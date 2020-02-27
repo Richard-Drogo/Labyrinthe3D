@@ -1,0 +1,1 @@
+Fusionner les exemples TestDetectMotion & TestDetectMultiScale
