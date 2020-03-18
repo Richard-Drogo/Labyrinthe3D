@@ -27,6 +27,8 @@ class Maze
 	int exitx_;
 	int exity_;
 
+    vector<vector<int>> grid_number_;
+
     void addFrontier(Point p,list<Point> & frontier);
     void mark(Point p,list<Point> & frontier);
     list<Point> neighbors(Point p);

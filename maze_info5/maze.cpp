@@ -17,28 +17,28 @@ Maze::Maze(int width, int height)
 {
     int pos = 2;
 
-	srand(time(NULL));
+    srand(time(NULL));
     //pos = rand() % 4;
-	if (pos == 0) {
+    if (pos == 0) {
         exitx_ = 0;
         exity_ = rand() % (width_) + 1  ;
-	}
-	else if (pos == 1) {
+    }
+    else if (pos == 1) {
         exity_ = width_;
         exitx_ = rand() % (height_ ) + 1;
     }
     else if (pos == 2) {
         exitx_ = height_;
         exity_ = rand() % (width_) + 1;;
-	}
+    }
     else if (pos == 3) {
         exity_ = 0;
         exitx_ = rand() % (height_ ) + 1;;
-	}
-	else {
-		cout << "should never happend";
-	}
-    cout << pos <<";" <<exitx_ << ";" << exity_ << "." << endl;
+    }
+    else {
+        cout << "should never happend";
+    }
+    cout << pos <<";" <<exitx_ << ";" << exity_ << endl;
 }
 
 void Maze::reinit()
@@ -51,7 +51,9 @@ void Maze::reinit()
             grid_number_[2*i+1][2*j+1] = 1 ;
         }
     }
-
+    if (exitx_ == height_){
+        grid_number_[2*height_][2*exity_-1] = 1 ;
+    }
 }
 
 void Maze::addFrontier(Point p, list<Point> &frontier)
@@ -97,79 +99,79 @@ Cell::Direction Maze::direction(Point f, Point t)
 }
 
 void Maze::display(bool pause)
-{    
+{
     int i,j;
     string cell[3]={"..","  ","()"};
 
     if (pause) system("cls"); // use "clear" under linux
 
     // Print the first line
-    for (j=0;j<width_;j++) 
-		if (exitx_ == 0) {
-			if (exity_ == j+1) {
-				cout << "+  ";
+    for (j=0;j<width_;j++)
+        if (exitx_ == 0) {
+            if (exity_ == j+1) {
+                cout << "+  ";
                 grid_number_[0][2*j] = 0;
                 grid_number_[0][2*j+1] = 1;
-			}
-			else
-			{
-				cout << "+--";
+            }
+            else
+            {
+                cout << "+--";
                 grid_number_[0][2*j] = 0;
                 grid_number_[0][2*j+1] = 0;
-			}
-		}
-		else
-		{
-			cout << "+--";
+            }
+        }
+        else
+        {
+            cout << "+--";
             grid_number_[0][2*j] = 0;
             grid_number_[0][2*j+1] = 0;
-		}
-	cout << '+' << endl;
+        }
+    cout << '+' << endl;
 
     // Print other lines
-    for (i=0;i<height_-1;i++) {
+    for (i=0;i<height_;i++) {
         // Beginning of line
-		if (exity_ == 0) {
+        if (exity_ == 0) {
             if (exitx_-1 == i)
-			{
-				cout << ' ';
+            {
+                cout << ' ';
                 grid_number_[2*i][0] = 0;
                 grid_number_[2*i+1][0] = 1;
-			}
-			else
-			{
-				cout << '|';
+            }
+            else
+            {
+                cout << '|';
                 grid_number_[2*i][0] = 0;
                 grid_number_[2*i+1][0] = 0;
-			}
-		}
-		else {
-			cout << '|';
+            }
+        }
+        else {
+            cout << '|';
             grid_number_[2*i][0] = 0;
             grid_number_[2*i+1][0] = 0;
-		}
+        }
         // Print cells
-        for (j=0;j<width_-1;j++) {
+        for (j=0;j<width_;j++) {
             if (i == exitx_-1){
                 if (j == width_-1 && j == exity_ -1) {
-					cout << " ";
-                    grid_number_[2*i-1][2*j-1] = 1;
-				}
-				else {
-					cout << cell[grid_[i][j].getValue()];
-					if (grid_[i][j].isFrontier(Cell::E)) cout << '|';
+                    cout << " ";
+                    grid_number_[2*i+1][2*j+2] = 1;
+                }
+                else {
+                    cout << cell[grid_[i][j].getValue()];
+                    if (grid_[i][j].isFrontier(Cell::E)) cout << '|';
                     else {
                         cout << ' ';
-                        grid_number_[2*i-1][2*j-1] = 1;
+                        grid_number_[2*i+1][2*j+2] = 1;
                     }
-				}
-			}
-			else {
-				cout << cell[grid_[i][j].getValue()];
-				if (grid_[i][j].isFrontier(Cell::E)) cout << '|';
+                }
+            }
+            else {
+                cout << cell[grid_[i][j].getValue()];
+                if (grid_[i][j].isFrontier(Cell::E)) cout << '|';
                 else {
                     cout << ' ';
-                    grid_number_[2*i-1][2*j-1] = 1;
+                    grid_number_[2*i+1][2*j+2] = 1;
                 }
             }
         }
@@ -177,33 +179,33 @@ void Maze::display(bool pause)
         // Beginning of line
         cout<<'+';
         // Print horizontal frontier
-        for (j=0;j<width_-1;j++) {
-			if (i == exitx_ - 1)
+        for (j=0;j<width_;j++) {
+            if (i == exitx_ - 1)
             {
-                cout << i;
-				if (j == exity_ - 1)
-				{
-					cout << "  +";
-				}
-				else
-				{
-					if (grid_[i][j].isFrontier(Cell::S)) cout << "--";
+                //cout << i;
+                if (j == exity_ - 1)
+                {
+                    cout << "  +";
+                }
+                else
+                {
+                    if (grid_[i][j].isFrontier(Cell::S)) cout << "--";
                     else {
                         cout << "  ";
-                        grid_number_[2*i+2][2*j+1] = 1;
+                       grid_number_[2*i+2][2*j+1] = 1;
                     }
-					cout << '+';
-				}
-			}
-			else {
-				if (grid_[i][j].isFrontier(Cell::S)) cout << "--";
+                    cout << '+';
+                }
+            }
+            else {
+                if (grid_[i][j].isFrontier(Cell::S)) cout << "--";
                 else {
                     cout << "  ";
 
-                    grid_number_[2*i+2][2*j+1] = 1;
+                   grid_number_[2*i+2][2*j+1] = 1;
                 };
-				cout << '+';
-			}
+                cout << '+';
+            }
         }
         cout<<endl;
     }
