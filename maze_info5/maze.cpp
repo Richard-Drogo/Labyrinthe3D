@@ -15,10 +15,10 @@ using namespace std;
 Maze::Maze(int width, int height)
     : grid_(height,vector<Cell>(width)), width_(width), height_(height)
 {
-    int pos;
+    int pos = 2;
 
 	srand(time(NULL));
-    pos = rand() % 4;
+    //pos = rand() % 4;
 	if (pos == 0) {
         exitx_ = 0;
         exity_ = rand() % (width_) + 1  ;
@@ -44,6 +44,14 @@ Maze::Maze(int width, int height)
 void Maze::reinit()
 {
     grid_=vector<vector<Cell>>(height_,vector<Cell>(width_));
+    grid_number_=vector<vector<int>>(2*height_+1,vector<int>(2*width_+1));
+
+    for ( int i = 0; i < height_; i++){
+        for ( int j = 0; j < width_;j++){
+            grid_number_[2*i+1][2*j+1] = 1 ;
+        }
+    }
+
 }
 
 void Maze::addFrontier(Point p, list<Point> &frontier)
@@ -80,7 +88,6 @@ list<Point> Maze::neighbors(Point p)
     return n;
 }
 
-
 Cell::Direction Maze::direction(Point f, Point t)
 {
     if (f.first<t.first) return Cell::E;
@@ -89,9 +96,8 @@ Cell::Direction Maze::direction(Point f, Point t)
     else return Cell::N;
 }
 
-
 void Maze::display(bool pause)
-{
+{    
     int i,j;
     string cell[3]={"..","  ","()"};
 
@@ -102,60 +108,79 @@ void Maze::display(bool pause)
 		if (exitx_ == 0) {
 			if (exity_ == j+1) {
 				cout << "+  ";
+                grid_number_[0][2*j] = 0;
+                grid_number_[0][2*j+1] = 1;
 			}
 			else
 			{
 				cout << "+--";
+                grid_number_[0][2*j] = 0;
+                grid_number_[0][2*j+1] = 0;
 			}
 		}
 		else
 		{
 			cout << "+--";
+            grid_number_[0][2*j] = 0;
+            grid_number_[0][2*j+1] = 0;
 		}
 	cout << '+' << endl;
 
     // Print other lines
-    for (i=0;i<height_;i++) {
+    for (i=0;i<height_-1;i++) {
         // Beginning of line
 		if (exity_ == 0) {
             if (exitx_-1 == i)
 			{
 				cout << ' ';
+                grid_number_[2*i][0] = 0;
+                grid_number_[2*i+1][0] = 1;
 			}
 			else
 			{
 				cout << '|';
+                grid_number_[2*i][0] = 0;
+                grid_number_[2*i+1][0] = 0;
 			}
 		}
 		else {
 			cout << '|';
+            grid_number_[2*i][0] = 0;
+            grid_number_[2*i+1][0] = 0;
 		}
         // Print cells
-        for (j=0;j<width_;j++) {
+        for (j=0;j<width_-1;j++) {
             if (i == exitx_-1){
-               // cout << j;
                 if (j == width_-1 && j == exity_ -1) {
 					cout << " ";
+                    grid_number_[2*i-1][2*j-1] = 1;
 				}
 				else {
 					cout << cell[grid_[i][j].getValue()];
 					if (grid_[i][j].isFrontier(Cell::E)) cout << '|';
-					else cout << ' ';
+                    else {
+                        cout << ' ';
+                        grid_number_[2*i-1][2*j-1] = 1;
+                    }
 				}
 			}
 			else {
 				cout << cell[grid_[i][j].getValue()];
 				if (grid_[i][j].isFrontier(Cell::E)) cout << '|';
-				else cout << ' ';
-			}
+                else {
+                    cout << ' ';
+                    grid_number_[2*i-1][2*j-1] = 1;
+                }
+            }
         }
         cout<<endl;
         // Beginning of line
         cout<<'+';
         // Print horizontal frontier
-        for (j=0;j<width_;j++) {
+        for (j=0;j<width_-1;j++) {
 			if (i == exitx_ - 1)
-			{
+            {
+                cout << i;
 				if (j == exity_ - 1)
 				{
 					cout << "  +";
@@ -163,17 +188,31 @@ void Maze::display(bool pause)
 				else
 				{
 					if (grid_[i][j].isFrontier(Cell::S)) cout << "--";
-					else cout << "  ";
+                    else {
+                        cout << "  ";
+                        grid_number_[2*i+2][2*j+1] = 1;
+                    }
 					cout << '+';
 				}
 			}
 			else {
 				if (grid_[i][j].isFrontier(Cell::S)) cout << "--";
-				else cout << "  ";
+                else {
+                    cout << "  ";
+
+                    grid_number_[2*i+2][2*j+1] = 1;
+                };
 				cout << '+';
 			}
         }
         cout<<endl;
+    }
+
+    for ( int i = 0; i < 2*height_+1; i++){
+        for ( int j = 0; j < 2*width_+1;j++){
+            cout << grid_number_[i][j] << " " ;
+        }
+        cout << endl;
     }
 
     if (pause) {
