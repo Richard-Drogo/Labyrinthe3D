@@ -15,10 +15,10 @@ using namespace std;
 Maze::Maze(int width, int height)
     : grid_(height,vector<Cell>(width)), width_(width), height_(height)
 {
-    int pos = 2;
+    int pos ;
 
     srand(time(NULL));
-    //pos = rand() % 4;
+    pos = rand() % 4;
     if (pos == 0) {
         exitx_ = 0;
         exity_ = rand() % (width_) + 1  ;
@@ -217,6 +217,8 @@ void Maze::display(bool pause)
         cout << endl;
     }
 
+    list<Point>path = this->path(Point(1,1),Point(5,5));
+
     if (pause) {
         cout<<"Press ENTER to continue....."<<endl;
         cin.ignore(1);
@@ -265,3 +267,75 @@ void Maze::generate(bool show)
         if (show) display(true);
     }
 }
+
+list<Point> Maze::MatrixNeighbors(Point p,vector<vector<int>> grid_number_copy){
+    list<Point> list;
+    if(p.first+1<=2*height_-1 && grid_number_copy[p.first+1][p.second] == 1 ){ // si case du dessous
+        list.push_back(Point(p.first+1,p.second));
+    }
+    if(p.first-1>= 0 && grid_number_copy[p.first-1][p.second] == 1){ // si case du dessus
+        list.push_back(Point(p.first-1,p.second));
+    }
+    if(p.second+1<=2*width_-1 && grid_number_copy[p.first][p.second+1] == 1){ // si case de droite
+        list.push_back(Point(p.first,p.second+1));
+    }
+    if(p.second-1>=0 && grid_number_copy[p.first][p.second-1] == 1){ // si case de gauche
+        list.push_back(Point(p.first,p.second-1));
+    }
+
+    return list;
+}
+
+list<Point> Maze::path(Point begin, Point end){
+    vector<vector<int>> grid_number_copy = grid_number_;
+
+    Point usingPoint = begin;
+    grid_number_copy[usingPoint.first][usingPoint.second] = 2;
+    list<Point> pile;
+    pile.push_front(begin);// ajout dans la pile du début du chemin
+    if (grid_number_copy[end.first][end.second] != 0){
+        while(usingPoint.first != end.first || usingPoint.second != end.second){
+
+            cout << usingPoint.first << " " << usingPoint.second << endl << pile.size() << endl;;
+
+            //pile.pop_front();// ajout dans la pile du début du chemin
+            grid_number_copy[usingPoint.first][usingPoint.second] = 2;
+            list<Point> neighborsList = MatrixNeighbors(usingPoint, grid_number_copy);
+            if(neighborsList.size() > 0){
+                cout << "empile ";
+                pile.push_front(neighborsList.front());
+            }
+            else {
+                cout << "depile ";
+                pile.pop_front();
+            }
+            usingPoint = pile.front();
+        }
+        cout << endl;
+        pile.push_front(end);
+
+        for ( int i = 0; i < 2*height_+1; i++){
+            for ( int j = 0; j < 2*width_+1;j++){
+                cout << grid_number_copy[i][j] << " " ;
+            }
+            cout << endl;
+        }
+    }
+    return pile;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

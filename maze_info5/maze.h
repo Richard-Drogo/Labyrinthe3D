@@ -24,8 +24,8 @@ class Maze
     int width_;
     int height_;
 
-	int exitx_;
-	int exity_;
+    int exitx_;
+    int exity_;
 
     vector<vector<int>> grid_number_;
 
@@ -39,7 +39,8 @@ public:
     void reinit();
     void display(bool pause=false);
     void generate(bool show=false);
-
+    list<Point> path(Point,Point);
+    list<Point> MatrixNeighbors(Point p,vector<vector<int>> grid_number_copy);
 
 };
 
