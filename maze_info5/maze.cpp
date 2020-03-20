@@ -43,6 +43,7 @@ Maze::Maze(int width, int height)
         cout << "should never happend";
     }
     cout << pos <<";" <<exitx_ << ";" << exity_ << endl;
+    cout << exit_.first << " " << exit_.second << endl;
 }
 
 void Maze::reinit()
@@ -55,9 +56,9 @@ void Maze::reinit()
             grid_number_[2*i+1][2*j+1] = 1 ;
         }
     }
-    if (exitx_ == height_){
-        grid_number_[exit_.first][exit_.second] = 1 ;
-    }
+
+    grid_number_[exit_.first][exit_.second] = 1 ;
+
 
 }
 
@@ -191,13 +192,14 @@ void Maze::display(bool pause)
                 if (j == exity_ - 1)
                 {
                     cout << "  +";
+                    grid_number_[2*i+2][2*j+1] = 1;
                 }
                 else
                 {
                     if (grid_[i][j].isFrontier(Cell::S)) cout << "--";
                     else {
                         cout << "  ";
-                       grid_number_[2*i+2][2*j+1] = 1;
+                        grid_number_[2*i+2][2*j+1] = 1;
                     }
                     cout << '+';
                 }
@@ -215,9 +217,14 @@ void Maze::display(bool pause)
         cout<<endl;
     }
 
-    this->generateInitialPosition();
+    for ( int i = 0; i < 2*height_+1; i++){
+        for ( int j = 0; j < 2*width_+1;j++){
+            cout << grid_number_[i][j] << " " ;
+        }
+        cout << endl;
+    }
 
-    cout << exit_.first << " " << exit_.second << endl;
+    this->generateInitialPosition();
 
     list<Point>path = this->path(initPosPlayer_,exit_);
 
@@ -309,8 +316,8 @@ list<Point> Maze::path(Point begin, Point end){
     if (grid_number_copy[end.first][end.second] != 0){
         while(usingPoint.first != end.first || usingPoint.second != end.second){
 
-            cout << usingPoint.first << " " << usingPoint.second << endl << pile.size() << endl;;
-
+            cout << usingPoint.first << " " << usingPoint.second << "  " << pile.size() << endl;;
+            //cout << pile.size() << " ";
             //pile.pop_front();// ajout dans la pile du début du chemin
             grid_number_copy[usingPoint.first][usingPoint.second] = 2;
             list<Point> neighborsList = MatrixNeighbors(usingPoint, grid_number_copy);
@@ -327,12 +334,14 @@ list<Point> Maze::path(Point begin, Point end){
         //cout << endl;
         pile.push_front(end);
 
+        /*
         for ( int i = 0; i < 2*height_+1; i++){
             for ( int j = 0; j < 2*width_+1;j++){
                 cout << grid_number_copy[i][j] << " " ;
             }
             cout << endl;
         }
+        */
     }
     return pile;
 }
@@ -367,7 +376,7 @@ void Maze::generateInitialPosition(){
     this->initPosPlayer_ = Point(posJX,posJY);
     this->gettableItem_ = Point(posX,posY);
 
-    //cout << posX << " " << posY << endl << posJX << " "<< posJY << endl ;
+    cout << posX << " " << posY << endl << posJX << " "<< posJY << endl ;
     //cout << distance << endl;
 }
 
