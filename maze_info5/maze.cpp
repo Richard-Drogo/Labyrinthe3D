@@ -22,18 +22,22 @@ Maze::Maze(int width, int height)
     if (pos == 0) {
         exitx_ = 0;
         exity_ = rand() % (width_) + 1  ;
+        exit_ = Point(0,2*exity_-1);
     }
     else if (pos == 1) {
         exity_ = width_;
         exitx_ = rand() % (height_ ) + 1;
+        exit_  = Point(2*exitx_-1,2*width_);
     }
     else if (pos == 2) {
         exitx_ = height_;
-        exity_ = rand() % (width_) + 1;;
+        exity_ = rand() % (width_) + 1;
+        exit_ = Point(2*height_,2*exity_-1);
     }
     else if (pos == 3) {
         exity_ = 0;
-        exitx_ = rand() % (height_ ) + 1;;
+        exitx_ = rand() % (height_ ) + 1;
+        exit_ = Point(2*exitx_-1,0);
     }
     else {
         cout << "should never happend";
@@ -52,8 +56,9 @@ void Maze::reinit()
         }
     }
     if (exitx_ == height_){
-        grid_number_[2*height_][2*exity_-1] = 1 ;
+        grid_number_[exit_.first][exit_.second] = 1 ;
     }
+
 }
 
 void Maze::addFrontier(Point p, list<Point> &frontier)
@@ -210,14 +215,22 @@ void Maze::display(bool pause)
         cout<<endl;
     }
 
+    this->generateInitialPosition();
+
+    cout << exit_.first << " " << exit_.second << endl;
+
+    list<Point>path = this->path(initPosPlayer_,exit_);
+
+    grid_number_[exit_.first][exit_.second] = 4;
+    grid_number_[gettableItem_.first][gettableItem_.second] = 3;
+    grid_number_[initPosPlayer_.first][initPosPlayer_.second] = 2;
+
     for ( int i = 0; i < 2*height_+1; i++){
         for ( int j = 0; j < 2*width_+1;j++){
             cout << grid_number_[i][j] << " " ;
         }
         cout << endl;
     }
-
-    list<Point>path = this->path(Point(1,1),Point(5,5));
 
     if (pause) {
         cout<<"Press ENTER to continue....."<<endl;
@@ -270,13 +283,13 @@ void Maze::generate(bool show)
 
 list<Point> Maze::MatrixNeighbors(Point p,vector<vector<int>> grid_number_copy){
     list<Point> list;
-    if(p.first+1<=2*height_-1 && grid_number_copy[p.first+1][p.second] == 1 ){ // si case du dessous
+    if(p.first+1<=2*height_ && grid_number_copy[p.first+1][p.second] == 1 ){ // si case du dessous
         list.push_back(Point(p.first+1,p.second));
     }
     if(p.first-1>= 0 && grid_number_copy[p.first-1][p.second] == 1){ // si case du dessus
         list.push_back(Point(p.first-1,p.second));
     }
-    if(p.second+1<=2*width_-1 && grid_number_copy[p.first][p.second+1] == 1){ // si case de droite
+    if(p.second+1<=2*width_ && grid_number_copy[p.first][p.second+1] == 1){ // si case de droite
         list.push_back(Point(p.first,p.second+1));
     }
     if(p.second-1>=0 && grid_number_copy[p.first][p.second-1] == 1){ // si case de gauche
@@ -302,16 +315,16 @@ list<Point> Maze::path(Point begin, Point end){
             grid_number_copy[usingPoint.first][usingPoint.second] = 2;
             list<Point> neighborsList = MatrixNeighbors(usingPoint, grid_number_copy);
             if(neighborsList.size() > 0){
-                cout << "empile ";
+                //cout << "empile ";
                 pile.push_front(neighborsList.front());
             }
             else {
-                cout << "depile ";
+                //cout << "depile ";
                 pile.pop_front();
             }
             usingPoint = pile.front();
         }
-        cout << endl;
+        //cout << endl;
         pile.push_front(end);
 
         for ( int i = 0; i < 2*height_+1; i++){
@@ -324,18 +337,37 @@ list<Point> Maze::path(Point begin, Point end){
     return pile;
 }
 
+void Maze::generateInitialPosition(){
+    int posX;
+    int posY;
 
+    int posJX;
+    int posJY;
 
+    srand(time(NULL));
+    posX = 2*(rand() % height_) + 1;
+    posY = 2*(rand() % width_) + 1;
 
+    posJX = 2*(rand() % height_) + 1;
+    posJY = 2*(rand() % width_ ) + 1;
 
+    //cout << posX << " " << posY << endl << posJX << " "<< posJY << endl ;
 
+    int distance = (this->path(Point(posX,posY),Point(posJX,posJY))).size();
 
+    while (distance < height_*width_/8 ){
+        posX = 2*(rand() % height_) + 1;
+        posY = 2*(rand() % width_) + 1;
 
+        posJX = 2*(rand() % height_) + 1;
+        posJY = 2*(rand() % width_ ) + 1;
+        distance = (this->path(Point(posX,posY),Point(posJX,posJY))).size();
+    }
 
+    this->initPosPlayer_ = Point(posJX,posJY);
+    this->gettableItem_ = Point(posX,posY);
 
-
-
-
-
-
+    //cout << posX << " " << posY << endl << posJX << " "<< posJY << endl ;
+    //cout << distance << endl;
+}
 

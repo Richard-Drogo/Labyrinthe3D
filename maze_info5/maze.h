@@ -27,6 +27,11 @@ class Maze
     int exitx_;
     int exity_;
 
+
+    Point exit_;
+    Point initPosPlayer_;
+    Point gettableItem_;
+
     vector<vector<int>> grid_number_;
 
     void addFrontier(Point p,list<Point> & frontier);
@@ -41,6 +46,11 @@ public:
     void generate(bool show=false);
     list<Point> path(Point,Point);
     list<Point> MatrixNeighbors(Point p,vector<vector<int>> grid_number_copy);
+    void generateInitialPosition();
+
+    Point getPlayerPos() { return initPosPlayer_;};
+    Point getexitPos() { return exit_;};
+    Point getItemPos() { return gettableItem_;};
 
 };
 
