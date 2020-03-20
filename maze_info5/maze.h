@@ -46,7 +46,7 @@ public:
     void generate(bool show=false);
     list<Point> path(Point,Point);
     list<Point> MatrixNeighbors(Point p,vector<vector<int>> grid_number_copy);
-    void generateInitialPosition();
+    void generateInitialPosition(Point start, int addedPoint);
 
     Point getPlayerPos() { return initPosPlayer_;};
     Point getexitPos() { return exit_;};

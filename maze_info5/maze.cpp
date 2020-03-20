@@ -224,7 +224,8 @@ void Maze::display(bool pause)
         cout << endl;
     }
 
-    this->generateInitialPosition();
+    this->generateInitialPosition(exit_,2);
+    this->generateInitialPosition(gettableItem_,1);
 
     list<Point>path = this->path(initPosPlayer_,exit_);
 
@@ -316,7 +317,7 @@ list<Point> Maze::path(Point begin, Point end){
     if (grid_number_copy[end.first][end.second] != 0){
         while(usingPoint.first != end.first || usingPoint.second != end.second){
 
-            cout << usingPoint.first << " " << usingPoint.second << "  " << pile.size() << endl;;
+            //cout << usingPoint.first << " " << usingPoint.second << "  " << pile.size() << endl;;
             //cout << pile.size() << " ";
             //pile.pop_front();// ajout dans la pile du début du chemin
             grid_number_copy[usingPoint.first][usingPoint.second] = 2;
@@ -346,16 +347,18 @@ list<Point> Maze::path(Point begin, Point end){
     return pile;
 }
 
-void Maze::generateInitialPosition(){
-    int posX;
-    int posY;
+void Maze::generateInitialPosition(Point start, int addedPoint){
+
+    // fixe les positions du point initial
+    int posX = start.first;
+    int posY = start.second;
 
     int posJX;
     int posJY;
 
+
+
     srand(time(NULL));
-    posX = 2*(rand() % height_) + 1;
-    posY = 2*(rand() % width_) + 1;
 
     posJX = 2*(rand() % height_) + 1;
     posJY = 2*(rand() % width_ ) + 1;
@@ -364,17 +367,19 @@ void Maze::generateInitialPosition(){
 
     int distance = (this->path(Point(posX,posY),Point(posJX,posJY))).size();
 
-    while (distance < height_*width_/8 ){
-        posX = 2*(rand() % height_) + 1;
-        posY = 2*(rand() % width_) + 1;
+    while (distance < height_*width_/7 ){ // paramètre ajustable
 
         posJX = 2*(rand() % height_) + 1;
         posJY = 2*(rand() % width_ ) + 1;
         distance = (this->path(Point(posX,posY),Point(posJX,posJY))).size();
     }
 
-    this->initPosPlayer_ = Point(posJX,posJY);
-    this->gettableItem_ = Point(posX,posY);
+    if( addedPoint == 1){ // en fonction de la valeur calculée on rentre la bonne valeur
+        this->initPosPlayer_ = Point(posJX,posJY);
+    }
+    else if (addedPoint == 2){
+        this->gettableItem_ = Point(posJX,posJY);
+    }
 
     cout << posX << " " << posY << endl << posJX << " "<< posJY << endl ;
     //cout << distance << endl;
