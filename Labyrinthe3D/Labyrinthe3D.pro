@@ -16,11 +16,23 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    glcolor.cpp \
+    labyrinthe.cpp \
     main.cpp \
-    labyrinthe3d.cpp
+    labyrinthe3d.cpp \
+    object3d.cpp \
+    openglhelper.cpp \
+    rgbcolor.cpp \
+    vertex.cpp
 
 HEADERS += \
-    labyrinthe3d.h
+    glcolor.h \
+    labyrinthe.h \
+    labyrinthe3d.h \
+    object3d.h \
+    openglhelper.h \
+    rgbcolor.h \
+    vertex.h
 
 FORMS += \
     labyrinthe3d.ui

@@ -164,6 +164,13 @@
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QLabel" name="label_sound_designer">
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
           <item>
@@ -277,11 +284,7 @@
       <widget class="QWidget" name="page">
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
-         <layout class="QGridLayout" name="gridLayout_ui_labyrinthe">
-          <item row="0" column="0">
-           <widget class="QOpenGLWidget" name="openGLWidget_labyrinthe3D"/>
-          </item>
-         </layout>
+         <layout class="QGridLayout" name="gridLayout_ui_labyrinthe"/>
         </item>
        </layout>
       </widget>

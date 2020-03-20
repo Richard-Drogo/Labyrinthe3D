@@ -12,6 +12,7 @@
 #include <QMessageBox>
 #include <QGLWidget>
 #include <QPixmap>
+#include <QDebug>
 
 using namespace cv;
 using namespace std;
@@ -26,7 +27,8 @@ Labyrinthe3D::Labyrinthe3D(QWidget *parent): QMainWindow(parent), ui(new Ui::Lab
     ui->label_largeur->setText(tr("Largeur : "));
     ui->label_record->setText(tr("Record : "));
     ui->label_developpeurs->setText(tr("Developpeurs : Richard DROGO & Lilian HOUDELET"));
-    ui->label_designer->setText(tr("Designer : Cédric PARIZY"));
+    ui->label_designer->setText(tr("Graphiste : Cédric PARIZY"));
+    ui->label_sound_designer->setText(tr("Sound Designer : Maxime LANCELOT"));
     ui->pushButton_jouer->setText(tr("Jouer"));
 
     ui->lineEdit_longueur->setText(QString::number(LONGUEUR_PAR_DEFAUT));
@@ -302,7 +304,9 @@ void Labyrinthe3D::razUICalibration(){
 void Labyrinthe3D::setupUILabyrinthe(){
     label_video_labyrinthe = new QLabel(this);
     label_video_labyrinthe->setFixedSize((int)(this->width() / 4),(int)(this->height() / 4));
+    labyrinthe = new Labyrinthe(this, ui->lineEdit_longueur->text().toInt(), ui->lineEdit_longueur->text().toInt());
 
+    ui->gridLayout_ui_labyrinthe->addWidget(labyrinthe, 0, 0, Qt::AlignLeft | Qt::AlignTop);
     ui->gridLayout_ui_labyrinthe->addWidget(label_video_labyrinthe, 0, 0, Qt::AlignRight | Qt::AlignTop);
 
     timer_video->start();

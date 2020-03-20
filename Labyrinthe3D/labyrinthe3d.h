@@ -6,6 +6,7 @@
 #include <QKeyEvent>
 #include <QGLWidget>
 #include <QLabel>
+#include "labyrinthe.h"
 
 using namespace cv;
 
@@ -47,6 +48,7 @@ private:
     Rect calibrage;
 
     QLabel * label_video_labyrinthe = nullptr;
+    Labyrinthe * labyrinthe = nullptr;
 
     /* retournerIndiceDuRectanglePlusGrand(std::vector<Rect> rectangles)
      * Rôle : Permet de retourner l'indice du plus grand rectangle d'un vector<Rect> passé en paramètre.
