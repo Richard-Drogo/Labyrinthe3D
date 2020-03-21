@@ -25,12 +25,12 @@ qint8 OpenGLHelper::drawQUAD3D(QVector<Vertex> vertices, GLColor color){
     return 0;
 }
 
-qint8 OpenGLHelper::drawCube(QVector<QVector<Vertex>> vertices, QVector<GLColor> colors){
-    if(vertices.size() != 6){
+qint8 OpenGLHelper::drawCube(QVector<QVector<Vertex>> vertices, QVector<GLColor> colors, qint8 quantite){
+    if(vertices.size() / 6 != quantite){
         return -1;
     }
 
-    for(unsigned long long i = 0; i < 6; i++){
+    for(unsigned long long i = 0; i < (6 * quantite); i++){
         if(vertices[i].size() != 4){
             return -2;
         }
@@ -38,9 +38,9 @@ qint8 OpenGLHelper::drawCube(QVector<QVector<Vertex>> vertices, QVector<GLColor>
 
 
     // We can draw the Cube
-    if(colors.size() == 6){
+    if(colors.size() == (6 * quantite)){
         // We have one color for each face
-        for(unsigned long long i = 0; i < 6; i++){
+        for(unsigned long long i = 0; i < (6 * quantite); i++){
             glColor3ub(colors[i].getRed(), colors[i].getGreen(), colors[i].getBlue());
             for(unsigned long long j = 0; j < 4; j++){
                 glVertex3f(vertices[i][j].getX(),vertices[i][j].getY(),vertices[i][j].getZ());
@@ -49,7 +49,7 @@ qint8 OpenGLHelper::drawCube(QVector<QVector<Vertex>> vertices, QVector<GLColor>
     } else {
         // We use one color only
         glColor3ub(colors[0].getRed(), colors[0].getGreen(), colors[0].getBlue());
-        for(unsigned long long i = 0; i < 6; i++){
+        for(unsigned long long i = 0; i < (6 * quantite); i++){
             for(unsigned long long j = 0; j < 4; j++){
                 glVertex3f(vertices[i][j].getX(),vertices[i][j].getY(),vertices[i][j].getZ());
             }

@@ -5,6 +5,7 @@
 #include <vector>
 #include "object3d.h"
 #include <QVector>
+#include "mur.h"
 
 using namespace std;
 
@@ -17,12 +18,25 @@ public:
 private:
     QVector<QVector<qint8>> matrice_labyrinthe_;
     Object3D sol_;
+    QVector<Mur> murs_;
     qint8 longueur_;
     qint8 largeur_;
     const qint8 EPAISSEUR_SOL = 2;
     const double EPAISSEUR_MUR = 0.2;
+    const double HAUTEUR_MUR = 2.5;
+    const double LONGUEUR_MUR = 1;
+    const double TAILLE_JOUEUR = 1.7;
+    const double LONGUEUR_CASE = 2;
 
-    Object3D genererMur(qint8 x, qint8 y);
+    void genererMur();
+    qint8 definirTypeMur(qint8 x, qint8 y);
+    qint8 compterCombienDeCasesNonDefinies(qint8 x, qint8 y);
+
+    const qint8 MUR = 0;
+    const qint8 CHEMIN = 1;
+    const qint8 JOUEUR = 2;
+    const qint8 SPHERE = 3;
+    const qint8 SORTIE = 4;
 
 protected:
     // Fonction d'initialisation

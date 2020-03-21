@@ -14,7 +14,7 @@ Object3D::Object3D(QString name, QVector<QVector<Vertex>> vertices, QVector<GLCo
     this->colors_ = colors;
 }
 
-qint8 Object3D::Display(){
+qint8 Object3D::display(){
     glPushMatrix();
 
     glBegin(GL_QUADS);

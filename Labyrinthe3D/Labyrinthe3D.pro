@@ -20,6 +20,7 @@ SOURCES += \
     labyrinthe.cpp \
     main.cpp \
     labyrinthe3d.cpp \
+    mur.cpp \
     object3d.cpp \
     openglhelper.cpp \
     rgbcolor.cpp \
@@ -29,6 +30,7 @@ HEADERS += \
     glcolor.h \
     labyrinthe.h \
     labyrinthe3d.h \
+    mur.h \
     object3d.h \
     openglhelper.h \
     rgbcolor.h \

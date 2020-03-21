@@ -16,7 +16,7 @@ public:
     // Constructeurs
     Object3D();
     Object3D(QString name, QVector<QVector<Vertex>> vertices, QVector<GLColor> colors);
-    qint8 Display();
+    qint8 display();
 
     // Getters
     QVector<QVector<Vertex>> getVertices(){return vertices_;};
@@ -27,10 +27,11 @@ public:
     void setVertices(QVector<QVector<Vertex>> vertices) {vertices_ = vertices;};
     void setColors(QVector<GLColor> colors) {colors_ = colors;};
 
-private:
+protected:
     QVector<QVector<Vertex>> vertices_;
     QVector<GLColor> colors_;
     QString name_;
+
 };
 
 #endif // OBJECT3D_H

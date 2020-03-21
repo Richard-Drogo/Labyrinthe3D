@@ -16,7 +16,7 @@ public:
     OpenGLHelper();
     static qint8 drawQUAD3D(QVector<Vertex> vertices, GLColor color);
 
-    static qint8 drawCube(QVector<QVector<Vertex>> vertices, QVector<GLColor> colors);
+    static qint8 drawCube(QVector<QVector<Vertex>> vertices, QVector<GLColor> colors, qint8 quantite = 1);
 };
 
 #endif // OPENGLHELPER_H
