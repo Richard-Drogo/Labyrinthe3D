@@ -34,6 +34,8 @@ class Maze
 
     vector<vector<int>> grid_number_;
 
+    list<Point> pathPlayerToItem_;
+
     void addFrontier(Point p,list<Point> & frontier);
     void mark(Point p,list<Point> & frontier);
     list<Point> neighbors(Point p);

@@ -12,11 +12,11 @@ using namespace std;
 
 int main()
 {
-	int a; 
-    Maze maze(13,15);
+    //int a;
+    Maze maze(13,10);
     maze.generate();
     maze.display();
-	cin >> a;
+    //cin >> a;
     return 0;
 }
 

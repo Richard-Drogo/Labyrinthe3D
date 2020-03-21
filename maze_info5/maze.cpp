@@ -227,7 +227,7 @@ void Maze::display(bool pause)
     this->generateInitialPosition(exit_,2);
     this->generateInitialPosition(gettableItem_,1);
 
-    list<Point>path = this->path(initPosPlayer_,exit_);
+    pathPlayerToItem_ = this->path(initPosPlayer_,gettableItem_);
 
     grid_number_[exit_.first][exit_.second] = 4;
     grid_number_[gettableItem_.first][gettableItem_.second] = 3;
@@ -239,6 +239,8 @@ void Maze::display(bool pause)
         }
         cout << endl;
     }
+
+
 
     if (pause) {
         cout<<"Press ENTER to continue....."<<endl;
@@ -367,7 +369,7 @@ void Maze::generateInitialPosition(Point start, int addedPoint){
 
     int distance = (this->path(Point(posX,posY),Point(posJX,posJY))).size();
 
-    while (distance < height_*width_/7 ){ // paramètre ajustable
+    while (distance < height_*width_/6 ){ // paramètre ajustable
 
         posJX = 2*(rand() % height_) + 1;
         posJY = 2*(rand() % width_ ) + 1;
