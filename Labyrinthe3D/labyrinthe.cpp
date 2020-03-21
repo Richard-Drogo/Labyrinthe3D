@@ -105,83 +105,100 @@ void Labyrinthe::genererMur(){
     }
 }
 
-qint8 Labyrinthe::definirTypeMur(qint8 x, qint8 y){
+void Labyrinthe::definirTypeMur(qint8 x, qint8 y){
     qint8 cases_hors_zones_autour = compterCombienDeCasesNonDefinies(x,y);
-    qint8 orientation = -1;
+    qint8 position = -1;
+    qint8 orientation = Mur::AUCUNE_ORIENTATION;
     qint8 type = -1;
-
     if(cases_hors_zones_autour == 2){
-        // C'est un angle
-
+        // C'est un mur d'angle
         if((x-1 <0) && (y-1 <0)) {
-            orientation = Mur::NW;
+            position = Mur::NW;
         } else if((x-1 <0) && (y+1 >=largeur_)){
-            orientation = Mur::SW;
+            position = Mur::SW;
         } else if((y+1 >= largeur_) && (x+1 >= longueur_)) {
-            orientation = Mur::SE;
+            position = Mur::SE;
         } else if((x+1 >=longueur_) && (y-1 <0)){
-            orientation = Mur::NE;
+            position = Mur::NE;
         } else {
-            qDebug() << "orientation non déterminée...";
+            qDebug() << tr("Position du mur non déterminée ") << "(" << y << ";" << x << ")";
         }
 
-        switch (orientation){
+        switch (position){
         case Mur::NW:{
-            if((matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR)){
-                type = Mur::ANGLE_T1;
-            } else if(matrice_labyrinthe_[y][x+1] == SORTIE){
-                type = Mur::ANGLE_T2;
-            } else if(matrice_labyrinthe_[y+1][x] == SORTIE){
-                type = Mur::ANGLE_T3;
+            if ((matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR)){
+                type = Mur::ANGLE;
+                orientation = position;
+            } else if ((matrice_labyrinthe_[y][x+1] == SORTIE) || (matrice_labyrinthe_[y+1][x] == SORTIE)){
+                type = Mur::CONTOUR_T2;
+                if(matrice_labyrinthe_[y][x+1] == SORTIE){
+                    orientation = Mur::W;
+                } else {
+                    orientation = Mur::N;
+                }
             } else {
-                qDebug() << "type non déterminé " << x << ";" << y;
+                qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")";
             }
         }break;
 
         case Mur::SW:{
-            if((matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y-1][x] == MUR)){
-                type = Mur::ANGLE_T1;
-            } else if(matrice_labyrinthe_[y][x+1] == SORTIE){
-                type = Mur::ANGLE_T2;
-            } else if(matrice_labyrinthe_[y-1][x] == SORTIE){
-                type = Mur::ANGLE_T3;
+            if ((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR)){
+                type = Mur::ANGLE;
+                orientation = position;
+            } else if ((matrice_labyrinthe_[y-1][x] == SORTIE) || (matrice_labyrinthe_[y][x+1] == SORTIE)){
+                type = Mur::CONTOUR_T2;
+                if (matrice_labyrinthe_[y-1][x] == SORTIE){
+                    orientation = Mur::S;
+                } else {
+                    orientation = Mur::W;
+                }
             } else {
-                qDebug() << "type non déterminé " << x << ";" << y;
+                qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")";
             }
         }break;
 
         case Mur::SE:{
-            if((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y-1][x] == MUR)){
-                type = Mur::ANGLE_T1;
-            } else if(matrice_labyrinthe_[y][x-1] == SORTIE){
-                type = Mur::ANGLE_T2;
-            } else if(matrice_labyrinthe_[y-1][x] == SORTIE){
-                type = Mur::ANGLE_T3;
+            if ((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y-1][x] == MUR)){
+                type = Mur::ANGLE;
+                orientation = position;
+            } else if ((matrice_labyrinthe_[y][x-1] == SORTIE) || (matrice_labyrinthe_[y-1][x] == SORTIE)){
+                type = Mur::CONTOUR_T2;
+                if (matrice_labyrinthe_[y][x-1] == SORTIE){
+                    orientation = Mur::E;
+                } else {
+                    orientation = Mur::S;
+                }
             } else {
-                qDebug() << "type non déterminé " << x << ";" << y;
+                qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")";
             }
         }break;
 
         case Mur::NE:{
-            if((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR)){
-                type = Mur::ANGLE_T1;
-            } else if(matrice_labyrinthe_[y][x-1] == SORTIE){
-                type = Mur::ANGLE_T2;
-            } else if(matrice_labyrinthe_[y+1][x] == SORTIE){
-                type = Mur::ANGLE_T3;
+            if ((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR)){
+                type = Mur::ANGLE;
+                orientation = position;
+            } else if ((matrice_labyrinthe_[y][x-1] == SORTIE) || (matrice_labyrinthe_[y+1][x] == SORTIE)){
+                type = Mur::CONTOUR_T2;
+                if (matrice_labyrinthe_[y][x-1] == SORTIE){
+                    orientation = Mur::E;
+                } else {
+                    orientation = Mur::N;
+                }
             } else {
-                qDebug() << "type non déterminé " << x << ";" << y;
+                qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")";
             }
         }break;
 
         default :{
-            qDebug() << "erreur due à l'orientation non déterminée.";
+            qDebug() << tr("Erreur due à la position indéterminée du mur ") << "(" << y << ";" << x << ")";
         }break;
         }
 
         this->murs_.push_back(Mur(x * LONGUEUR_CASE, y * LONGUEUR_CASE, type, orientation, EPAISSEUR_MUR, HAUTEUR_MUR, LONGUEUR_MUR * LONGUEUR_CASE, {GLColor(255, 255, 255)}));
+
     } else if (cases_hors_zones_autour == 1){
-        // C'est un contour
+        // C'est un mur du contour
+        // La position est égale à l'orientation pour les murs de contours.
         if(y-1 <0) {
             orientation = Mur::N;
         } else if(x-1 <0){
@@ -191,94 +208,110 @@ qint8 Labyrinthe::definirTypeMur(qint8 x, qint8 y){
         } else if(x+1 >=longueur_){
             orientation = Mur::E;
         } else {
-            qDebug() << "orientation non déterminée...";
+            qDebug() << tr("Orientation du mur non déterminée ") << "(" << y << ";" << x << ")";
         }
-
 
         switch (orientation){
         case Mur::N:{
-            if((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR)){
+            if (((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR)) || ((matrice_labyrinthe_[y][x-1] == SORTIE) && (matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR)) || ((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == SORTIE) && (matrice_labyrinthe_[y+1][x] == MUR))){
                 type = Mur::CONTOUR_T1;
-            } else if((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR)){
+            } else if (((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR)) || ((matrice_labyrinthe_[y][x-1] == SORTIE) && (matrice_labyrinthe_[y][x+1] == MUR)) || ((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == SORTIE))){
                 type = Mur::CONTOUR_T2;
-            } else if((matrice_labyrinthe_[y][x-1] == SORTIE) && (matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR)){
-                type = Mur::CONTOUR_T3;
-            } else if((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == SORTIE) && (matrice_labyrinthe_[y+1][x] == MUR)){
-                type = Mur::CONTOUR_T4;
-            } else if((matrice_labyrinthe_[y][x-1] == SORTIE) && (matrice_labyrinthe_[y][x+1] == MUR)){
-                type = Mur::CONTOUR_T5;
-            } else if((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == SORTIE)){
-                type = Mur::CONTOUR_T6;
             } else {
-                qDebug() << "type non déterminé " << x << ";" << y;
+                qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")";
             }
         }break;
 
         case Mur::W:{
-            if((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR)){
+            if (((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR)) || ((matrice_labyrinthe_[y+1][x] == SORTIE) && (matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR)) || ((matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y-1][x] == SORTIE) && (matrice_labyrinthe_[y][x+1] == MUR))){
                 type = Mur::CONTOUR_T1;
-            } else if((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR)){
+            } else if (((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR)) || ((matrice_labyrinthe_[y+1][x] == SORTIE) && (matrice_labyrinthe_[y-1][x] == MUR)) || ((matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y-1][x] == SORTIE))){
                 type = Mur::CONTOUR_T2;
-            } else if((matrice_labyrinthe_[y+1][x] == SORTIE) && (matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR)){
-                type = Mur::CONTOUR_T3;
-            } else if((matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y-1][x] == SORTIE) && (matrice_labyrinthe_[y][x+1] == MUR)){
-                type = Mur::CONTOUR_T4;
-            } else if((matrice_labyrinthe_[y+1][x] == SORTIE) && (matrice_labyrinthe_[y-1][x] == MUR)){
-                type = Mur::CONTOUR_T5;
-            } else if((matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y-1][x] == SORTIE)){
-                type = Mur::CONTOUR_T6;
             } else {
-                qDebug() << "type non déterminé " << x << ";" << y;
+                qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")";
             }
         }break;
 
         case Mur::S:{
-            if((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y-1][x] == MUR)){
+            if (((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y-1][x] == MUR)) || ((matrice_labyrinthe_[y][x+1] == SORTIE) && (matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y-1][x] == MUR)) || ((matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y][x-1] == SORTIE) && (matrice_labyrinthe_[y-1][x] == MUR))){
                 type = Mur::CONTOUR_T1;
-            } else if((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR)){
+            } else if (((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR)) || ((matrice_labyrinthe_[y][x+1] == SORTIE) && (matrice_labyrinthe_[y][x-1] == MUR)) || ((matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y][x-1] == SORTIE))){
                 type = Mur::CONTOUR_T2;
-            } else if((matrice_labyrinthe_[y][x+1] == SORTIE) && (matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y-1][x] == MUR)){
-                type = Mur::CONTOUR_T3;
-            } else if((matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y][x-1] == SORTIE) && (matrice_labyrinthe_[y-1][x] == MUR)){
-                type = Mur::CONTOUR_T4;
-            } else if((matrice_labyrinthe_[y][x+1] == SORTIE) && (matrice_labyrinthe_[y][x-1] == MUR)){
-                type = Mur::CONTOUR_T5;
-            } else if((matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y][x-1] == SORTIE)){
-                type = Mur::CONTOUR_T6;
             } else {
-                qDebug() << "type non déterminé " << x << ";" << y;
+                qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")";
             }
         }break;
 
         case Mur::E:{
-            if((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y][x-1] == MUR)){
+            if (((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y][x-1] == MUR)) || ((matrice_labyrinthe_[y-1][x] == SORTIE) && (matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y][x-1] == MUR)) || ((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == SORTIE) && (matrice_labyrinthe_[y][x-1] == MUR))){
                 type = Mur::CONTOUR_T1;
-            } else if((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR)){
+            } else if (((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR)) || ((matrice_labyrinthe_[y-1][x] == SORTIE) && (matrice_labyrinthe_[y+1][x] == MUR)) || ((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == SORTIE))){
                 type = Mur::CONTOUR_T2;
-            } else if((matrice_labyrinthe_[y-1][x] == SORTIE) && (matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y][x-1] == MUR)){
-                type = Mur::CONTOUR_T3;
-            } else if((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == SORTIE) && (matrice_labyrinthe_[y][x-1] == MUR)){
-                type = Mur::CONTOUR_T4;
-            } else if((matrice_labyrinthe_[y-1][x] == SORTIE) && (matrice_labyrinthe_[y+1][x] == MUR)){
-                type = Mur::CONTOUR_T5;
-            } else if((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == SORTIE)){
-                type = Mur::CONTOUR_T6;
             } else {
-                qDebug() << "type non déterminé " << x << ";" << y;
+                qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")";
             }
         }break;
 
         default :{
-            qDebug() << "erreur due à l'orientation non déterminée.";
+            qDebug() << tr("Erreur due à l'orientation indéterminée du mur ") << "(" << y << ";" << x << ")";
         }break;
         }
 
         this->murs_.push_back(Mur(x * LONGUEUR_CASE, y * LONGUEUR_CASE, type, orientation, EPAISSEUR_MUR, HAUTEUR_MUR, LONGUEUR_MUR * LONGUEUR_CASE, {GLColor(255, 255, 255)}));
+
     } else if (cases_hors_zones_autour == 0){
         // C'est un mur central.
-        // TODO
+        // Dans les cas précédents, la position était principalement nécessaire pour éviter d'accéder à une case non définie du labyrinthe.
+        // Ici on va déterminer directement le type de pièce, puis son orientation.
+
+        if ((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR)){
+            // Pas d'orientation pour cette pièce. On laisse la valeur par défaut.
+            type = Mur::CENTRE_T1;
+        } else if (((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y-1][x] != MUR)) || ((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y][x-1] != MUR)) || ((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] != MUR)) || ((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] != MUR))) {
+            type = Mur::CENTRE_T2;
+            if ((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y-1][x] != MUR)) {
+                orientation = Mur::N;
+            } else if ((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y][x-1] != MUR)) {
+                orientation = Mur::W;
+            } else if ((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] != MUR)) {
+                orientation = Mur::S;
+            } else {
+                orientation = Mur::E;
+            }
+        } else if (((matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y-1][x] != MUR) && (matrice_labyrinthe_[y][x-1] != MUR)) || ((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y+1][x] != MUR) && (matrice_labyrinthe_[y][x-1] != MUR)) || ((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] != MUR) && (matrice_labyrinthe_[y][x+1] != MUR)) || ((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y-1][x] != MUR) && (matrice_labyrinthe_[y][x+1] != MUR))) {
+            type = Mur::CENTRE_T3;
+            if ((matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y-1][x] != MUR) && (matrice_labyrinthe_[y][x-1] != MUR)) {
+                orientation = Mur::NW;
+            } else if ((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y+1][x] != MUR) && (matrice_labyrinthe_[y][x-1] != MUR)) {
+                orientation = Mur::SW;
+            } else if ((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] != MUR) && (matrice_labyrinthe_[y][x+1] != MUR)) {
+                orientation = Mur::SE;
+            } else {
+                orientation = Mur::NE;
+            }
+        } else if (((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y-1][x] != MUR) && (matrice_labyrinthe_[y+1][x] != MUR)) || ((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y][x-1] != MUR) && (matrice_labyrinthe_[y][x+1] != MUR)) || ((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] != MUR) && (matrice_labyrinthe_[y-1][x] != MUR) && (matrice_labyrinthe_[y+1][x] != MUR)) || ((matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y][x-1] != MUR) && (matrice_labyrinthe_[y-1][x] != MUR) && (matrice_labyrinthe_[y+1][x] != MUR)) || ((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] != MUR) && (matrice_labyrinthe_[y][x-1] != MUR) && (matrice_labyrinthe_[y][x+1] != MUR)) || ((matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y-1][x] != MUR) && (matrice_labyrinthe_[y][x-1] != MUR) && (matrice_labyrinthe_[y][x+1] != MUR))) {
+            type = Mur::CENTRE_T4;
+            if ((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y-1][x] != MUR) && (matrice_labyrinthe_[y+1][x] != MUR)) {
+                orientation = Mur::H;
+            } else if ((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y][x-1] != MUR) && (matrice_labyrinthe_[y][x+1] != MUR)) {
+                orientation = Mur::V;
+            } else if ((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] != MUR) && (matrice_labyrinthe_[y-1][x] != MUR) && (matrice_labyrinthe_[y+1][x] != MUR)) {
+                orientation = Mur::H;
+            } else if ((matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y][x-1] != MUR) && (matrice_labyrinthe_[y-1][x] != MUR) && (matrice_labyrinthe_[y+1][x] != MUR)) {
+                orientation = Mur::H;
+            } else if ((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] != MUR) && (matrice_labyrinthe_[y][x-1] != MUR) && (matrice_labyrinthe_[y][x+1] != MUR)) {
+                orientation = Mur::V;
+            } else {
+                orientation = Mur::V;
+            }
+        } else {
+            qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")";
+        }
+
+        this->murs_.push_back(Mur(x * LONGUEUR_CASE, y * LONGUEUR_CASE, type, orientation, EPAISSEUR_MUR, HAUTEUR_MUR, LONGUEUR_MUR * LONGUEUR_CASE, {GLColor(255, 255, 255)}));
+
     } else {
-        qDebug() << "ERREUR : " << cases_hors_zones_autour << " hors zone!";
+        qDebug() << tr("Erreur !") << " " << cases_hors_zones_autour << " " << tr("cases hors zone détectées pour le mur") << " (" << y << ";" << x << ")";
     }
 }
 

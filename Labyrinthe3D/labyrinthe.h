@@ -29,7 +29,7 @@ private:
     const double LONGUEUR_CASE = 2;
 
     void genererMur();
-    qint8 definirTypeMur(qint8 x, qint8 y);
+    void definirTypeMur(qint8 x, qint8 y);
     qint8 compterCombienDeCasesNonDefinies(qint8 x, qint8 y);
 
     const qint8 MUR = 0;
