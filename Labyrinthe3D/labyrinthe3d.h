@@ -21,6 +21,7 @@ class Labyrinthe3D : public QMainWindow
 public:
     Labyrinthe3D(QWidget *parent = nullptr);
     ~Labyrinthe3D();
+    void quitterLabyrinthe();
 
 private slots:
     void on_pushButton_jouer_clicked();
@@ -41,6 +42,7 @@ private:
     const quint8 LARGEUR_PAR_DEFAUT = 6;
     const quint8 DIMENSION_MINIMALE = 5;
     const quint8 DIMENSION_MAXIMALE = 20;
+    const qint8 INTERVALE_TIMER = 100;
 
     QTimer * timer_video = nullptr;
     VideoCapture * webcam = nullptr;

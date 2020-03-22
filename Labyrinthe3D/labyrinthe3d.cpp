@@ -83,7 +83,7 @@ void Labyrinthe3D::on_pushButton_calibrer_clicked()
             webcam =new VideoCapture(0);
             timer_video = new QTimer(this);
             connect(timer_video, SIGNAL(timeout()), this, SLOT(updateVideo()));
-            timer_video->start(20);
+            timer_video->start(INTERVALE_TIMER);
 
         } else {
             ui->label_video->setText(tr("Nous n'avons pas pu charger HaarCascade..."));
@@ -224,17 +224,6 @@ void Labyrinthe3D::keyPressEvent(QKeyEvent * event){
 
     }
 
-
-    case 2:{
-        switch (event->key()) {
-        case Qt::Key_Escape:{
-            ui->stackedWidget_navigation->setCurrentIndex(0);
-            razUILabyrinthe();
-        }
-            break;
-        }
-    }
-        break;
     }
 }
 
@@ -317,5 +306,12 @@ void Labyrinthe3D::setupUILabyrinthe(){
 void Labyrinthe3D::razUILabyrinthe(){
     delete label_video_labyrinthe;
     delete timer_video;
+}
+
+void Labyrinthe3D::quitterLabyrinthe(){
+    qDebug() << "A DEBUGUER";
+    ui->stackedWidget_navigation->setCurrentIndex(0);
+    razUILabyrinthe();
+    ui->stackedWidget_navigation->setFocus();
 }
 // Fin : Méthodes privées

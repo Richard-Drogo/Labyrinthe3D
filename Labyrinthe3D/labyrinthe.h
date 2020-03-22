@@ -17,6 +17,7 @@ public:
     Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur);
 
 private:
+    QWidget * parent_;
     QVector<QVector<qint8>> matrice_labyrinthe_;
     Object3D sol_;
     Object3D plafond_;
@@ -24,15 +25,15 @@ private:
     qint8 longueur_;
     qint8 largeur_;
     double angle_direction_ = -1;
-    const double EPAISSEUR_SOL = 2;
-    const double EPAISSEUR_PLAFOND = 2;
+    const double EPAISSEUR_SOL = 0.5;
+    const double EPAISSEUR_PLAFOND = 0.5;
     const double EPAISSEUR_MUR = 0.2;
     const double HAUTEUR_MUR = 3;
     const double LONGUEUR_MUR = 1;
     const double TAILLE_JOUEUR = 1.7;
     const double LONGUEUR_CASE = 2;
     const double LONGUEUR_DEPLACEMENT = 0.1 * LONGUEUR_CASE;
-
+    const double DEPLACEMENT_ANGULAIRE = 5; // Degrés
 
     const qint8 LIGNE_D_HORIZON = 100;
     Vertex positionJoueur_;

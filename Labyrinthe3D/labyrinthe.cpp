@@ -8,9 +8,11 @@
 #include <QDebug>
 #include <QKeyEvent>
 #include <QtMath>
+#include "labyrinthe3d.h"
 
 Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QGLWidget(parent)
 {
+    parent_ = parent;
     longueur_ = longueur * 2 + 1;
     largeur_ = largeur * 2 + 1;
     // 0 : Mur
@@ -55,14 +57,14 @@ Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QGLWid
     if (posY_joueur - 1 >= 0) {
         if(matrice_labyrinthe_[posY_joueur - 1][posX_joueur] == CHEMIN){
             direction_ = Vertex(positionJoueur_.getX(), positionJoueur_.getY(), positionJoueur_.getZ() - 1 * LONGUEUR_CASE);
-            angle_direction_ = 90;
+            angle_direction_ = 270;
         }
     }
 
     if (posY_joueur + 1 >= 0) {
         if(matrice_labyrinthe_[posY_joueur + 1][posX_joueur] == CHEMIN){
             direction_ = Vertex(positionJoueur_.getX(), positionJoueur_.getY(), positionJoueur_.getZ() + 1 * LONGUEUR_CASE);
-            angle_direction_ = 270;
+            angle_direction_ = 90;
         }
     }
 
@@ -138,19 +140,9 @@ void Labyrinthe::paintGL()
         success = murs_[i].display();
     }
     plafond_.display();
+    this->setFocus();
 }
 
-void Labyrinthe::keyPressEvent(QKeyEvent * event){
-    switch (event->key()) {
-    case Qt::Key_Z:
-    {
-        positionJoueur_.setX(positionJoueur_.getX() + qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
-        positionJoueur_.setZ(positionJoueur_.getZ() + qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
-    }break;
-
-    }
-
-}
 
 // Fin : SLOTS CRÉÉS
 
@@ -398,3 +390,65 @@ qint8 Labyrinthe::compterCombienDeCasesNonDefinies(qint8 x, qint8 y){
     return compteur;
 }
 // Fin : Méthodes privées
+
+
+void Labyrinthe::keyPressEvent(QKeyEvent * event){
+
+
+    switch (event->key()) {
+
+    case Qt::Key_Escape:
+    {
+        ((Labyrinthe3D)parent_).quitterLabyrinthe();
+        ((Labyrinthe3D)parent_).setFocus();
+    }break;
+
+    case Qt::Key_Z:
+    {
+        positionJoueur_.setX(positionJoueur_.getX() + qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+        positionJoueur_.setZ(positionJoueur_.getZ() + qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+
+        direction_.setX(direction_.getX() + qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+        direction_.setZ(direction_.getZ() + qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+    }break;
+
+
+    case Qt::Key_S:
+    {
+        positionJoueur_.setX(positionJoueur_.getX() - qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+        positionJoueur_.setZ(positionJoueur_.getZ() - qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+
+        direction_.setX(direction_.getX() - qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+        direction_.setZ(direction_.getZ() - qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+    }break;
+
+    case Qt::Key_Q:
+    {
+        if(angle_direction_ - DEPLACEMENT_ANGULAIRE < 0){
+            angle_direction_ = 360 + (angle_direction_ - angle_direction_);
+        } else {
+            angle_direction_ = angle_direction_ - DEPLACEMENT_ANGULAIRE;
+        }
+
+        direction_.setX(positionJoueur_.getX() + qSqrt(qPow(direction_.getX() - positionJoueur_.getX(),2) + qPow(direction_.getZ() - positionJoueur_.getZ(),2)) * qCos(qDegreesToRadians(angle_direction_)));
+        direction_.setZ(positionJoueur_.getZ() + qSqrt(qPow(direction_.getX() - positionJoueur_.getX(),2) + qPow(direction_.getZ() - positionJoueur_.getZ(),2)) * qSin(qDegreesToRadians(angle_direction_)));
+    }break;
+
+
+    case Qt::Key_D:
+    {
+        if(angle_direction_ + DEPLACEMENT_ANGULAIRE >= 360){
+            angle_direction_ = DEPLACEMENT_ANGULAIRE - (360 - angle_direction_);
+        } else {
+            angle_direction_ = angle_direction_ + DEPLACEMENT_ANGULAIRE;
+        }
+        direction_.setX(positionJoueur_.getX() + qSqrt(qPow(direction_.getX() - positionJoueur_.getX(),2) + qPow(direction_.getZ() - positionJoueur_.getZ(),2)) * qCos(qDegreesToRadians(angle_direction_)));
+        direction_.setZ(positionJoueur_.getZ() + qSqrt(qPow(direction_.getX() - positionJoueur_.getX(),2) + qPow(direction_.getZ() - positionJoueur_.getZ(),2)) * qSin(qDegreesToRadians(angle_direction_)));
+    }break;
+    }
+
+    // Acceptation de l'evenement et mise a jour de la scene
+    event->accept();
+    updateGL();
+
+}

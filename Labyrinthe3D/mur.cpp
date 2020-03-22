@@ -137,8 +137,8 @@ void Mur::setVertices(){
             vertices_.push_back({SW_TOP_1, SE_TOP_1, SE_BOT_1, SW_BOT_1});
             vertices_.push_back({SE_TOP_1, NE_TOP_1, NE_BOT_1, SE_BOT_1});
 
-            Vertex NE_BOT_2(x_ + longueur_, 0, y_ + longueur_ / 2 - epaisseur_), NW_BOT_2(x_ + epaisseur_, 0, y_ + longueur_ / 2 - epaisseur_), SW_BOT_2(x_ + epaisseur_, 0, y_ + longueur_ / 2 + epaisseur_), SE_BOT_2(x_ + longueur_, 0, y_ + longueur_ / 2 - epaisseur_);
-            Vertex NE_TOP_2(x_ + longueur_, hauteur_, y_ + longueur_ / 2 - epaisseur_), NW_TOP_2(x_ + epaisseur_, hauteur_, y_ + longueur_ / 2 - epaisseur_), SW_TOP_2(x_ + epaisseur_, hauteur_, y_ + longueur_ / 2 + epaisseur_), SE_TOP_2(x_ + longueur_, hauteur_, y_ + longueur_ / 2 - epaisseur_);
+            Vertex NE_BOT_2(x_ + longueur_, 0, y_ + longueur_ / 2 - epaisseur_), NW_BOT_2(x_ + epaisseur_, 0, y_ + longueur_ / 2 - epaisseur_), SW_BOT_2(x_ + epaisseur_, 0, y_ + longueur_ / 2 + epaisseur_), SE_BOT_2(x_ + longueur_, 0, y_ + longueur_ / 2 + epaisseur_);
+            Vertex NE_TOP_2(x_ + longueur_, hauteur_, y_ + longueur_ / 2 - epaisseur_), NW_TOP_2(x_ + epaisseur_, hauteur_, y_ + longueur_ / 2 - epaisseur_), SW_TOP_2(x_ + epaisseur_, hauteur_, y_ + longueur_ / 2 + epaisseur_), SE_TOP_2(x_ + longueur_, hauteur_, y_ + longueur_ / 2 + epaisseur_);
             vertices_.push_back({NE_TOP_2, NW_TOP_2, SW_TOP_2, SE_TOP_2});
             vertices_.push_back({NE_BOT_2, NW_BOT_2, SW_BOT_2, SE_BOT_2});
             vertices_.push_back({NE_TOP_2, NW_TOP_2, NW_BOT_2, NE_BOT_2});
@@ -303,8 +303,8 @@ void Mur::setVertices(){
             vertices_.push_back({SW_TOP_1, SE_TOP_1, SE_BOT_1, SW_BOT_1});
             vertices_.push_back({SE_TOP_1, NE_TOP_1, NE_BOT_1, SE_BOT_1});
 
-            Vertex NE_BOT_2(x_ + longueur_, 0, y_ + longueur_ / 2 - epaisseur_), NW_BOT_2(x_ + longueur_ / 2 + epaisseur_, 0, y_ + longueur_ / 2 - epaisseur_), SW_BOT_2(x_ + longueur_ / 2 + epaisseur_, 0, y_ + longueur_ / 2 + epaisseur_), SE_BOT_2(x_ + longueur_, 0, y_ + longueur_ / 2 - epaisseur_);
-            Vertex NE_TOP_2(x_ + longueur_, hauteur_, y_ + longueur_ / 2 - epaisseur_), NW_TOP_2(x_ + longueur_ / 2 + epaisseur_, hauteur_, y_ + longueur_ / 2 - epaisseur_), SW_TOP_2(x_ + longueur_ / 2 + epaisseur_, hauteur_, y_ + longueur_ / 2 + epaisseur_), SE_TOP_2(x_ + longueur_, hauteur_, y_ + longueur_ / 2 - epaisseur_);
+            Vertex NE_BOT_2(x_ + longueur_, 0, y_ + longueur_ / 2 - epaisseur_), NW_BOT_2(x_ + longueur_ / 2 + epaisseur_, 0, y_ + longueur_ / 2 - epaisseur_), SW_BOT_2(x_ + longueur_ / 2 + epaisseur_, 0, y_ + longueur_ / 2 + epaisseur_), SE_BOT_2(x_ + longueur_, 0, y_ + longueur_ / 2 + epaisseur_);
+            Vertex NE_TOP_2(x_ + longueur_, hauteur_, y_ + longueur_ / 2 - epaisseur_), NW_TOP_2(x_ + longueur_ / 2 + epaisseur_, hauteur_, y_ + longueur_ / 2 - epaisseur_), SW_TOP_2(x_ + longueur_ / 2 + epaisseur_, hauteur_, y_ + longueur_ / 2 + epaisseur_), SE_TOP_2(x_ + longueur_, hauteur_, y_ + longueur_ / 2 + epaisseur_);
             vertices_.push_back({NE_TOP_2, NW_TOP_2, SW_TOP_2, SE_TOP_2});
             vertices_.push_back({NE_BOT_2, NW_BOT_2, SW_BOT_2, SE_BOT_2});
             vertices_.push_back({NE_TOP_2, NW_TOP_2, NW_BOT_2, NE_BOT_2});
@@ -420,8 +420,8 @@ void Mur::setVertices(){
         }break;
 
         case NE:{
-            Vertex NE_BOT_1(x_ + longueur_ / 2 + epaisseur_, 0, y_ + longueur_ / 2 - epaisseur_), NW_BOT_1(x_, 0, y_ + longueur_ / 2 - epaisseur_), SW_BOT_1(x_, 0, y_ + longueur_ / 2 + epaisseur_), SE_BOT_1(x_ + longueur_, 0, y_ + longueur_ / 2 + epaisseur_);
-            Vertex NE_TOP_1(x_ + longueur_ / 2 + epaisseur_, hauteur_, y_ + longueur_ / 2 - epaisseur_), NW_TOP_1(x_, hauteur_, y_ + longueur_ / 2 - epaisseur_), SW_TOP_1(x_, hauteur_, y_ + longueur_ / 2 + epaisseur_), SE_TOP_1(x_ + longueur_, hauteur_, y_ + longueur_ / 2 + epaisseur_);
+            Vertex NE_BOT_1(x_ + longueur_ / 2 + epaisseur_, 0, y_ + longueur_ / 2 - epaisseur_), NW_BOT_1(x_, 0, y_ + longueur_ / 2 - epaisseur_), SW_BOT_1(x_, 0, y_ + longueur_ / 2 + epaisseur_), SE_BOT_1(x_ + longueur_ / 2 + epaisseur_, 0, y_ + longueur_ / 2 + epaisseur_);
+            Vertex NE_TOP_1(x_ + longueur_ / 2 + epaisseur_, hauteur_, y_ + longueur_ / 2 - epaisseur_), NW_TOP_1(x_, hauteur_, y_ + longueur_ / 2 - epaisseur_), SW_TOP_1(x_, hauteur_, y_ + longueur_ / 2 + epaisseur_), SE_TOP_1(x_ + longueur_ / 2 + epaisseur_, hauteur_, y_ + longueur_ / 2 + epaisseur_);
             vertices_.push_back({NE_TOP_1, NW_TOP_1, SW_TOP_1, SE_TOP_1});
             vertices_.push_back({NE_BOT_1, NW_BOT_1, SW_BOT_1, SE_BOT_1});
             vertices_.push_back({NE_TOP_1, NW_TOP_1, NW_BOT_1, NE_BOT_1});

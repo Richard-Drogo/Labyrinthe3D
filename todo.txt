@@ -1,1 +1,30 @@
-Fusionner les exemples TestDetectMotion & TestDetectMultiScale
+TODO Liste |
+------------
+
+
+Cahier des charges : 
+1 - Déplacements au moyen de la caméra.
+2 - Gestion des collisions.
+3 - Affichage du labyrinthe lorsque le joueur ne bouge pas.
+4 - Génération de la sphère.
+5 - Placement de la porte au niveau de la sortie.
+6 - Intéraction sphère et sortie.
+7 - Gestion de l'éclairage (Lié au Bonus [Demander si OK au professeur]).
+8 - Génération automatique du labyrinthe. (Fusionner la partie de Lilian avec le projet actuel).
+9 - Commenter le code.
+10 - Documentation des murs (Revoir les Excel "Types de murs possibles").
+11 - Rapport.
+
+
+Corrections de Bugs :
+1 - La saisie des valeurs de configuration du labyrinthe (Longueur et largeur) ne fonctionne pas toujours.
+
+
+Bonus :
+1 - Textures des murs et du plafond.
+2 - Affichage de la lampe torche du joueur.
+3 - Intéraction de la lampe torche du joueur avec les murs (CAHIER DES CHARGES, PARTIE ECLAIRAGE).
+4 - Placements des indices.
+5 - Modification design de l'interface selon les travaux de Cédric.
+6 - Ajouter les musiques de Maxime.
+7 - Ajouter les animations de Cédric.
