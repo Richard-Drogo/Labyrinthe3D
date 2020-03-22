@@ -1,5 +1,10 @@
 #include "vertex.h"
 
+Vertex::Vertex()
+{
+
+}
+
 Vertex::Vertex(double x, double y, double z)
 {
     this->x_ = x;

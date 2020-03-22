@@ -304,6 +304,8 @@ void Labyrinthe3D::razUICalibration(){
 void Labyrinthe3D::setupUILabyrinthe(){
     label_video_labyrinthe = new QLabel(this);
     label_video_labyrinthe->setFixedSize((int)(this->width() / 4),(int)(this->height() / 4));
+    label_video_labyrinthe->setFocusPolicy(Qt::NoFocus);
+
     labyrinthe = new Labyrinthe(this, ui->lineEdit_longueur->text().toInt(), ui->lineEdit_largeur->text().toInt());
 
     ui->gridLayout_ui_labyrinthe->addWidget(labyrinthe, 0, 0, Qt::AlignLeft | Qt::AlignTop);

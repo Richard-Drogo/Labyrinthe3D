@@ -6,6 +6,8 @@
 #include <glcolor.h>
 #include <QVector>
 #include <QDebug>
+#include <QKeyEvent>
+#include <QtMath>
 
 Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QGLWidget(parent)
 {
@@ -32,20 +34,67 @@ Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QGLWid
                            {0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                           };
 
+    qint8 posX_joueur = 19; // Valeur retournée par fonction
+    qint8 posY_joueur = 7; // Valeur retournée par fonction
+
+    positionJoueur_ = Vertex(posX_joueur * LONGUEUR_CASE,TAILLE_JOUEUR, posY_joueur * LONGUEUR_CASE);
+    if(posX_joueur - 1 >= 0){
+        if(matrice_labyrinthe_[posY_joueur][posX_joueur - 1] == CHEMIN){
+            direction_ = Vertex(positionJoueur_.getX() - 1 * LONGUEUR_CASE, positionJoueur_.getY(),positionJoueur_.getZ());
+            angle_direction_ = 180;
+        }
+    }
+
+    if (posX_joueur + 1 < longueur_) {
+        if(matrice_labyrinthe_[posY_joueur][posX_joueur + 1] == CHEMIN){
+            direction_ = Vertex(positionJoueur_.getX() + 1 * LONGUEUR_CASE, positionJoueur_.getY(),positionJoueur_.getZ());
+            angle_direction_ = 0;
+        }
+    }
+
+    if (posY_joueur - 1 >= 0) {
+        if(matrice_labyrinthe_[posY_joueur - 1][posX_joueur] == CHEMIN){
+            direction_ = Vertex(positionJoueur_.getX(), positionJoueur_.getY(), positionJoueur_.getZ() - 1 * LONGUEUR_CASE);
+            angle_direction_ = 90;
+        }
+    }
+
+    if (posY_joueur + 1 >= 0) {
+        if(matrice_labyrinthe_[posY_joueur + 1][posX_joueur] == CHEMIN){
+            direction_ = Vertex(positionJoueur_.getX(), positionJoueur_.getY(), positionJoueur_.getZ() + 1 * LONGUEUR_CASE);
+            angle_direction_ = 270;
+        }
+    }
+
     // Début : Sol
-    Vertex NE_SOL_TOP(longueur_ * LONGUEUR_CASE, 0, 0), NW_SOL_TOP(0, 0, 0), SW_SOL_TOP(0, 0, largeur_ * LONGUEUR_CASE), SE_SOL_TOP(longueur_ * LONGUEUR_CASE, 0, largeur_ * LONGUEUR_CASE);
-    Vertex NE_SOL_BOT(longueur_ * LONGUEUR_CASE, -EPAISSEUR_SOL, 0), NW_SOL_BOT(0, -EPAISSEUR_SOL, 0), SW_SOL_BOT(0, -EPAISSEUR_SOL, largeur_ * LONGUEUR_CASE), SE_SOL_BOT(longueur_ * LONGUEUR_CASE, -EPAISSEUR_SOL, largeur_ * LONGUEUR_CASE);
+    Vertex NE_TOP_SOL(longueur_ * LONGUEUR_CASE, 0, 0), NW_TOP_SOL(0, 0, 0), SW_TOP_SOL(0, 0, largeur_ * LONGUEUR_CASE), SE_SOL_TOP(longueur_ * LONGUEUR_CASE, 0, largeur_ * LONGUEUR_CASE);
+    Vertex NE_BOT_SOL(longueur_ * LONGUEUR_CASE, -EPAISSEUR_SOL, 0), NW_BOT_SOL(0, -EPAISSEUR_SOL, 0), SW_BOT_SOL(0, -EPAISSEUR_SOL, largeur_ * LONGUEUR_CASE), SE_BOT_SOL(longueur_ * LONGUEUR_CASE, -EPAISSEUR_SOL, largeur_ * LONGUEUR_CASE);
     QVector<QVector<Vertex>> vertices_sol {
-        {NE_SOL_TOP, NW_SOL_TOP, SW_SOL_TOP, SE_SOL_TOP},
-        {NE_SOL_BOT, NW_SOL_BOT, SW_SOL_BOT, SE_SOL_BOT},
-        {NE_SOL_TOP, NW_SOL_TOP, NW_SOL_BOT, NE_SOL_BOT},
-        {NW_SOL_TOP, SW_SOL_TOP, SW_SOL_BOT, NW_SOL_BOT},
-        {SW_SOL_TOP, SE_SOL_TOP, SE_SOL_BOT, SW_SOL_BOT},
-        {SE_SOL_TOP, NE_SOL_TOP, NE_SOL_BOT, SE_SOL_BOT}
+        {NE_TOP_SOL, NW_TOP_SOL, SW_TOP_SOL, SE_SOL_TOP},
+        {NE_BOT_SOL, NW_BOT_SOL, SW_BOT_SOL, SE_BOT_SOL},
+        {NE_TOP_SOL, NW_TOP_SOL, NW_BOT_SOL, NE_BOT_SOL},
+        {NW_TOP_SOL, SW_TOP_SOL, SW_BOT_SOL, NW_BOT_SOL},
+        {SW_TOP_SOL, SE_SOL_TOP, SE_BOT_SOL, SW_BOT_SOL},
+        {SE_SOL_TOP, NE_TOP_SOL, NE_BOT_SOL, SE_BOT_SOL}
     };
 
     sol_ = Object3D("Sol", vertices_sol, {GLColor(33, 12, 0)});
     // Fin : Sol
+
+    // Début : Plafond
+    Vertex NE_TOP_PLAFOND(longueur_ * LONGUEUR_CASE, HAUTEUR_MUR + EPAISSEUR_PLAFOND, 0), NW_TOP_PLAFOND(0, HAUTEUR_MUR + EPAISSEUR_PLAFOND, 0), SW_TOP_PLAFOND(0, HAUTEUR_MUR + EPAISSEUR_PLAFOND, largeur_ * LONGUEUR_CASE), SE_SOL_PLAFOND(longueur_ * LONGUEUR_CASE, HAUTEUR_MUR + EPAISSEUR_PLAFOND, largeur_ * LONGUEUR_CASE);
+    Vertex NE_BOT_PLAFOND(longueur_ * LONGUEUR_CASE, HAUTEUR_MUR, 0), NW_BOT_PLAFOND(0, HAUTEUR_MUR, 0), SW_BOT_PLAFOND(0, HAUTEUR_MUR, largeur_ * LONGUEUR_CASE), SE_BOT_PLAFOND(longueur_ * LONGUEUR_CASE, HAUTEUR_MUR, largeur_ * LONGUEUR_CASE);
+    QVector<QVector<Vertex>> vertices_plafond {
+        {NE_TOP_PLAFOND, NW_TOP_PLAFOND, SW_TOP_PLAFOND, SE_SOL_PLAFOND},
+        {NE_BOT_PLAFOND, NW_BOT_PLAFOND, SW_BOT_PLAFOND, SE_BOT_PLAFOND},
+        {NE_TOP_PLAFOND, NW_TOP_PLAFOND, NW_BOT_PLAFOND, NE_BOT_PLAFOND},
+        {NW_TOP_PLAFOND, SW_TOP_PLAFOND, SW_BOT_PLAFOND, NW_BOT_PLAFOND},
+        {SW_TOP_PLAFOND, SE_SOL_PLAFOND, SE_BOT_PLAFOND, SW_BOT_PLAFOND},
+        {SE_SOL_PLAFOND, NE_TOP_PLAFOND, NE_BOT_PLAFOND, SE_BOT_PLAFOND}
+    };
+
+    plafond_ = Object3D("Plafond", vertices_plafond, {RGBColor::red_color_});
+    // Fin : Plafond
 
     genererMur();
     setFixedSize(parent->width(), parent->height());
@@ -76,11 +125,11 @@ void Labyrinthe::paintGL()
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(80, 16/9, 0.1, 100);
+    gluPerspective(80, 16/9, 0.1, LIGNE_D_HORIZON);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(longueur_ , 40, largeur_,
-              longueur_ / 1.01, 0, largeur_,
+    gluLookAt(positionJoueur_.getX(), positionJoueur_.getY(), positionJoueur_.getZ(),
+              direction_.getX(), direction_.getY(), direction_.getZ(),
               0,1,0);
 
     sol_.display();
@@ -88,8 +137,21 @@ void Labyrinthe::paintGL()
     for(int i=0; i < murs_.size(); i++){
         success = murs_[i].display();
     }
-    qDebug() << murs_.size();
+    plafond_.display();
 }
+
+void Labyrinthe::keyPressEvent(QKeyEvent * event){
+    switch (event->key()) {
+    case Qt::Key_Z:
+    {
+        positionJoueur_.setX(positionJoueur_.getX() + qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+        positionJoueur_.setZ(positionJoueur_.getZ() + qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+    }break;
+
+    }
+
+}
+
 // Fin : SLOTS CRÉÉS
 
 

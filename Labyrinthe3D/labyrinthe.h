@@ -6,6 +6,7 @@
 #include "object3d.h"
 #include <QVector>
 #include "mur.h"
+#include <utility>
 
 using namespace std;
 
@@ -18,15 +19,24 @@ public:
 private:
     QVector<QVector<qint8>> matrice_labyrinthe_;
     Object3D sol_;
+    Object3D plafond_;
     QVector<Mur> murs_;
     qint8 longueur_;
     qint8 largeur_;
-    const qint8 EPAISSEUR_SOL = 2;
+    double angle_direction_ = -1;
+    const double EPAISSEUR_SOL = 2;
+    const double EPAISSEUR_PLAFOND = 2;
     const double EPAISSEUR_MUR = 0.2;
-    const double HAUTEUR_MUR = 2.5;
+    const double HAUTEUR_MUR = 3;
     const double LONGUEUR_MUR = 1;
     const double TAILLE_JOUEUR = 1.7;
     const double LONGUEUR_CASE = 2;
+    const double LONGUEUR_DEPLACEMENT = 0.1 * LONGUEUR_CASE;
+
+
+    const qint8 LIGNE_D_HORIZON = 100;
+    Vertex positionJoueur_;
+    Vertex direction_;
 
     void genererMur();
     void definirTypeMur(qint8 x, qint8 y);
@@ -38,6 +48,7 @@ private:
     const qint8 SPHERE = 3;
     const qint8 SORTIE = 4;
 
+
 protected:
     // Fonction d'initialisation
     void initializeGL();
@@ -47,6 +58,8 @@ protected:
 
     // Fonction d'affichage
     void paintGL();
+
+    void keyPressEvent(QKeyEvent * event);
 };
 
 #endif // LABYRINTHE_H
