@@ -18,6 +18,7 @@ Cahier des charges :
 
 Corrections de Bugs :
 1 - La saisie des valeurs de configuration du labyrinthe (Longueur et largeur) ne fonctionne pas toujours.
+Cause : le bug est causé par la vérification permanante des valeurs, bloquant les longueur de 10 à 19.
 
 
 Bonus :
