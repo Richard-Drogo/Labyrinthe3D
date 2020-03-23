@@ -443,6 +443,55 @@ void Mur::setVertices(){
     }break;
 
     case CENTRE_T4:{
+        switch(orientation_){
+        case N:{
+            Vertex NE_BOT(x_ + longueur_ / 2 + epaisseur_, 0, y_), NW_BOT(x_ + longueur_ / 2 - epaisseur_, 0, y_), SW_BOT(x_ + longueur_ / 2 - epaisseur_, 0, y_ + longueur_ / 2 + epaisseur_), SE_BOT(x_ + longueur_ / 2 + epaisseur_, 0, y_ + longueur_ / 2 + epaisseur_);
+            Vertex NE_TOP(x_ + longueur_ / 2 + epaisseur_, hauteur_, y_), NW_TOP(x_ + longueur_ / 2 - epaisseur_, hauteur_, y_), SW_TOP(x_ + longueur_ / 2 - epaisseur_, hauteur_, y_ + longueur_ / 2 + epaisseur_), SE_TOP(x_ + longueur_ / 2 + epaisseur_, hauteur_, y_ + longueur_ / 2 + epaisseur_);
+            vertices_.push_back({NE_TOP, NW_TOP, SW_TOP, SE_TOP});
+            vertices_.push_back({NE_BOT, NW_BOT, SW_BOT, SE_BOT});
+            vertices_.push_back({NE_TOP, NW_TOP, NW_BOT, NE_BOT});
+            vertices_.push_back({NW_TOP, SW_TOP, SW_BOT, NW_BOT});
+            vertices_.push_back({SW_TOP, SE_TOP, SE_BOT, SW_BOT});
+            vertices_.push_back({SE_TOP, NE_TOP, NE_BOT, SE_BOT});
+        }break;
+
+        case W:{
+            Vertex NE_BOT(x_ + longueur_ / 2 + epaisseur_, 0, y_ + longueur_ / 2 - epaisseur_), NW_BOT(x_, 0, y_ + longueur_ / 2 - epaisseur_), SW_BOT(x_, 0, y_ + longueur_ / 2 + epaisseur_), SE_BOT(x_ + longueur_ / 2 + epaisseur_, 0, y_ + longueur_ / 2 + epaisseur_);
+            Vertex NE_TOP(x_ + longueur_ / 2 + epaisseur_, hauteur_, y_ + longueur_ / 2 - epaisseur_), NW_TOP(x_, hauteur_, y_ + longueur_ / 2 - epaisseur_), SW_TOP(x_, hauteur_, y_ + longueur_ / 2 + epaisseur_), SE_TOP(x_ + longueur_ / 2 + epaisseur_, hauteur_, y_ + longueur_ / 2 + epaisseur_);
+            vertices_.push_back({NE_TOP, NW_TOP, SW_TOP, SE_TOP});
+            vertices_.push_back({NE_BOT, NW_BOT, SW_BOT, SE_BOT});
+            vertices_.push_back({NE_TOP, NW_TOP, NW_BOT, NE_BOT});
+            vertices_.push_back({NW_TOP, SW_TOP, SW_BOT, NW_BOT});
+            vertices_.push_back({SW_TOP, SE_TOP, SE_BOT, SW_BOT});
+            vertices_.push_back({SE_TOP, NE_TOP, NE_BOT, SE_BOT});
+        }break;
+
+        case S:{
+            Vertex NE_BOT(x_ + longueur_ / 2 + epaisseur_, 0, y_ + longueur_ / 2 - epaisseur_), NW_BOT(x_ + longueur_ / 2 - epaisseur_, 0, y_ + longueur_ / 2 - epaisseur_), SW_BOT(x_ + longueur_ / 2 - epaisseur_, 0, y_ + longueur_), SE_BOT(x_ + longueur_ / 2 + epaisseur_, 0, y_ + longueur_);
+            Vertex NE_TOP(x_ + longueur_ / 2 + epaisseur_, hauteur_, y_ + longueur_ / 2 - epaisseur_), NW_TOP(x_ + longueur_ / 2 - epaisseur_, hauteur_, y_ + longueur_ / 2 - epaisseur_), SW_TOP(x_ + longueur_ / 2 - epaisseur_, hauteur_, y_ + longueur_), SE_TOP(x_ + longueur_ / 2 + epaisseur_, hauteur_, y_ + longueur_);
+            vertices_.push_back({NE_TOP, NW_TOP, SW_TOP, SE_TOP});
+            vertices_.push_back({NE_BOT, NW_BOT, SW_BOT, SE_BOT});
+            vertices_.push_back({NE_TOP, NW_TOP, NW_BOT, NE_BOT});
+            vertices_.push_back({NW_TOP, SW_TOP, SW_BOT, NW_BOT});
+            vertices_.push_back({SW_TOP, SE_TOP, SE_BOT, SW_BOT});
+            vertices_.push_back({SE_TOP, NE_TOP, NE_BOT, SE_BOT});
+        }break;
+
+        case E:{
+            Vertex NE_BOT(x_ + longueur_, 0, y_ + longueur_ / 2 - epaisseur_), NW_BOT(x_ + longueur_ / 2 - epaisseur_, 0, y_ + longueur_ / 2 - epaisseur_), SW_BOT(x_ + longueur_ / 2 - epaisseur_, 0, y_ + longueur_ / 2 + epaisseur_), SE_BOT(x_ + longueur_, 0, y_ + longueur_ / 2 + epaisseur_);
+            Vertex NE_TOP(x_ + longueur_, hauteur_, y_ + longueur_ / 2 - epaisseur_), NW_TOP(x_ + longueur_ / 2 - epaisseur_, hauteur_, y_ + longueur_ / 2 - epaisseur_), SW_TOP(x_ + longueur_ / 2 - epaisseur_, hauteur_, y_ + longueur_ / 2 + epaisseur_), SE_TOP(x_ + longueur_, hauteur_, y_ + longueur_ / 2 + epaisseur_);
+            vertices_.push_back({NE_TOP, NW_TOP, SW_TOP, SE_TOP});
+            vertices_.push_back({NE_BOT, NW_BOT, SW_BOT, SE_BOT});
+            vertices_.push_back({NE_TOP, NW_TOP, NW_BOT, NE_BOT});
+            vertices_.push_back({NW_TOP, SW_TOP, SW_BOT, NW_BOT});
+            vertices_.push_back({SW_TOP, SE_TOP, SE_BOT, SW_BOT});
+            vertices_.push_back({SE_TOP, NE_TOP, NE_BOT, SE_BOT});
+        }break;
+
+        }
+    }break;
+
+    case CENTRE_T5:{
         if(orientation_ == H){
             Vertex NE_BOT(x_ + longueur_, 0, y_ + longueur_ / 2 - epaisseur_), NW_BOT(x_, 0, y_ + longueur_ / 2 - epaisseur_), SW_BOT(x_, 0, y_ + longueur_ / 2 + epaisseur_), SE_BOT(x_ + longueur_, 0, y_ + longueur_ / 2 + epaisseur_);
             Vertex NE_TOP(x_ + longueur_, hauteur_, y_ + longueur_ / 2 - epaisseur_), NW_TOP(x_, hauteur_, y_ + longueur_ / 2 - epaisseur_), SW_TOP(x_, hauteur_, y_ + longueur_ / 2 + epaisseur_), SE_TOP(x_ + longueur_, hauteur_, y_ + longueur_ / 2 + epaisseur_);
@@ -497,6 +546,10 @@ qint8 Mur::display(){
     }break;
 
     case CENTRE_T4:{
+        success = OpenGLHelper::drawCube(vertices_, colors_, 1);
+    }break;
+
+    case CENTRE_T5:{
         success = OpenGLHelper::drawCube(vertices_, colors_, 1);
     }break;
     }

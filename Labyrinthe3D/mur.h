@@ -18,6 +18,7 @@ public:
     static const qint8 CENTRE_T2 = 4;
     static const qint8 CENTRE_T3 = 5;
     static const qint8 CENTRE_T4 = 6;
+    static const qint8 CENTRE_T5 = 7;
 
     static const qint8 NE = 0;
     static const qint8 NW = 1;

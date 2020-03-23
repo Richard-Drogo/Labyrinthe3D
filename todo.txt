@@ -12,13 +12,13 @@ Cahier des charges :
 7 - Gestion de l'éclairage (Lié au Bonus [Demander si OK au professeur]).
 8 - Génération automatique du labyrinthe. (Fusionner la partie de Lilian avec le projet actuel).
 9 - Commenter le code.
-10 - Documentation des murs (Revoir les Excel "Types de murs possibles").
-11 - Rapport.
+10 - Rapport.
 
 
 Corrections de Bugs :
 1 - La saisie des valeurs de configuration du labyrinthe (Longueur et largeur) ne fonctionne pas toujours.
-
+2 - Touche ECHAP ne fonctionnant pas pour quitter l'UI OpenGL.
+3 - Redimensionnement automatique de toute les UI.
 
 Bonus :
 1 - Textures des murs et du plafond.
