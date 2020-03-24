@@ -1,16 +1,19 @@
-#include "labyrinthe.h"
-#include <GL/glu.h>
 #include <QApplication>
 #include <QScreen>
-#include <openglhelper.h>
-#include <glcolor.h>
 #include <QVector>
 #include <QDebug>
 #include <QKeyEvent>
 #include <QtMath>
+
+#include <GL/glu.h>
+#include <glcolor.h>
+
+#include "labyrinthe.h"
 #include "labyrinthe3d.h"
 #include "maze.h"
 
+
+// Début : Méthodes publiques
 Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QGLWidget(parent)
 {
     parent_ = parent;
@@ -92,6 +95,37 @@ Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QGLWid
     move(0,0);
 }
 
+void Labyrinthe::actionCamera(qint8 action){
+    switch(action){
+    case ACTION_CAMERA_AUCUNE:{
+        // TODO : Si aucune touche n'est actuelle appuyée, afficher la carte du labyrinthe.
+    }break;
+
+    case ACTION_CAMERA_AVANCER:{
+        avancer();
+    }break;
+
+    case ACTION_CAMERA_RECULER:{
+        reculer();
+    }break;
+
+    case ACTION_CAMERA_TOURNER_CAMERA_A_GAUCHE:{
+        tournerCameraAGauche();
+    }break;
+
+    case ACTION_CAMERA_TOURNER_CAMERA_A_DROITE:{
+        tournerCameraADroite();
+    }break;
+
+    default:{
+        qDebug() << tr("ERREUR : L'action caméra transmise n'est pas référencée ! Code : ") << action;
+    }break;
+    }
+    updateGL();
+}
+// Fin : Méthodes publiques
+
+
 // Début : SLOTS CRÉÉS
 void Labyrinthe::initializeGL()
 {
@@ -132,7 +166,44 @@ void Labyrinthe::paintGL()
     this->setFocus();
 }
 
+void Labyrinthe::keyPressEvent(QKeyEvent * event){
 
+
+    switch (event->key()) {
+
+    case Qt::Key_Escape:
+    {
+        ((Labyrinthe3D)parent_).quitterLabyrinthe();
+        ((Labyrinthe3D)parent_).setFocus();
+    }break;
+
+    case Qt::Key_Z:
+    {
+        avancer();
+    }break;
+
+
+    case Qt::Key_S:
+    {
+        reculer();
+    }break;
+
+    case Qt::Key_Q:
+    {
+        tournerCameraAGauche();
+   }break;
+
+
+    case Qt::Key_D:
+    {
+        tournerCameraADroite();
+    }break;
+    }
+
+    // Acceptation de l'evenement et mise a jour de la scene
+    event->accept();
+    updateGL();
+}
 // Fin : SLOTS CRÉÉS
 
 
@@ -383,66 +454,42 @@ qint8 Labyrinthe::compterCombienDeCasesNonDefinies(qint8 x, qint8 y){
 
     return compteur;
 }
-// Fin : Méthodes privées
 
+void Labyrinthe::avancer(){
+    positionJoueur_.setX(positionJoueur_.getX() + qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+    positionJoueur_.setZ(positionJoueur_.getZ() + qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
 
-void Labyrinthe::keyPressEvent(QKeyEvent * event){
+    direction_.setX(direction_.getX() + qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+    direction_.setZ(direction_.getZ() + qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+}
 
+void Labyrinthe::reculer(){
+    positionJoueur_.setX(positionJoueur_.getX() - qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+    positionJoueur_.setZ(positionJoueur_.getZ() - qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
 
-    switch (event->key()) {
+    direction_.setX(direction_.getX() - qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+    direction_.setZ(direction_.getZ() - qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+}
 
-    case Qt::Key_Escape:
-    {
-        ((Labyrinthe3D)parent_).quitterLabyrinthe();
-        ((Labyrinthe3D)parent_).setFocus();
-    }break;
-
-    case Qt::Key_Z:
-    {
-        positionJoueur_.setX(positionJoueur_.getX() + qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
-        positionJoueur_.setZ(positionJoueur_.getZ() + qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
-
-        direction_.setX(direction_.getX() + qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
-        direction_.setZ(direction_.getZ() + qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
-    }break;
-
-
-    case Qt::Key_S:
-    {
-        positionJoueur_.setX(positionJoueur_.getX() - qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
-        positionJoueur_.setZ(positionJoueur_.getZ() - qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
-
-        direction_.setX(direction_.getX() - qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
-        direction_.setZ(direction_.getZ() - qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
-    }break;
-
-    case Qt::Key_Q:
-    {
-        if(angle_direction_ - DEPLACEMENT_ANGULAIRE < 0){
-            angle_direction_ = 360 + (angle_direction_ - angle_direction_);
-        } else {
-            angle_direction_ = angle_direction_ - DEPLACEMENT_ANGULAIRE;
-        }
-
-        direction_.setX(positionJoueur_.getX() + qSqrt(qPow(direction_.getX() - positionJoueur_.getX(),2) + qPow(direction_.getZ() - positionJoueur_.getZ(),2)) * qCos(qDegreesToRadians(angle_direction_)));
-        direction_.setZ(positionJoueur_.getZ() + qSqrt(qPow(direction_.getX() - positionJoueur_.getX(),2) + qPow(direction_.getZ() - positionJoueur_.getZ(),2)) * qSin(qDegreesToRadians(angle_direction_)));
-    }break;
-
-
-    case Qt::Key_D:
-    {
-        if(angle_direction_ + DEPLACEMENT_ANGULAIRE >= 360){
-            angle_direction_ = DEPLACEMENT_ANGULAIRE - (360 - angle_direction_);
-        } else {
-            angle_direction_ = angle_direction_ + DEPLACEMENT_ANGULAIRE;
-        }
-        direction_.setX(positionJoueur_.getX() + qSqrt(qPow(direction_.getX() - positionJoueur_.getX(),2) + qPow(direction_.getZ() - positionJoueur_.getZ(),2)) * qCos(qDegreesToRadians(angle_direction_)));
-        direction_.setZ(positionJoueur_.getZ() + qSqrt(qPow(direction_.getX() - positionJoueur_.getX(),2) + qPow(direction_.getZ() - positionJoueur_.getZ(),2)) * qSin(qDegreesToRadians(angle_direction_)));
-    }break;
+void Labyrinthe::tournerCameraAGauche(){
+    if(angle_direction_ - DEPLACEMENT_ANGULAIRE < 0){
+        angle_direction_ = 360 + (angle_direction_ - angle_direction_);
+    } else {
+        angle_direction_ = angle_direction_ - DEPLACEMENT_ANGULAIRE;
     }
 
-    // Acceptation de l'evenement et mise a jour de la scene
-    event->accept();
-    updateGL();
+    direction_.setX(positionJoueur_.getX() + qSqrt(qPow(direction_.getX() - positionJoueur_.getX(),2) + qPow(direction_.getZ() - positionJoueur_.getZ(),2)) * qCos(qDegreesToRadians(angle_direction_)));
+    direction_.setZ(positionJoueur_.getZ() + qSqrt(qPow(direction_.getX() - positionJoueur_.getX(),2) + qPow(direction_.getZ() - positionJoueur_.getZ(),2)) * qSin(qDegreesToRadians(angle_direction_)));
+}
+
+void Labyrinthe::tournerCameraADroite(){
+    if(angle_direction_ + DEPLACEMENT_ANGULAIRE >= 360){
+        angle_direction_ = DEPLACEMENT_ANGULAIRE - (360 - angle_direction_);
+    } else {
+        angle_direction_ = angle_direction_ + DEPLACEMENT_ANGULAIRE;
+    }
+    direction_.setX(positionJoueur_.getX() + qSqrt(qPow(direction_.getX() - positionJoueur_.getX(),2) + qPow(direction_.getZ() - positionJoueur_.getZ(),2)) * qCos(qDegreesToRadians(angle_direction_)));
+    direction_.setZ(positionJoueur_.getZ() + qSqrt(qPow(direction_.getX() - positionJoueur_.getX(),2) + qPow(direction_.getZ() - positionJoueur_.getZ(),2)) * qSin(qDegreesToRadians(angle_direction_)));
 
 }
+// Fin : Méthodes privées
