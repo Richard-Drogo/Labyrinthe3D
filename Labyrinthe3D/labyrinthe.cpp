@@ -9,35 +9,24 @@
 #include <QKeyEvent>
 #include <QtMath>
 #include "labyrinthe3d.h"
+#include "maze.h"
 
 Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QGLWidget(parent)
 {
     parent_ = parent;
     longueur_ = longueur * 2 + 1;
     largeur_ = largeur * 2 + 1;
+    maze_  = new Maze(longueur, largeur);
+
     // 0 : Mur
     // 1 : Chemin
     // 2 : Joueur
     // 3 : Sphère
     // 4 : Sortie
-    // Matrice valable uniquement pour un labyrinthe (10, 6);
-    matrice_labyrinthe_ = {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                           {0,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,0},
-                           {0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,1,0,0,0},
-                           {0,1,1,3,1,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0},
-                           {0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0},
-                           {0,1,0,1,1,1,1,1,0,1,0,1,1,1,0,1,0,1,1,1,0},
-                           {0,1,0,0,0,1,0,0,0,1,0,1,0,0,0,1,0,0,0,1,0},
-                           {0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,0,2,0},
-                           {0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0},
-                           {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
-                           {0,0,0,0,0,1,0,1,0,0,0,1,0,0,0,1,0,1,0,1,0},
-                           {0,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,0,1,0},
-                           {0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                          };
+    matrice_labyrinthe_ = maze_->getGridNumber();
 
-    qint8 posX_joueur = 19; // Valeur retournée par fonction
-    qint8 posY_joueur = 7; // Valeur retournée par fonction
+    qint8 posX_joueur = maze_->getPlayerPos().second; // Valeur retournée par fonction
+    qint8 posY_joueur = maze_->getPlayerPos().first; // Valeur retournée par fonction
 
     positionJoueur_ = Vertex(posX_joueur * LONGUEUR_CASE,TAILLE_JOUEUR, posY_joueur * LONGUEUR_CASE);
     if(posX_joueur - 1 >= 0){

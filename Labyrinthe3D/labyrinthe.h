@@ -7,6 +7,7 @@
 #include <QVector>
 #include "mur.h"
 #include <utility>
+#include "maze.h"
 
 using namespace std;
 
@@ -25,6 +26,7 @@ private:
     qint8 longueur_;
     qint8 largeur_;
     double angle_direction_ = -1;
+    Maze * maze_ = nullptr;
     const double EPAISSEUR_SOL = 0.5;
     const double EPAISSEUR_PLAFOND = 0.5;
     const double EPAISSEUR_MUR = 0.2;
