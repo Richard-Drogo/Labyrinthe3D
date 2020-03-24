@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     glcolor.cpp \
+    item.cpp \
     labyrinthe.cpp \
     main.cpp \
     labyrinthe3d.cpp \
@@ -30,6 +31,7 @@ SOURCES += \
 HEADERS += \
     cell.h \
     glcolor.h \
+    item.h \
     labyrinthe.h \
     labyrinthe3d.h \
     maze.h \

@@ -43,8 +43,8 @@ Maze::Maze(int width, int height)
     else {
         cout << "should never happend";
     }
-    cout << pos <<";" <<exitx_ << ";" << exity_ << endl;
-    cout << exit_.first << " " << exit_.second << endl;
+    //cout << pos <<";" <<exitx_ << ";" << exity_ << endl;
+    //cout << exit_.first << " " << exit_.second << endl;
 
     this->generate();
     this->display();
@@ -373,7 +373,7 @@ void Maze::generateInitialPosition(Point start, int addedPoint){
 
     int distance = (this->path(Point(posX,posY),Point(posJX,posJY))).size();
 
-    while (distance < height_*width_/6 ){ // paramètre ajustable
+    while (distance < height_*width_/4 ){ // paramètre ajustable
 
         posJX = 2*(rand() % height_) + 1;
         posJY = 2*(rand() % width_ ) + 1;
@@ -387,6 +387,6 @@ void Maze::generateInitialPosition(Point start, int addedPoint){
         this->gettableItem_ = Point(posJX,posJY);
     }
 
-    cout << posX << " " << posY << endl << posJX << " "<< posJY << endl ;
+    //cout << posX << " " << posY << endl << posJX << " "<< posJY << endl ;
     //cout << distance << endl;
 }

@@ -8,6 +8,7 @@
 #include "mur.h"
 #include <utility>
 #include "maze.h"
+#include "item.h"
 
 using namespace std;
 
@@ -51,6 +52,7 @@ private:
     const qint8 SPHERE = 3;
     const qint8 SORTIE = 4;
 
+    Item* item_;
 
 protected:
     // Fonction d'initialisation

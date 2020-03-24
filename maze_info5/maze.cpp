@@ -44,6 +44,8 @@ Maze::Maze(int width, int height)
     }
     cout << pos <<";" <<exitx_ << ";" << exity_ << endl;
     cout << exit_.first << " " << exit_.second << endl;
+    this->generate();
+    this->display();
 }
 
 void Maze::reinit()
