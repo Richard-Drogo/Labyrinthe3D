@@ -12,6 +12,7 @@
 #include "object3d.h"
 #include "mur.h"
 #include "maze.h"
+#include "item.h"
 
 using namespace std;
 
@@ -100,6 +101,7 @@ private:
     void tournerCameraADroite();
     // Fin : Méthodes privées
 
+    Item* item_;
 
 protected:
     void initializeGL();

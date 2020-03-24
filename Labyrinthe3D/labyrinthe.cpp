@@ -11,6 +11,7 @@
 #include "labyrinthe.h"
 #include "labyrinthe3d.h"
 #include "maze.h"
+#include "item.h"
 
 
 // Début : Méthodes publiques
@@ -30,6 +31,12 @@ Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QGLWid
 
     qint8 posX_joueur = maze_->getPlayerPos().second; // Valeur retournée par fonction
     qint8 posY_joueur = maze_->getPlayerPos().first; // Valeur retournée par fonction
+
+    double posY_item = (double) maze_->getItemPos().second;
+    double posX_item = (double) maze_->getItemPos().first;
+
+    item_ = new Item((posX_item+1.0/2.0)*LONGUEUR_CASE,1,(posY_item+1.0/2.0)*LONGUEUR_CASE,240, 120, 60);
+    //item_ = new Item(1,1,1,240, 120, 60); //test
 
     positionJoueur_ = Vertex(posX_joueur * LONGUEUR_CASE,TAILLE_JOUEUR, posY_joueur * LONGUEUR_CASE);
     if(posX_joueur - 1 >= 0){
@@ -145,6 +152,9 @@ void Labyrinthe::resizeGL(int width, int height)
 
 void Labyrinthe::paintGL()
 {
+
+    qDebug() << maze_->getItemPos().second << " " << maze_->getItemPos().first << " ";
+
     // Reinitialisation des tampons
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Effacer des buffers couleurs et Z
 
@@ -163,7 +173,10 @@ void Labyrinthe::paintGL()
         success = murs_[i].display();
     }
     plafond_.display();
+    item_->Display();
+
     this->setFocus();
+
 }
 
 void Labyrinthe::keyPressEvent(QKeyEvent * event){
