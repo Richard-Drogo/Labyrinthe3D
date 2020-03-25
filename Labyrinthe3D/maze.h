@@ -27,6 +27,7 @@ class Maze
     int exitx_;
     int exity_;
 
+    int pos;
 
     Point exit_;
     Point initPosPlayer_;
@@ -53,7 +54,7 @@ public:
     Point getPlayerPos() { return initPosPlayer_;};
     Point getexitPos() { return exit_;};
     Point getItemPos() { return gettableItem_;};
-
+    int getExitOrientation() {return pos;};
 };
 
 #endif // MAZE_H

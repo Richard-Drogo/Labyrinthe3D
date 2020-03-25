@@ -25,6 +25,7 @@ SOURCES += \
     mur.cpp \
     object3d.cpp \
     openglhelper.cpp \
+    porte.cpp \
     rgbcolor.cpp \
     vertex.cpp
 
@@ -38,6 +39,7 @@ HEADERS += \
     mur.h \
     object3d.h \
     openglhelper.h \
+    porte.h \
     rgbcolor.h \
     vertex.h
 

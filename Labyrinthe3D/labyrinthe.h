@@ -13,6 +13,7 @@
 #include "mur.h"
 #include "maze.h"
 #include "item.h"
+#include "porte.h"
 
 using namespace std;
 
@@ -27,7 +28,7 @@ public:
 
     void actionCamera(qint8 action);
     // Début : Constantes utilisées par la Caméra
-    static const qint8 SEUIL_NORME_ACTION_CAMERA = 15; // DOIT TOUJOURS ÊTRE != 0
+    static const qint8 SEUIL_NORME_ACTION_CAMERA = 30; // DOIT TOUJOURS ÊTRE != 0
     static const qint8 ACTION_CAMERA_AUCUNE = 0;
     static const qint8 ACTION_CAMERA_AVANCER = 1;
     static const qint8 ACTION_CAMERA_TOURNER_CAMERA_A_GAUCHE = 2;
@@ -55,6 +56,8 @@ private:
     Object3D sol_;
     Object3D plafond_;
     QVector<Mur> murs_;
+    Item* item_;
+    Porte* porte_ = nullptr;
     // Fin : Objets 3D dessinés
 
     // Début : Attributs de la génération du labyrinthe
@@ -66,12 +69,15 @@ private:
 
     // Début : Définition des constantes
     // Début : Configurations dimensionnelles
+    const double LONGUEUR_CASE = 2;
     const double EPAISSEUR_SOL = 0.5;
     const double EPAISSEUR_PLAFOND = 0.5;
     const double EPAISSEUR_MUR = 0.2;
+    const double EPAISSEUR_PORTE = 0.2;
     const double HAUTEUR_MUR = 3;
-    const double LONGUEUR_MUR = 1;
-    const double LONGUEUR_CASE = 2;
+    const double HAUTEUR_PORTE = 3;
+    const double LONGUEUR_MUR = 1 * LONGUEUR_CASE;
+    const double LONGUEUR_PORTE = 1 * LONGUEUR_CASE;
     // Fin : Configurations dimensionnelles
 
     // Début : Configurations physiques
@@ -92,7 +98,9 @@ private:
 
 
     // Début : Méthodes privées
+    void display();
     void genererMur();
+    void genererPorte();
     void definirTypeMur(qint8 x, qint8 y);
     qint8 compterCombienDeCasesNonDefinies(qint8 x, qint8 y);
     void avancer();
@@ -101,7 +109,6 @@ private:
     void tournerCameraADroite();
     // Fin : Méthodes privées
 
-    Item* item_;
 
 protected:
     void initializeGL();

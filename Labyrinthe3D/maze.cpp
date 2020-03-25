@@ -16,8 +16,6 @@ using namespace std;
 Maze::Maze(int width, int height)
     : grid_(height,vector<Cell>(width)), width_(width), height_(height)
 {
-    int pos ;
-
     srand(time(NULL));
     pos = rand() % 4;
     if (pos == 0) {

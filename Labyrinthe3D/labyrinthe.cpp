@@ -12,7 +12,7 @@
 #include "labyrinthe3d.h"
 #include "maze.h"
 #include "item.h"
-
+#include "porte.h"
 
 // Début : Méthodes publiques
 Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QGLWidget(parent)
@@ -39,6 +39,7 @@ Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QGLWid
     //item_ = new Item(1,1,1,240, 120, 60); //test
 
     positionJoueur_ = Vertex(posX_joueur * LONGUEUR_CASE,TAILLE_JOUEUR, posY_joueur * LONGUEUR_CASE);
+    // Début : On détermine la direction observée
     if(posX_joueur - 1 >= 0){
         if(matrice_labyrinthe_[posY_joueur][posX_joueur - 1] == CHEMIN){
             direction_ = Vertex(positionJoueur_.getX() - 1 * LONGUEUR_CASE, positionJoueur_.getY(),positionJoueur_.getZ());
@@ -66,6 +67,8 @@ Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QGLWid
             angle_direction_ = 90;
         }
     }
+    // Fin : On détermine la direction observée
+
 
     // Début : Sol
     Vertex NE_TOP_SOL(longueur_ * LONGUEUR_CASE, 0, 0), NW_TOP_SOL(0, 0, 0), SW_TOP_SOL(0, 0, largeur_ * LONGUEUR_CASE), SE_SOL_TOP(longueur_ * LONGUEUR_CASE, 0, largeur_ * LONGUEUR_CASE);
@@ -98,6 +101,7 @@ Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QGLWid
     // Fin : Plafond
 
     genererMur();
+    genererPorte();
     setFixedSize(parent->width(), parent->height());
     move(0,0);
 }
@@ -167,16 +171,9 @@ void Labyrinthe::paintGL()
               direction_.getX(), direction_.getY(), direction_.getZ(),
               0,1,0);
 
-    sol_.display();
-    qint8 success;
-    for(int i=0; i < murs_.size(); i++){
-        success = murs_[i].display();
-    }
-    plafond_.display();
-    item_->Display();
+    this->display();
 
     this->setFocus();
-
 }
 
 void Labyrinthe::keyPressEvent(QKeyEvent * event){
@@ -221,6 +218,16 @@ void Labyrinthe::keyPressEvent(QKeyEvent * event){
 
 
 // Début : Méthodes privées
+void Labyrinthe::display(){
+    sol_.display();
+    for(int i=0; i < murs_.size(); i++){
+        murs_[i].display();
+    }
+    plafond_.display();
+    item_->Display();
+    porte_->display();
+}
+
 void Labyrinthe::genererMur(){
 
     for(int y = 0; y < matrice_labyrinthe_.size(); y++){
@@ -230,6 +237,36 @@ void Labyrinthe::genererMur(){
             }
         }
     }
+}
+
+void Labyrinthe::genererPorte(){
+    qint8 x = maze_->getexitPos().second;
+    qint8 y = maze_->getexitPos().first;
+    qint8 cases_hors_zones_autour = compterCombienDeCasesNonDefinies(x,y);
+    qint8 type = -1;
+    qint8 orientation = -1;
+
+    if(cases_hors_zones_autour == 2){
+        type = Porte::ANGLE;
+        // TODO
+        qDebug() << "TODO";
+    } else if (cases_hors_zones_autour == 1){
+        type = Porte::CONTOUR;
+        if(y-1 <0) {
+            orientation = Porte::N;
+        } else if(x-1 <0){
+            orientation = Porte::W;
+        } else if(y+1 >= largeur_) {
+            orientation = Porte::S;
+        } else if(x+1 >=longueur_){
+            orientation = Porte::E;
+        } else {
+            qDebug() << tr("Orientation de la porte non déterminée ") << "(" << y << ";" << x << ")" << endl << tr("Cases hors zone aux alentours : ") << cases_hors_zones_autour;
+        }
+    } else {
+        qDebug() << tr("Erreur !") << " " << cases_hors_zones_autour << " " << tr("cases hors zone détectées pour la porte") << " (" << y << ";" << x << ")";
+    }
+    porte_ = new Porte(x * LONGUEUR_CASE, y * LONGUEUR_CASE, type, orientation, EPAISSEUR_PORTE, HAUTEUR_PORTE, LONGUEUR_PORTE, {GLColor(0, 0, 255)});
 }
 
 void Labyrinthe::definirTypeMur(qint8 x, qint8 y){
@@ -248,7 +285,7 @@ void Labyrinthe::definirTypeMur(qint8 x, qint8 y){
         } else if((x+1 >=longueur_) && (y-1 <0)){
             position = Mur::NE;
         } else {
-            qDebug() << tr("Position du mur non déterminée ") << "(" << y << ";" << x << ")";
+            qDebug() << tr("Position du mur non déterminée ") << "(" << y << ";" << x << ")" << endl << tr("Cases hors zone aux alentours : ") << cases_hors_zones_autour;
         }
 
         switch (position){
@@ -264,7 +301,7 @@ void Labyrinthe::definirTypeMur(qint8 x, qint8 y){
                     orientation = Mur::N;
                 }
             } else {
-                qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")";
+                qDebug() << tr("Type du mur non déterminé pour l'orientation ") << orientation << " (" << y << ";" << x << ")" << endl << tr("Cases hors zone aux alentours : ") << cases_hors_zones_autour;
             }
         }break;
 
@@ -280,7 +317,7 @@ void Labyrinthe::definirTypeMur(qint8 x, qint8 y){
                     orientation = Mur::W;
                 }
             } else {
-                qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")";
+                qDebug() << tr("Type du mur non déterminé pour l'orientation ") << orientation << " (" << y << ";" << x << ")" << endl << tr("Cases hors zone aux alentours : ") << cases_hors_zones_autour;
             }
         }break;
 
@@ -296,7 +333,7 @@ void Labyrinthe::definirTypeMur(qint8 x, qint8 y){
                     orientation = Mur::S;
                 }
             } else {
-                qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")";
+                qDebug() << tr("Type du mur non déterminé pour l'orientation ") << orientation << " (" << y << ";" << x << ")" << endl << tr("Cases hors zone aux alentours : ") << cases_hors_zones_autour;
             }
         }break;
 
@@ -312,16 +349,16 @@ void Labyrinthe::definirTypeMur(qint8 x, qint8 y){
                     orientation = Mur::N;
                 }
             } else {
-                qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")";
+                qDebug() << tr("Type du mur non déterminé pour l'orientation ") << orientation << " (" << y << ";" << x << ")" << endl << tr("Cases hors zone aux alentours : ") << cases_hors_zones_autour;
             }
         }break;
 
         default :{
-            qDebug() << tr("Erreur due à la position indéterminée du mur ") << "(" << y << ";" << x << ")";
+            qDebug() << tr("Erreur due à la position indéterminée du mur ") << "(" << y << ";" << x << ")" << "(" << y << ";" << x << ")" << endl << tr("Cases hors zone aux alentours : ") << cases_hors_zones_autour;
         }break;
         }
 
-        this->murs_.push_back(Mur(x * LONGUEUR_CASE, y * LONGUEUR_CASE, type, orientation, EPAISSEUR_MUR, HAUTEUR_MUR, LONGUEUR_MUR * LONGUEUR_CASE, {GLColor(255, 255, 255)}));
+        this->murs_.push_back(Mur(x * LONGUEUR_CASE, y * LONGUEUR_CASE, type, orientation, EPAISSEUR_MUR, HAUTEUR_MUR, LONGUEUR_MUR, {GLColor(255, 255, 255)}));
 
     } else if (cases_hors_zones_autour == 1){
         // C'est un mur du contour
@@ -335,7 +372,7 @@ void Labyrinthe::definirTypeMur(qint8 x, qint8 y){
         } else if(x+1 >=longueur_){
             orientation = Mur::E;
         } else {
-            qDebug() << tr("Orientation du mur non déterminée ") << "(" << y << ";" << x << ")";
+            qDebug() << tr("Orientation du mur non déterminée ") << "(" << y << ";" << x << ")" << endl << tr("Cases hors zone aux alentours : ") << cases_hors_zones_autour;
         }
 
         switch (orientation){
@@ -345,7 +382,7 @@ void Labyrinthe::definirTypeMur(qint8 x, qint8 y){
             } else if (((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR)) || ((matrice_labyrinthe_[y][x-1] == SORTIE) && (matrice_labyrinthe_[y][x+1] == MUR)) || ((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == SORTIE))){
                 type = Mur::CONTOUR_T2;
             } else {
-                qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")";
+                qDebug() << tr("Type du mur non déterminé pour l'orientation ") << orientation << " (" << y << ";" << x << ")" << endl << tr("Cases hors zone aux alentours : ") << cases_hors_zones_autour;
             }
         }break;
 
@@ -355,7 +392,7 @@ void Labyrinthe::definirTypeMur(qint8 x, qint8 y){
             } else if (((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR)) || ((matrice_labyrinthe_[y+1][x] == SORTIE) && (matrice_labyrinthe_[y-1][x] == MUR)) || ((matrice_labyrinthe_[y+1][x] == MUR) && (matrice_labyrinthe_[y-1][x] == SORTIE))){
                 type = Mur::CONTOUR_T2;
             } else {
-                qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")";
+                qDebug() << tr("Type du mur non déterminé pour l'orientation ") << orientation << " (" << y << ";" << x << ")" << endl << tr("Cases hors zone aux alentours : ") << cases_hors_zones_autour;
             }
         }break;
 
@@ -365,7 +402,7 @@ void Labyrinthe::definirTypeMur(qint8 x, qint8 y){
             } else if (((matrice_labyrinthe_[y][x-1] == MUR) && (matrice_labyrinthe_[y][x+1] == MUR)) || ((matrice_labyrinthe_[y][x+1] == SORTIE) && (matrice_labyrinthe_[y][x-1] == MUR)) || ((matrice_labyrinthe_[y][x+1] == MUR) && (matrice_labyrinthe_[y][x-1] == SORTIE))){
                 type = Mur::CONTOUR_T2;
             } else {
-                qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")";
+                qDebug() << tr("Type du mur non déterminé pour l'orientation ") << orientation << " (" << y << ";" << x << ")" << endl << tr("Cases hors zone aux alentours : ") << cases_hors_zones_autour;
             }
         }break;
 
@@ -375,16 +412,16 @@ void Labyrinthe::definirTypeMur(qint8 x, qint8 y){
             } else if (((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == MUR)) || ((matrice_labyrinthe_[y-1][x] == SORTIE) && (matrice_labyrinthe_[y+1][x] == MUR)) || ((matrice_labyrinthe_[y-1][x] == MUR) && (matrice_labyrinthe_[y+1][x] == SORTIE))){
                 type = Mur::CONTOUR_T2;
             } else {
-                qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")";
+                qDebug() << tr("Type du mur non déterminé pour l'orientation ") << orientation << " (" << y << ";" << x << ")" << endl << tr("Cases hors zone aux alentours : ") << cases_hors_zones_autour;
             }
         }break;
 
         default :{
-            qDebug() << tr("Erreur due à l'orientation indéterminée du mur ") << "(" << y << ";" << x << ")";
+            qDebug() << tr("Erreur due à l'orientation indéterminée du mur ") << "(" << y << ";" << x << ")" << endl << tr("Cases hors zone aux alentours : ") << cases_hors_zones_autour;
         }break;
         }
 
-        this->murs_.push_back(Mur(x * LONGUEUR_CASE, y * LONGUEUR_CASE, type, orientation, EPAISSEUR_MUR, HAUTEUR_MUR, LONGUEUR_MUR * LONGUEUR_CASE, {GLColor(255, 255, 255)}));
+        this->murs_.push_back(Mur(x * LONGUEUR_CASE, y * LONGUEUR_CASE, type, orientation, EPAISSEUR_MUR, HAUTEUR_MUR, LONGUEUR_MUR, {GLColor(255, 255, 255)}));
 
     } else if (cases_hors_zones_autour == 0){
         // C'est un mur central.
@@ -437,10 +474,10 @@ void Labyrinthe::definirTypeMur(qint8 x, qint8 y){
                 orientation = Mur::V;
             }
         } else {
-            qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")";
+            qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")" << endl << tr("Cases hors zone aux alentours : ") << cases_hors_zones_autour;
         }
 
-        this->murs_.push_back(Mur(x * LONGUEUR_CASE, y * LONGUEUR_CASE, type, orientation, EPAISSEUR_MUR, HAUTEUR_MUR, LONGUEUR_MUR * LONGUEUR_CASE, {GLColor(255, 255, 255)}));
+        this->murs_.push_back(Mur(x * LONGUEUR_CASE, y * LONGUEUR_CASE, type, orientation, EPAISSEUR_MUR, HAUTEUR_MUR, LONGUEUR_MUR, {GLColor(255, 255, 255)}));
 
     } else {
         qDebug() << tr("Erreur !") << " " << cases_hors_zones_autour << " " << tr("cases hors zone détectées pour le mur") << " (" << y << ";" << x << ")";
