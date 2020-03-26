@@ -5,12 +5,11 @@ TODO Liste |
 Cahier des charges : 
 1 - Gestion des collisions.
 2 - Affichage du labyrinthe lorsque le joueur ne bouge pas.
-3 - Placement de la porte au niveau de la sortie. (Contours : OK, Angle : A FAIRE)
-4 - Intéraction sphère et sortie.
-5 - Gestion de l'éclairage (Lié au Bonus [Demander si OK au professeur]).
-6 - Chronomètre.
-7 - Commenter le code.
-8 - Rapport.
+3 - Intéraction sphère et sortie.
+4 - Gestion de l'éclairage (Lié au Bonus [Demander si OK au professeur]).
+5 - Chronomètre.
+6 - Commenter le code.
+7 - Rapport.
 
 
 Corrections de Bugs :

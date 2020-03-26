@@ -2,52 +2,54 @@
 #define PORTE_H
 
 #include "object3d.h"
+#include "mur.h"
 
 class Porte : public Object3D
 {
 public:
     // Début : Méthodes publiques
-    Porte(qint8 x, qint8 y, qint8 type, qint8 position, double epaisseur, double hauteur, double longueur, QVector<GLColor> colors);
+    Porte(double x, double y, qint8 position, double epaisseur, double hauteur, double longueur, QVector<GLColor> couleurs_porte);
     qint8 display();
+    void ouvrir();
     // Fin : Méthodes publiques
 
 
-    // Début : Constantes des types possibles
-    static const qint8 ANGLE = 0;
-    static const qint8 CONTOUR = 1;
-    // Fin : Constantes des types possibles
-
-    // Début : Constantes des orientations possibles
-    // Début : Orientations pour le type "ANGLE"
-    static const qint8 NW_H = 0;
-    static const qint8 NW_V = 1;
-    static const qint8 SW_H = 2;
-    static const qint8 SW_V = 3;
-    static const qint8 SE_H = 4;
-    static const qint8 SE_V = 5;
-    static const qint8 NE_H = 6;
-    static const qint8 NE_V = 7;
-    // Fin : Orientations pour le type "ANGLE"
-
-    // Début : Orientations pour le type "CONTOUR"
+    // Début : Constantes des positions possibles
     static const qint8 N = 0;
     static const qint8 W = 1;
     static const qint8 S = 2;
     static const qint8 E = 3;
-    // Fin : Orientations pour le type "CONTOUR"
-    // Fin : Constantes des orientations possibles
+    // Fin : Constantes des positions possibles
 
-
+    // Début : GETTERS
+    bool isOuverte() {return ouverte_;};
+    // FIN : GETTERS
 private:
-    // Début : Attributs de physiques
-    qint8 x_;
-    qint8 y_;
-    qint8 type_;
+    // Début : Attributs du Constructeur
+    double x_;
+    double y_;
     qint8 position_;
     double epaisseur_;
     double hauteur_;
     double longueur_;
-    // Fin : Attributs de physiques
+    // Fin : Attributs du Constructeur
+
+
+    // Début : Attributs de physique
+    double angle_NE = 0;
+    double angle_SW = -90;
+    double angle_SE;
+    bool ouverte_ = false;
+    Vertex centre_NE;
+    Vertex centre_SW;
+    Vertex centre_SE;
+    // Fin : Attributs de physique
+
+
+    // Début : Constantes de physique
+    const double DEPLACEMENT_ANGULAIRE = 1;
+    const qint8 LIMITE_OUVERTURE_ANGULAIRE = 90;
+    // Fin : Constantes de physique
 
 
     // Début : Méthodes privées

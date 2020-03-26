@@ -1,7 +1,7 @@
 #include "mur.h"
 #include "openglhelper.h"
 
-Mur::Mur(qint8 x, qint8 y, qint8 type, qint8 orientation, double epaisseur, double hauteur, double longueur, QVector<GLColor> colors) : Object3D()
+Mur::Mur(double x, double y, qint8 type, qint8 orientation, double epaisseur, double hauteur, double longueur, QVector<GLColor> colors) : Object3D()
 {
     x_ = x;
     y_ = y;

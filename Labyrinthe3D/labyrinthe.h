@@ -36,13 +36,16 @@ public:
     static const qint8 ACTION_CAMERA_TOURNER_CAMERA_A_DROITE = 4;
     // Fin : Constantes utilisées par la Caméra
 
+    // Début : Constantes dimensionnelles publiques
+    static constexpr double LONGUEUR_CASE = 2;
+    // Fin : Constantes dimensionnelles publiques
 
 private:
     // Début : Attributs
     // Début : Attributs du Constructeur
     QWidget * parent_;
-    qint8 longueur_; // Longueur indiquée sur l'UI.
-    qint8 largeur_; // Largeur indiquée sur l'UI.
+    double longueur_; // Longueur indiquée sur l'UI.
+    double largeur_; // Largeur indiquée sur l'UI.
     // Fin : Attributs du Constructeurs
 
     // Début : Attributs de la physique
@@ -69,15 +72,14 @@ private:
 
     // Début : Définition des constantes
     // Début : Configurations dimensionnelles
-    const double LONGUEUR_CASE = 2;
     const double EPAISSEUR_SOL = 0.5;
     const double EPAISSEUR_PLAFOND = 0.5;
-    const double EPAISSEUR_MUR = 0.2;
-    const double EPAISSEUR_PORTE = 0.2;
+    const double EPAISSEUR_MUR = 0.1 * LONGUEUR_CASE;
+    const double EPAISSEUR_PORTE = 0.1  * LONGUEUR_CASE;
     const double HAUTEUR_MUR = 3;
     const double HAUTEUR_PORTE = 3;
-    const double LONGUEUR_MUR = 1 * LONGUEUR_CASE;
-    const double LONGUEUR_PORTE = 1 * LONGUEUR_CASE;
+    const double LONGUEUR_MUR = LONGUEUR_CASE;
+    const double LONGUEUR_PORTE = LONGUEUR_CASE;
     // Fin : Configurations dimensionnelles
 
     // Début : Configurations physiques

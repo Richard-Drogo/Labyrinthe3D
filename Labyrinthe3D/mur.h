@@ -6,7 +6,7 @@
 class Mur : public Object3D
 {
 public:
-    Mur(qint8 x, qint8 y, qint8 type, qint8 orientation, double epaisseur, double hauteur, double longueur, QVector<GLColor> colors);
+    Mur(double x, double y, qint8 type, qint8 orientation, double epaisseur, double hauteur, double longueur, QVector<GLColor> colors);
     qint8 display();
 
     static const qint8 ANGLE = 0;
@@ -35,8 +35,8 @@ public:
 
     static const qint8 AUCUNE_ORIENTATION = -1;
 private:
-    qint8 x_;
-    qint8 y_;
+    double x_;
+    double y_;
     qint8 type_;
     qint8 orientation_;
     double epaisseur_;
