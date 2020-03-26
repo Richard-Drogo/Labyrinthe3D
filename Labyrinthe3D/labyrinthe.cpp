@@ -158,7 +158,7 @@ void Labyrinthe::resizeGL(int width, int height)
 void Labyrinthe::paintGL()
 {
 
-    qDebug() << maze_->getItemPos().second << " " << maze_->getItemPos().first << " ";
+    //qDebug() << maze_->getItemPos().second << " " << maze_->getItemPos().first << " ";
 
     // Reinitialisation des tampons
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Effacer des buffers couleurs et Z
