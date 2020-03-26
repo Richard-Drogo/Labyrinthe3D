@@ -63,6 +63,12 @@ private:
     Porte* porte_ = nullptr;
     // Fin : Objets 3D dessinés
 
+    // Début : Information sphère
+    double itemPosX_;
+    double itemPosY_;
+    bool itemGet_ = false;
+    // Fin : Information sphère
+
     // Début : Attributs de la génération du labyrinthe
     QVector<QVector<qint8>> matrice_labyrinthe_;
     Maze * maze_ = nullptr;
@@ -87,6 +93,7 @@ private:
     const double DEPLACEMENT_ANGULAIRE = 5; // Degrés
     const double TAILLE_JOUEUR = 1.7;
     const qint8 LIGNE_D_HORIZON = 100;
+    const double TAILLE_SPHERE = 1;
     // Fin : Configurations physiques
 
     // Début : Configuration de la matrice du labyrinthe
@@ -117,6 +124,8 @@ protected:
     void resizeGL(int width, int height);
     void paintGL();
     void keyPressEvent(QKeyEvent * event);
+
+    void touchTheBall();
 };
 
 #endif // LABYRINTHE_H

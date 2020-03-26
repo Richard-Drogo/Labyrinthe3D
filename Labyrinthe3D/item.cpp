@@ -52,3 +52,5 @@ void Item::Display() const
     gluSphere(this->sphere,this->rayon,20,20);
     glPopMatrix();
 }
+
+
