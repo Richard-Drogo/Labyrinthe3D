@@ -14,8 +14,8 @@ int main()
 {
     //int a;
     Maze maze(13,10);
-    maze.generate();
-    maze.display();
+    //maze.generate();
+    //maze.display();
     //cin >> a;
     return 0;
 }

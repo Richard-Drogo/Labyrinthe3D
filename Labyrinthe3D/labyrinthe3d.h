@@ -42,15 +42,24 @@ private:
     const quint8 LARGEUR_PAR_DEFAUT = 6;
     const quint8 DIMENSION_MINIMALE = 5;
     const quint8 DIMENSION_MAXIMALE = 20;
-    const qint8 INTERVALE_TIMER = 100;
+    const quint8 INTERVALE_TIMER = 50;
 
     QTimer * timer_video = nullptr;
     VideoCapture * webcam = nullptr;
     CascadeClassifier CascadeClassifier_visages;
-    Rect calibrage;
+    Rect calibrageRect;
+    Rect templateRect;
+    cv::Point workingCenter;
+    Mat frameReference, resultImage;
 
     QLabel * label_video_labyrinthe = nullptr;
     Labyrinthe * labyrinthe = nullptr;
+
+    // Début : Constantes pour calcul du Vecteur Translation sur la Caméra
+    static const quint8 TEMPLATE_WIDTH = 50;
+    static const quint8 TEMPLATE_HEIGHT = 50;
+    // Fin : Constantes pour calcul du Vecteur Translation sur la Caméra
+
 
     /* retournerIndiceDuRectanglePlusGrand(std::vector<Rect> rectangles)
      * Rôle : Permet de retourner l'indice du plus grand rectangle d'un vector<Rect> passé en paramètre.
@@ -68,6 +77,9 @@ private:
     void setupUILabyrinthe();
 
     void razUILabyrinthe();
+
+    qint8 getActionCamera(cv::Point vecteur_translation, double norme);
+
 
 protected:
     void keyPressEvent(QKeyEvent * event);

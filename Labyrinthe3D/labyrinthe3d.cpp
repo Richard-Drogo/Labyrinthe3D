@@ -1,18 +1,22 @@
-#include "labyrinthe3d.h"
-#include "ui_labyrinthe3d.h"
-#include "opencv2/opencv.hpp"
-#include "opencv2/imgproc.hpp"
-#include "opencv2/highgui.hpp"
-#include <opencv2/objdetect.hpp>
 #include <QTimer>
-#include <cstdio>
-#include <iostream>
 #include <QTemporaryDir>
 #include <QtDebug>
 #include <QMessageBox>
 #include <QGLWidget>
 #include <QPixmap>
 #include <QDebug>
+#include <QtMath>
+
+#include <cstdio>
+#include <iostream>
+
+#include "labyrinthe3d.h"
+#include "ui_labyrinthe3d.h"
+#include "opencv2/opencv.hpp"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/highgui.hpp"
+#include <opencv2/objdetect.hpp>
+#include "opencv2/video/tracking.hpp"
 
 using namespace cv;
 using namespace std;
@@ -152,10 +156,22 @@ void Labyrinthe3D::updateVideo(){
                 {
                     unsigned long long int indice_plus_grand_rectangle = retournerIndiceDuRectanglePlusGrand(visages);
                     rectangle(image_webcam,visages[indice_plus_grand_rectangle],Scalar(0,255,0),2);
-                    calibrage = visages[indice_plus_grand_rectangle];
+                    calibrageRect = visages[indice_plus_grand_rectangle];
+                    templateRect = Rect((calibrageRect.width-TEMPLATE_WIDTH)/2,(calibrageRect.height-TEMPLATE_HEIGHT)/2,TEMPLATE_WIDTH,TEMPLATE_HEIGHT);
+                    workingCenter = cv::Point(calibrageRect.x+calibrageRect.width/2, calibrageRect.y+calibrageRect.height/2);
+
+                    // Extract rect1 and convert to gray
+                    cv::cvtColor(Mat(image_webcam,calibrageRect),frameReference,COLOR_RGB2GRAY);
+
+                    // Create the matchTemplate image result
+                    int result_cols =  image_webcam.cols-templateRect.width + 1;
+                    int result_rows = image_webcam.rows-templateRect.height + 1;
+                    resultImage.create(result_cols, result_rows, CV_32FC1);
+
                 } else {
-                    calibrage.width = -1;
-                    calibrage.height = -1;
+                    calibrageRect.width = -1;
+                    calibrageRect.height = -1;
+                    workingCenter = cv::Point(-1,-1);
                 }
 
                 QImage img= QImage((const unsigned char*)(image_webcam.data),image_webcam.cols,image_webcam.rows,QImage::Format_RGB888);
@@ -167,17 +183,39 @@ void Labyrinthe3D::updateVideo(){
                 timer_video->stop();
             }
         } else if (ui->stackedWidget_navigation->currentIndex() == 2){
-            Mat image_webcam, image_ndg;
+            Mat image_webcam;
 
             if (webcam->read(image_webcam)) {
-                flip(image_webcam,image_webcam,1);
+                //
+                Mat frameComparaison;
+
+                cv::flip(image_webcam,image_webcam,1);
                 cvtColor(image_webcam,image_webcam,COLOR_BGR2RGB);
 
-                rectangle(image_webcam,calibrage,Scalar(0,255,0),2);
+                cv::cvtColor(Mat(image_webcam,calibrageRect),frameComparaison,COLOR_RGB2GRAY);
+
+                // Extract template image in frame1
+                Mat templateImage(frameReference,templateRect);
+                // Do the Matching between the working rect in frame2 and the templateImage in frame1
+                matchTemplate(frameComparaison, templateImage, resultImage, TM_CCORR_NORMED);
+                // Localize the best match with minMaxLoc
+                double minVal; double maxVal; cv::Point minLoc; cv::Point maxLoc;
+                minMaxLoc(resultImage, &minVal, &maxVal, &minLoc, &maxLoc);
+                // Compute the translation vector between the origin and the matching rect
+                cv::Point vect(maxLoc.x-templateRect.x,maxLoc.y-templateRect.y);
+
+                // Draw green rectangle and the translation vector
+                rectangle(image_webcam,calibrageRect,Scalar( 0, 255, 0),2);
+                cv::Point p(workingCenter.x+vect.x,workingCenter.y+vect.y);
+                arrowedLine(image_webcam,workingCenter,p,Scalar(255,255,255),2);
 
                 QImage img= QImage((const unsigned char*)(image_webcam.data),image_webcam.cols,image_webcam.rows,QImage::Format_RGB888);
                 QPixmap image = QPixmap::fromImage(img);
                 label_video_labyrinthe->setPixmap(image.scaled(label_video_labyrinthe->width(),label_video_labyrinthe->height(),Qt::KeepAspectRatio));
+
+                //swap(frameReference,frameComparaison);
+
+                labyrinthe->actionCamera(getActionCamera(vect, qSqrt(qPow(vect.x,2) + qPow(vect.y,2))));
 
             } else {
                 ui->label_video->setText(tr("Nous n'avons pas pu faire d'acquisitions via la Webcam..."));
@@ -203,7 +241,7 @@ void Labyrinthe3D::keyPressEvent(QKeyEvent * event){
             if(webcam != nullptr){
                 if(webcam->isOpened()){
                     // On vérifie qu'un visage a bien été détecté.
-                    if((calibrage.width != -1) && (calibrage.height != -1)){
+                    if((calibrageRect.width != -1) && (calibrageRect.height != -1)){
                         timer_video->stop();
                         int reponse = QMessageBox::question(this, tr("Confirmation"), tr("Ce cadrage vous convient-il ?"), QMessageBox::Yes | QMessageBox::No);
                         if(reponse == QMessageBox::Yes){
@@ -260,6 +298,48 @@ unsigned long long Labyrinthe3D::retournerIndiceDuRectanglePlusGrand(std::vector
     } else {
         return 0;
     }
+}
+
+qint8 Labyrinthe3D::getActionCamera(cv::Point vecteur_translation, double norme){
+    qint8 action = -1;
+    qint8 seuil = Labyrinthe::SEUIL_NORME_ACTION_CAMERA;
+
+    if(norme > seuil){
+        if(vecteur_translation.x > 0){
+            if(vecteur_translation.y > 0){
+                if (vecteur_translation.x >= vecteur_translation.y){
+                    action = Labyrinthe::ACTION_CAMERA_TOURNER_CAMERA_A_DROITE;
+                } else {
+                    action = Labyrinthe::ACTION_CAMERA_AVANCER;
+                }
+            } else {
+                if (vecteur_translation.x >= -vecteur_translation.y){
+                    action = Labyrinthe::ACTION_CAMERA_TOURNER_CAMERA_A_DROITE;
+                } else {
+                    action = Labyrinthe::ACTION_CAMERA_RECULER;
+                }
+            }
+        } else {
+            if(vecteur_translation.y > 0){
+                if (-vecteur_translation.x >= vecteur_translation.y){
+                    action = Labyrinthe::ACTION_CAMERA_TOURNER_CAMERA_A_GAUCHE;
+                } else {
+                    action = Labyrinthe::ACTION_CAMERA_AVANCER;
+                }
+            } else {
+                if (-vecteur_translation.x >= -vecteur_translation.y){
+                    action = Labyrinthe::ACTION_CAMERA_TOURNER_CAMERA_A_GAUCHE;
+                } else {
+                    action = Labyrinthe::ACTION_CAMERA_RECULER;
+                }
+            }
+        }
+
+    } else {
+        action = Labyrinthe::ACTION_CAMERA_AUCUNE;
+    }
+
+    return action;
 }
 
 void Labyrinthe3D::verifierConfiguration(){

@@ -17,22 +17,29 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     glcolor.cpp \
+    item.cpp \
     labyrinthe.cpp \
     main.cpp \
     labyrinthe3d.cpp \
+    maze.cpp \
     mur.cpp \
     object3d.cpp \
     openglhelper.cpp \
+    porte.cpp \
     rgbcolor.cpp \
     vertex.cpp
 
 HEADERS += \
+    cell.h \
     glcolor.h \
+    item.h \
     labyrinthe.h \
     labyrinthe3d.h \
+    maze.h \
     mur.h \
     object3d.h \
     openglhelper.h \
+    porte.h \
     rgbcolor.h \
     vertex.h
 

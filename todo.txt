@@ -3,16 +3,13 @@ TODO Liste |
 
 
 Cahier des charges : 
-1 - Déplacements au moyen de la caméra.
-2 - Gestion des collisions.
-3 - Affichage du labyrinthe lorsque le joueur ne bouge pas.
-4 - Génération de la sphère.
-5 - Placement de la porte au niveau de la sortie.
-6 - Intéraction sphère et sortie.
-7 - Gestion de l'éclairage (Lié au Bonus [Demander si OK au professeur]).
-8 - Génération automatique du labyrinthe. (Fusionner la partie de Lilian avec le projet actuel).
-9 - Commenter le code.
-10 - Rapport.
+1 - Gestion des collisions.
+2 - Affichage du labyrinthe lorsque le joueur ne bouge pas.
+3 - Intéraction sphère et sortie.
+4 - Gestion de l'éclairage (Lié au Bonus [Demander si OK au professeur]).
+5 - Chronomètre.
+6 - Commenter le code.
+7 - Rapport.
 
 
 Corrections de Bugs :
@@ -20,6 +17,8 @@ Corrections de Bugs :
 Cause : le bug est causé par la vérification permanante des valeurs, bloquant les longueur de 10 à 19.
 2 - Touche ECHAP ne fonctionnant pas pour quitter l'UI OpenGL.
 3 - Redimensionnement automatique de toute les UI.
+4 - Bug générations sorties dans les angles
+5 - Bug génération de 4 chemins en carrés (SCREEN disponible)
 
 Bonus :
 1 - Textures des murs et du plafond.

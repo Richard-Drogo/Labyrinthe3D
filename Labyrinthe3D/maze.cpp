@@ -9,14 +9,13 @@
 #include <ctime>
 #include "cell.h"
 #include "maze.h"
+#include <QVector>
 
 using namespace std;
 
 Maze::Maze(int width, int height)
     : grid_(height,vector<Cell>(width)), width_(width), height_(height)
 {
-    int pos ;
-
     srand(time(NULL));
     pos = rand() % 4;
     if (pos == 0) {
@@ -42,8 +41,9 @@ Maze::Maze(int width, int height)
     else {
         cout << "should never happend";
     }
-    cout << pos <<";" <<exitx_ << ";" << exity_ << endl;
-    cout << exit_.first << " " << exit_.second << endl;
+    //cout << pos <<";" <<exitx_ << ";" << exity_ << endl;
+    //cout << exit_.first << " " << exit_.second << endl;
+
     this->generate();
     this->display();
 }
@@ -51,7 +51,7 @@ Maze::Maze(int width, int height)
 void Maze::reinit()
 {
     grid_=vector<vector<Cell>>(height_,vector<Cell>(width_));
-    grid_number_=vector<vector<int>>(2*height_+1,vector<int>(2*width_+1));
+    grid_number_=QVector<QVector<qint8>>(2*height_+1,QVector<qint8>(2*width_+1));
 
     for ( int i = 0; i < height_; i++){
         for ( int j = 0; j < width_;j++){
@@ -293,7 +293,7 @@ void Maze::generate(bool show)
     }
 }
 
-list<Point> Maze::MatrixNeighbors(Point p,vector<vector<int>> grid_number_copy){
+list<Point> Maze::MatrixNeighbors(Point p,QVector<QVector<qint8>> grid_number_copy){
     list<Point> list;
     if(p.first+1<=2*height_ && grid_number_copy[p.first+1][p.second] == 1 ){ // si case du dessous
         list.push_back(Point(p.first+1,p.second));
@@ -312,7 +312,7 @@ list<Point> Maze::MatrixNeighbors(Point p,vector<vector<int>> grid_number_copy){
 }
 
 list<Point> Maze::path(Point begin, Point end){
-    vector<vector<int>> grid_number_copy = grid_number_;
+    QVector<QVector<qint8>> grid_number_copy = grid_number_;
 
     Point usingPoint = begin;
     grid_number_copy[usingPoint.first][usingPoint.second] = 2;
@@ -371,7 +371,7 @@ void Maze::generateInitialPosition(Point start, int addedPoint){
 
     int distance = (this->path(Point(posX,posY),Point(posJX,posJY))).size();
 
-    while (distance < height_*width_/6 ){ // paramètre ajustable
+    while (distance < height_*width_/4 ){ // paramètre ajustable
 
         posJX = 2*(rand() % height_) + 1;
         posJY = 2*(rand() % width_ ) + 1;
@@ -385,7 +385,6 @@ void Maze::generateInitialPosition(Point start, int addedPoint){
         this->gettableItem_ = Point(posJX,posJY);
     }
 
-    cout << posX << " " << posY << endl << posJX << " "<< posJY << endl ;
+    //cout << posX << " " << posY << endl << posJX << " "<< posJY << endl ;
     //cout << distance << endl;
 }
-
