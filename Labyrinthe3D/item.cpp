@@ -14,9 +14,6 @@ Item::Item(float posX, float rayon, float posY, unsigned int colorR, unsigned in
     // Creation de la quadrique
     GLUquadric* params = gluNewQuadric();
     this->sphere = params;
-
-    GLUquadric* cercle = gluNewQuadric();
-    this->traj = cercle;
 }
 
 Item::~Item(){

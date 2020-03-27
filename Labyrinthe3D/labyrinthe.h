@@ -93,7 +93,7 @@ private:
     const double DEPLACEMENT_ANGULAIRE = 5; // Degrés
     const double TAILLE_JOUEUR = 1.7;
     const qint8 LIGNE_D_HORIZON = 100;
-    const double TAILLE_SPHERE = 1;
+    const double TAILLE_SPHERE = 0.5;
     // Fin : Configurations physiques
 
     // Début : Configuration de la matrice du labyrinthe

@@ -17,8 +17,6 @@ private :
     //float revolution;
     float rayon;
     GLUquadric* sphere;
-    GLUquadric* traj;
-
 
 
 public:

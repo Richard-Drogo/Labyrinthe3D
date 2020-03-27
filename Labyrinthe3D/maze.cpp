@@ -18,6 +18,7 @@ Maze::Maze(int width, int height)
 {
     srand(time(NULL));
     pos = rand() % 4;
+
     if (pos == 0) {
         exitx_ = 0;
         exity_ = rand() % (width_) + 1  ;
@@ -60,8 +61,6 @@ void Maze::reinit()
     }
 
     grid_number_[exit_.first][exit_.second] = 1 ;
-
-
 }
 
 void Maze::addFrontier(Point p, list<Point> &frontier)
@@ -160,8 +159,9 @@ void Maze::display(bool pause)
         }
         // Print cells
         for (j=0;j<width_;j++) {
+
             if (i == exitx_-1){
-                if (j == width_-1 && j == exity_ -1) {
+                if (j == width_-1 && j == exity_ -1 && (pos == 1 | pos == 3 )) {
                     cout << " ";
                     grid_number_[2*i+1][2*j+2] = 1;
                 }
@@ -188,11 +188,11 @@ void Maze::display(bool pause)
         cout<<'+';
         // Print horizontal frontier
         for (j=0;j<width_;j++) {
+
             if (i == exitx_ - 1)
             {
                 //cout << i;
-                if (j == exity_ - 1)
-                {
+                if (j == exity_ - 1 && (pos == 2 | pos == 0 )){
                     cout << "  +";
                     grid_number_[2*i+2][2*j+1] = 1;
                 }

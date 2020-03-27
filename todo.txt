@@ -1,11 +1,11 @@
-TODO Liste |
+﻿TODO List |
 ------------
 
 
 Cahier des charges : 
 1 - Gestion des collisions.
 2 - Affichage du labyrinthe lorsque le joueur ne bouge pas.
-3 - Intéraction sphère et sortie.
+3 - Intéraction sphère et sortie. ( moitié, détection sphère OK)
 4 - Gestion de l'éclairage (Lié au Bonus [Demander si OK au professeur]).
 5 - Chronomètre.
 6 - Commenter le code.
