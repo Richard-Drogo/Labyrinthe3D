@@ -36,8 +36,12 @@ Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QGLWid
     double posY_item = (double) maze_->getItemPos().second;
     double posX_item = (double) maze_->getItemPos().first;
 
-    item_ = new Item((posX_item+1.0/2.0)*LONGUEUR_CASE,1,(posY_item+1.0/2.0)*LONGUEUR_CASE,240, 120, 60);
-    //item_ = new Item(1,1,1,240, 120, 60); //test
+    itemPosX_ = (posX_item+1.0/2.0)*LONGUEUR_CASE;
+    //qDebug() << itemPosX_;
+    itemPosY_ = (posY_item+1.0/2.0)*LONGUEUR_CASE;
+
+    item_ = new Item(itemPosX_,TAILLE_SPHERE,itemPosY_,240, 120, 60);
+    //item_ = new Item(1,1,1,240, 120, 60); //tes
 
     positionJoueur_ = Vertex(posX_joueur * LONGUEUR_CASE,TAILLE_JOUEUR, posY_joueur * LONGUEUR_CASE);
     // Début : On détermine la direction observée
@@ -235,9 +239,16 @@ void Labyrinthe::display(){
         murs_[i].display();
     }
     plafond_.display();
-    item_->Display();
-    porte_->display();
-}
+
+
+    //qDebug() << "redraw";
+    if ( !itemGet_ ){
+        touchTheBall();
+        item_->Display();
+        porte_->display();
+        }
+    }
+
 
 void Labyrinthe::genererMur(){
 
@@ -477,3 +488,13 @@ void Labyrinthe::tournerCameraADroite(){
 
 }
 // Fin : Méthodes privées
+
+void Labyrinthe::touchTheBall(){
+    //qDebug() << itemPosX_ <<  " " << positionJoueur_.getX() ;
+    //qDebug() << itemPosY_ <<  " " << positionJoueur_.getZ() ;
+    if (positionJoueur_.getX() < itemPosY_ + TAILLE_SPHERE && positionJoueur_.getX() > itemPosY_ - TAILLE_SPHERE
+            && positionJoueur_.getZ() < itemPosX_ + TAILLE_SPHERE && positionJoueur_.getZ() > itemPosX_ - TAILLE_SPHERE)
+    {
+        itemGet_ = true;
+    }
+}

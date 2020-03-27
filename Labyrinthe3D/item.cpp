@@ -14,9 +14,6 @@ Item::Item(float posX, float rayon, float posY, unsigned int colorR, unsigned in
     // Creation de la quadrique
     GLUquadric* params = gluNewQuadric();
     this->sphere = params;
-
-    GLUquadric* cercle = gluNewQuadric();
-    this->traj = cercle;
 }
 
 Item::~Item(){
@@ -52,3 +49,5 @@ void Item::Display() const
     gluSphere(this->sphere,this->rayon,20,20);
     glPopMatrix();
 }
+
+
