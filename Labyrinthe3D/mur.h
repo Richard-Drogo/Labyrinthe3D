@@ -8,6 +8,8 @@ class Mur : public Object3D
 public:
     Mur(double x, double y, qint8 type, qint8 orientation, double epaisseur, double hauteur, double longueur, QVector<GLColor> colors);
     qint8 display();
+    double getX() {return x_;};
+    double getY() {return y_;};
 
     static const qint8 ANGLE = 0;
 
