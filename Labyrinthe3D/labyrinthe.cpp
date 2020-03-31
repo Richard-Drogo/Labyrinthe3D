@@ -548,7 +548,7 @@ bool Labyrinthe::touchTheWall(double X, double Y){
                 }
             }
             //qDebug() << i << " " <<  minX << " " << maxX << " " << minY << " " << maxY << " " << X << " " << Y;
-            if(X < maxX && X > minX && Y < maxY && Y > minY){
+            if(X < maxX + 0.1 && X > minX - 0.1  && Y < maxY + 0.1 && Y > minY - 0.1){
                 return true;
             }
        }
