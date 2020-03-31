@@ -240,7 +240,6 @@ void Labyrinthe::display(){
     }
     plafond_.display();
 
-
     //qDebug() << "redraw";
     if ( !itemGet_ ){
         touchTheBall();
@@ -451,19 +450,33 @@ qint8 Labyrinthe::compterCombienDeCasesNonDefinies(qint8 x, qint8 y){
 }
 
 void Labyrinthe::avancer(){
-    positionJoueur_.setX(positionJoueur_.getX() + qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
-    positionJoueur_.setZ(positionJoueur_.getZ() + qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+
+    double expectedX = positionJoueur_.getX() + qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT;
+    double expectedY = positionJoueur_.getZ() + qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT;
+
+    if (!touchTheWall(expectedX,expectedY)){
+    positionJoueur_.setX(expectedX);
+    positionJoueur_.setZ(expectedY);
 
     direction_.setX(direction_.getX() + qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
     direction_.setZ(direction_.getZ() + qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+    }
+    else {
+        qDebug() << "aie";
+    }
 }
 
 void Labyrinthe::reculer(){
-    positionJoueur_.setX(positionJoueur_.getX() - qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
-    positionJoueur_.setZ(positionJoueur_.getZ() - qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+    double expectedX = positionJoueur_.getX() - qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT;
+    double expectedY = positionJoueur_.getZ() - qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT;
+
+    if (!touchTheWall(expectedX,expectedY)){
+    positionJoueur_.setX(expectedX);
+    positionJoueur_.setZ(expectedY);
 
     direction_.setX(direction_.getX() - qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
     direction_.setZ(direction_.getZ() - qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+    }
 }
 
 void Labyrinthe::tournerCameraAGauche(){
@@ -490,11 +503,64 @@ void Labyrinthe::tournerCameraADroite(){
 // Fin : Méthodes privées
 
 void Labyrinthe::touchTheBall(){
-    //qDebug() << itemPosX_ <<  " " << positionJoueur_.getX() ;
-    //qDebug() << itemPosY_ <<  " " << positionJoueur_.getZ() ;
     if (positionJoueur_.getX() < itemPosY_ + TAILLE_SPHERE && positionJoueur_.getX() > itemPosY_ - TAILLE_SPHERE
             && positionJoueur_.getZ() < itemPosX_ + TAILLE_SPHERE && positionJoueur_.getZ() > itemPosX_ - TAILLE_SPHERE)
     {
         itemGet_ = true;
     }
 }
+
+bool Labyrinthe::touchTheWall(double X, double Y){
+    double xcase = ((int) (positionJoueur_.getX()/LONGUEUR_CASE))*LONGUEUR_CASE;
+    double ycase = ((int) (positionJoueur_.getZ()/LONGUEUR_CASE))*LONGUEUR_CASE;
+
+    bool touching = false;
+    QVector<Mur> mursAdjacents; // récupération des murs à coté du joueur
+    for(int i = 0; i < murs_.size(); i++)
+    {
+        if (murs_[i].getX() == xcase-LONGUEUR_CASE | murs_[i].getX() == xcase | murs_[i].getX() == xcase+LONGUEUR_CASE){
+            if (murs_[i].getY() == ycase-LONGUEUR_CASE | murs_[i].getY() == ycase | murs_[i].getY() == ycase+LONGUEUR_CASE){
+                mursAdjacents.push_back(murs_[i]);
+            }
+        }
+    }
+
+   for(int i = 0; i < mursAdjacents.size(); i++){
+       int nbMurs = mursAdjacents[i].getVertices().size()/6;
+       for(int j = 0; j < nbMurs; j++){
+            QVector<Vertex> points = mursAdjacents[i].getVertices()[1+6*j];
+            double minX = 100000000;
+            double maxX = -1;
+            double minY = 100000000;
+            double maxY = -1;
+            for(int k = 0;k < points.size();k++){
+                if(points[k].getX() < minX){
+                    minX = points[k].getX();
+                }
+                if(points[k].getX() > maxX){
+                    maxX = points[k].getX();
+                }
+                if(points[k].getZ() < minY){
+                    minY = points[k].getZ();
+                }
+                if(points[k].getZ() > maxY){
+                    maxY = points[k].getZ();
+                }
+            }
+            //qDebug() << i << " " <<  minX << " " << maxX << " " << minY << " " << maxY << " " << X << " " << Y;
+            if(X < maxX && X > minX && Y < maxY && Y > minY){
+                return true;
+            }
+       }
+   }
+   return touching;
+}
+
+
+
+
+
+
+
+
+

@@ -126,6 +126,7 @@ protected:
     void keyPressEvent(QKeyEvent * event);
 
     void touchTheBall();
+    bool touchTheWall(double X, double Y);
 };
 
 #endif // LABYRINTHE_H
