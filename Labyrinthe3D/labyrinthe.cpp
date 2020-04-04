@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QKeyEvent>
 #include <QtMath>
+#include <QTimer>
 
 #include <GL/glu.h>
 #include <glcolor.h>
@@ -16,7 +17,7 @@
 #include "porte.h"
 
 // Début : Méthodes publiques
-Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QGLWidget(parent)
+Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QOpenGLWidget(parent)
 {
     parent_ = parent;
     longueur_ = longueur * 2 + 1;
@@ -107,6 +108,11 @@ Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QGLWid
 
     genererMur();
     genererPorte();
+
+    timer_carte_du_labyrinthe_ = new QTimer(this);
+    connect(timer_carte_du_labyrinthe_, SIGNAL(timeout()), this, SLOT(timerCarteDuLabyrintheFini()));
+    timer_carte_du_labyrinthe_->start(DELAI_AFFICHAGE_CARTE);
+
     setFixedSize(parent->width(), parent->height());
     move(0,0);
 }
@@ -114,22 +120,28 @@ Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QGLWid
 void Labyrinthe::actionCamera(qint8 action){
     switch(action){
     case ACTION_CAMERA_AUCUNE:{
-        // TODO : Si aucune touche n'est actuelle appuyée, afficher la carte du labyrinthe.
+        if(!timer_carte_du_labyrinthe_->isActive()){
+            timer_carte_du_labyrinthe_->start(DELAI_AFFICHAGE_CARTE);
+        }
     }break;
 
     case ACTION_CAMERA_AVANCER:{
+        arreterTimerCarteDuLabyrinthe();
         avancer();
     }break;
 
     case ACTION_CAMERA_RECULER:{
+        arreterTimerCarteDuLabyrinthe();
         reculer();
     }break;
 
     case ACTION_CAMERA_TOURNER_CAMERA_A_GAUCHE:{
+        arreterTimerCarteDuLabyrinthe();
         tournerCameraAGauche();
     }break;
 
     case ACTION_CAMERA_TOURNER_CAMERA_A_DROITE:{
+        arreterTimerCarteDuLabyrinthe();
         tournerCameraADroite();
     }break;
 
@@ -137,7 +149,7 @@ void Labyrinthe::actionCamera(qint8 action){
         qDebug() << tr("ERREUR : L'action caméra transmise n'est pas référencée ! Code : ") << action;
     }break;
     }
-    updateGL();
+    update();
 }
 // Fin : Méthodes publiques
 
@@ -161,6 +173,9 @@ void Labyrinthe::resizeGL(int width, int height)
 
 void Labyrinthe::paintGL()
 {
+    QPainter painter(this);
+    painter.beginNativePainting();
+    glEnable(GL_DEPTH_TEST);
 
     //qDebug() << maze_->getItemPos().second << " " << maze_->getItemPos().first << " ";
 
@@ -178,6 +193,11 @@ void Labyrinthe::paintGL()
 
     this->display();
 
+    painter.endNativePainting();
+    if(afficher_carte_){
+        dessinerCarteLabyrinthe(painter);
+    }
+    painter.end();
     this->setFocus();
 }
 
@@ -194,23 +214,27 @@ void Labyrinthe::keyPressEvent(QKeyEvent * event){
 
     case Qt::Key_Z:
     {
+        arreterTimerCarteDuLabyrinthe();
         avancer();
     }break;
 
 
     case Qt::Key_S:
     {
+        arreterTimerCarteDuLabyrinthe();
         reculer();
     }break;
 
     case Qt::Key_Q:
     {
+        arreterTimerCarteDuLabyrinthe();
         tournerCameraAGauche();
    }break;
 
 
     case Qt::Key_D:
     {
+        arreterTimerCarteDuLabyrinthe();
         tournerCameraADroite();
     }break;
 
@@ -227,7 +251,19 @@ void Labyrinthe::keyPressEvent(QKeyEvent * event){
 
     // Acceptation de l'evenement et mise a jour de la scene
     event->accept();
-    updateGL();
+    update();
+}
+
+void Labyrinthe::keyReleaseEvent(QKeyEvent * event){
+    if ((event->key() == Qt::Key_Z) || (event->key() == Qt::Key_Q) || (event->key() == Qt::Key_S) || (event->key() == Qt::Key_D)){
+        arreterTimerCarteDuLabyrinthe();
+    }
+}
+
+void Labyrinthe::timerCarteDuLabyrintheFini(){
+    afficher_carte_ = true;
+    timer_carte_du_labyrinthe_->stop();
+    update();
 }
 // Fin : SLOTS CRÉÉS
 
@@ -247,7 +283,6 @@ void Labyrinthe::display(){
         porte_->display();
         }
     }
-
 
 void Labyrinthe::genererMur(){
 
@@ -500,7 +535,57 @@ void Labyrinthe::tournerCameraADroite(){
     direction_.setZ(positionJoueur_.getZ() + qSqrt(qPow(direction_.getX() - positionJoueur_.getX(),2) + qPow(direction_.getZ() - positionJoueur_.getZ(),2)) * qSin(qDegreesToRadians(angle_direction_)));
 
 }
+
+void Labyrinthe::dessinerCarteLabyrinthe(QPainter & painter){
+    QRect fond(0,0,this->width(),this->height());
+    QRect zone_carte(this->width() * MARGE_AU_BORD_LONGUEUR_LARGEUR_PARENT, this->height() * MARGE_AU_BORD_LONGUEUR_LARGEUR_PARENT, int(this->width() * POURCENTAGE_LONGUEUR_PARENT - this->width() * MARGE_AU_BORD_LONGUEUR_LARGEUR_PARENT), int(this->height() * POURCENTAGE_LARGEUR_PARENT - this->height() * MARGE_AU_BORD_LONGUEUR_LARGEUR_PARENT));
+
+    QPen pen_fond(CARTE_COULEUR_FOND);
+
+    QPen pen_joueur(CARTE_COULEUR_JOUEUR);
+    pen_joueur.setWidth(CARTE_EPAISSEUR_JOUEUR);
+
+    QPen pen_direction_joueur(CARTE_COULEUR_JOUEUR);
+    pen_direction_joueur.setWidth(CARTE_EPAISSEUR_DIRECTION_JOUEUR);
+
+    QPen pen_murs(CARTE_COULEUR_MUR);
+    pen_murs.setWidth(CARTE_EPAISSEUR_MUR);
+
+    QPen pen_porte(CARTE_COULEUR_PORTE);
+    pen_porte.setWidth(CARTE_EPAISSEUR_PORTE);
+
+    painter.setViewport(zone_carte);
+    painter.setPen(pen_murs);
+
+    qreal longueur_case_carte = painter.viewport().width() / longueur_;
+    qreal largeur_case_carte = painter.viewport().height() / largeur_;
+
+    for(quint16 i = 0; i < murs_.length(); i++){
+        murs_[i].draw(painter, longueur_case_carte, largeur_case_carte);
+    }
+
+    painter.setPen(pen_joueur);
+    painter.drawPoint(positionJoueur_.getX() / LONGUEUR_CASE * longueur_case_carte, positionJoueur_.getZ() / LONGUEUR_CASE * largeur_case_carte);
+
+    painter.setPen(pen_direction_joueur);
+    painter.drawLine(positionJoueur_.getX() / LONGUEUR_CASE * longueur_case_carte, positionJoueur_.getZ() / LONGUEUR_CASE * largeur_case_carte, direction_.getX() / LONGUEUR_CASE * longueur_case_carte, direction_.getZ() / LONGUEUR_CASE * largeur_case_carte);
+
+    if(!itemGet_){
+        painter.setPen(pen_porte);
+        porte_->draw(painter, longueur_case_carte, largeur_case_carte);
+    }
+    painter.setViewport(fond);
+    painter.fillRect(fond, QBrush(QColor(pen_fond.color().red(),pen_fond.color().green(),pen_fond.color().blue(),CARTE_TRANSPARENCE_FOND)));
+
+
+}
+
+void Labyrinthe::arreterTimerCarteDuLabyrinthe(){
+    timer_carte_du_labyrinthe_->stop();
+    afficher_carte_ = false;
+}
 // Fin : Méthodes privées
+
 
 void Labyrinthe::touchTheBall(){
     if (positionJoueur_.getX() < itemPosY_ + TAILLE_SPHERE && positionJoueur_.getX() > itemPosY_ - TAILLE_SPHERE

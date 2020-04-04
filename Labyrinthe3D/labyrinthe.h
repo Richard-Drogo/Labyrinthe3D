@@ -1,7 +1,7 @@
 #ifndef LABYRINTHE_H
 #define LABYRINTHE_H
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include <QVector>
 
 #include <utility>
@@ -17,7 +17,7 @@
 
 using namespace std;
 
-class Labyrinthe : public QGLWidget
+class Labyrinthe : public QOpenGLWidget
 {
     Q_OBJECT
 
@@ -69,10 +69,12 @@ private:
     bool itemGet_ = false;
     // Fin : Information sphère
 
-    // Début : Attributs de la génération du labyrinthe
+    // Début : Attributs du labyrinthe
     QVector<QVector<qint8>> matrice_labyrinthe_;
     Maze * maze_ = nullptr;
-    // Fin : Attributs de la génération du labyrinthe
+    QTimer * timer_carte_du_labyrinthe_ = Q_NULLPTR;
+    bool afficher_carte_= false;
+    // Fin : Attributs du labyrinthe
     // Fin : Attributs
 
 
@@ -94,6 +96,7 @@ private:
     const double TAILLE_JOUEUR = 1.7;
     const qint8 LIGNE_D_HORIZON = 100;
     const double TAILLE_SPHERE = 0.5;
+    const quint16 DELAI_AFFICHAGE_CARTE = 1000; // En ms.
     // Fin : Configurations physiques
 
     // Début : Configuration de la matrice du labyrinthe
@@ -103,6 +106,21 @@ private:
     const qint8 SPHERE = 3;
     const qint8 SORTIE = 4;
     // Fin : Configuration de la matrice du labyrinthe
+
+    // Début : Constantes de dessin de la carte du labyrinthe
+    const QColor CARTE_COULEUR_FOND = Qt::black;
+    const quint8 CARTE_TRANSPARENCE_FOND = 200;
+    const QColor CARTE_COULEUR_MUR = Qt::white;
+    const quint8 CARTE_EPAISSEUR_MUR = 4;
+    const QColor CARTE_COULEUR_JOUEUR = Qt::green;
+    const quint8 CARTE_EPAISSEUR_JOUEUR = 20;
+    const quint8 CARTE_EPAISSEUR_DIRECTION_JOUEUR = 10;
+    const QColor CARTE_COULEUR_PORTE = Qt::blue;
+    const quint8 CARTE_EPAISSEUR_PORTE = 4;
+    const qreal POURCENTAGE_LONGUEUR_PARENT = 0.85; // Pour éviter que la carte s'affiche sous la caméra.
+    const qreal POURCENTAGE_LARGEUR_PARENT = 1;
+    const qreal MARGE_AU_BORD_LONGUEUR_LARGEUR_PARENT = 0.05;
+    // Fin : Constantes de dessin de la carte dy labyrinthe
     // Fin : Définition des constantes
 
 
@@ -116,15 +134,20 @@ private:
     void reculer();
     void tournerCameraAGauche();
     void tournerCameraADroite();
+    void dessinerCarteLabyrinthe(QPainter & painter);
+    void arreterTimerCarteDuLabyrinthe();
     // Fin : Méthodes privées
 
+
+private slots:
+    void timerCarteDuLabyrintheFini();
 
 protected:
     void initializeGL();
     void resizeGL(int width, int height);
     void paintGL();
     void keyPressEvent(QKeyEvent * event);
-
+    void keyReleaseEvent(QKeyEvent * event);
     void touchTheBall();
     bool touchTheWall(double X, double Y);
 };

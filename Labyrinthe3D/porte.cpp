@@ -57,6 +57,30 @@ void Porte::ouvrir(){
         }
     }
 }
+
+void Porte::draw(QPainter & painter, qreal longueur_case_carte, qreal largeur_case_carte){
+    qreal x = x_ / Labyrinthe::LONGUEUR_CASE * longueur_case_carte;
+    qreal y = y_ / Labyrinthe::LONGUEUR_CASE * largeur_case_carte;
+
+    switch(position_){
+    case N:{
+        painter.drawLine(x, y, x + longueur_case_carte, y);
+    }break;
+
+    case W:{
+        painter.drawLine(x, y, x, y + largeur_case_carte);
+    }break;
+
+    case S:{
+        painter.drawLine(x, y + largeur_case_carte, x + longueur_case_carte, y + largeur_case_carte);
+    }break;
+
+    case E:{
+        painter.drawLine(x + longueur_case_carte, y, x + longueur_case_carte, y + largeur_case_carte);
+    }break;
+
+    }
+}
 // Fin : Méthodes publiques
 
 
