@@ -11,6 +11,7 @@ public:
     Porte(double x, double y, qint8 position, double epaisseur, double hauteur, double longueur, QVector<GLColor> couleurs_porte);
     qint8 display();
     void ouvrir();
+    void draw(QPainter & painter, qreal longueur_case_carte, qreal largeur_case_carte);
     // Fin : Méthodes publiques
 
 

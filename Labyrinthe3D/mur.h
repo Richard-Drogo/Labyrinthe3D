@@ -1,6 +1,8 @@
 #ifndef MUR_H
 #define MUR_H
 
+#include <QPainter>
+
 #include "object3d.h"
 
 class Mur : public Object3D
@@ -8,6 +10,8 @@ class Mur : public Object3D
 public:
     Mur(double x, double y, qint8 type, qint8 orientation, double epaisseur, double hauteur, double longueur, QVector<GLColor> colors);
     qint8 display();
+    void draw(QPainter & painter, qreal longueur_case_carte, qreal largeur_case_carte);
+
     double getX() {return x_;};
     double getY() {return y_;};
 

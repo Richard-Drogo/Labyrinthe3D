@@ -1,5 +1,6 @@
 #include "mur.h"
 #include "openglhelper.h"
+#include "labyrinthe.h"
 
 Mur::Mur(double x, double y, qint8 type, qint8 orientation, double epaisseur, double hauteur, double longueur, QVector<GLColor> colors) : Object3D()
 {
@@ -557,4 +558,171 @@ qint8 Mur::display(){
 
     glPopMatrix();
     return success;
+}
+
+void Mur::draw(QPainter & painter, qreal longueur_case_carte, qreal largeur_case_carte){
+    qreal x = x_ / Labyrinthe::LONGUEUR_CASE * longueur_case_carte;
+    qreal y = y_ / Labyrinthe::LONGUEUR_CASE * largeur_case_carte;
+
+
+    switch(type_) {
+    case ANGLE:{
+        // Pour les angles on créé deux pavés droits.
+        switch(orientation_){
+        case NW:{
+            painter.drawLine(x, y, x + longueur_case_carte, y);
+            painter.drawLine(x, y, x, y + largeur_case_carte);
+        }break;
+
+        case SW:{
+            painter.drawLine(x, y, x, y + largeur_case_carte);
+            painter.drawLine(x, y + largeur_case_carte, x + longueur_case_carte, y + largeur_case_carte);
+        }break;
+
+        case SE:{
+            painter.drawLine(x + longueur_case_carte, y, x + longueur_case_carte, y + largeur_case_carte);
+            painter.drawLine(x, y + largeur_case_carte, x + longueur_case_carte, y + largeur_case_carte);
+        }break;
+
+        case NE:{
+            painter.drawLine(x, y, x + longueur_case_carte, y);
+            painter.drawLine(x + longueur_case_carte, y, x + longueur_case_carte, y + largeur_case_carte);
+        }break;
+
+        }
+    }break;
+
+    case CONTOUR_T1:{
+        switch(orientation_){
+        case N:{
+            painter.drawLine(x, y, x + longueur_case_carte, y);
+            painter.drawLine(x + longueur_case_carte / 2.0, y, x + longueur_case_carte / 2.0, y + largeur_case_carte);
+        }break;
+
+        case W:{
+            painter.drawLine(x, y, x, y + largeur_case_carte);
+            painter.drawLine(x, y + largeur_case_carte / 2.0, x + longueur_case_carte, y + largeur_case_carte / 2.0);
+        }break;
+
+        case S:{
+            painter.drawLine(x, y + largeur_case_carte, x + longueur_case_carte, y + largeur_case_carte);
+            painter.drawLine(x + longueur_case_carte / 2.0, y + largeur_case_carte, x + longueur_case_carte / 2.0, y);
+        }break;
+
+        case E:{
+            painter.drawLine(x + longueur_case_carte, y, x + longueur_case_carte, y + largeur_case_carte);
+            painter.drawLine(x + longueur_case_carte, y + largeur_case_carte / 2.0, x, y + largeur_case_carte / 2.0);
+        }break;
+
+        }
+    }break;
+
+    case CONTOUR_T2:{
+        switch(orientation_){
+        case N:{
+            painter.drawLine(x, y, x + longueur_case_carte, y);
+        }break;
+
+        case W:{
+            painter.drawLine(x, y, x, y + largeur_case_carte);
+        }break;
+
+        case S:{
+            painter.drawLine(x, y + largeur_case_carte, x + longueur_case_carte, y + largeur_case_carte);
+        }break;
+
+        case E:{
+            painter.drawLine(x + longueur_case_carte, y, x + longueur_case_carte, y + largeur_case_carte);
+        }break;
+
+        }
+    }break;
+
+    case CENTRE_T1:{
+        painter.drawLine(x + longueur_case_carte / 2.0, y, x + longueur_case_carte / 2.0, y + largeur_case_carte);
+        painter.drawLine(x, y + largeur_case_carte / 2.0, x + longueur_case_carte, y + largeur_case_carte / 2.0);
+    }break;
+
+    case CENTRE_T2:{
+        switch(orientation_){
+        case N:{
+            painter.drawLine(x, y + largeur_case_carte / 2.0, x + longueur_case_carte, y + largeur_case_carte / 2.0);
+            painter.drawLine(x + longueur_case_carte / 2.0, y + largeur_case_carte / 2.0, x + longueur_case_carte / 2.0, y + largeur_case_carte);
+        }break;
+
+        case W:{
+            painter.drawLine(x + longueur_case_carte / 2.0, y, x + longueur_case_carte / 2.0, y + largeur_case_carte);
+            painter.drawLine(x + longueur_case_carte / 2.0, y + largeur_case_carte / 2.0, x + longueur_case_carte , y + largeur_case_carte / 2.0);
+        }break;
+
+        case S:{
+            painter.drawLine(x, y + largeur_case_carte / 2.0, x + longueur_case_carte, y + largeur_case_carte / 2.0);
+            painter.drawLine(x + longueur_case_carte / 2.0, y, x + longueur_case_carte / 2.0, y + largeur_case_carte / 2.0);
+        }break;
+
+        case E:{
+            painter.drawLine(x + longueur_case_carte / 2.0, y, x + longueur_case_carte / 2.0, y + largeur_case_carte);
+            painter.drawLine(x, y + largeur_case_carte / 2.0, x + longueur_case_carte / 2.0 , y + largeur_case_carte / 2.0);
+        }break;
+
+        }
+    }break;
+
+    case CENTRE_T3:{
+        // Pour les angles on créé deux pavés droits.
+        switch(orientation_){
+        case NW:{
+            painter.drawLine(x + longueur_case_carte / 2.0, y + largeur_case_carte / 2.0, x + longueur_case_carte, y + largeur_case_carte / 2.0);
+            painter.drawLine(x + longueur_case_carte / 2.0, y + largeur_case_carte / 2.0, x + longueur_case_carte / 2.0, y + largeur_case_carte);
+        }break;
+
+        case SW:{
+            painter.drawLine(x + longueur_case_carte / 2.0, y, x + longueur_case_carte / 2.0, y + largeur_case_carte / 2.0);
+            painter.drawLine(x + longueur_case_carte / 2.0, y + largeur_case_carte / 2.0, x + longueur_case_carte, y + largeur_case_carte / 2.0);
+        }break;
+
+        case SE:{
+            painter.drawLine(x + longueur_case_carte / 2.0, y, x + longueur_case_carte / 2.0, y + largeur_case_carte / 2.0);
+            painter.drawLine(x, y + largeur_case_carte / 2.0, x + longueur_case_carte / 2.0, y + largeur_case_carte / 2.0);
+        }break;
+
+        case NE:{
+            painter.drawLine(x, y + largeur_case_carte / 2.0, x + longueur_case_carte / 2.0, y + largeur_case_carte / 2.0);
+            painter.drawLine(x + longueur_case_carte / 2.0, y + largeur_case_carte / 2.0, x + longueur_case_carte / 2.0, y + largeur_case_carte);
+        }break;
+
+        }
+    }break;
+
+    case CENTRE_T4:{
+        switch(orientation_){
+        case N:{
+            painter.drawLine(x + longueur_case_carte / 2.0, y, x + longueur_case_carte / 2.0, y + largeur_case_carte / 2.0);
+        }break;
+
+        case W:{
+            painter.drawLine(x, y + largeur_case_carte / 2.0, x + longueur_case_carte / 2.0, y + largeur_case_carte / 2.0);
+
+        }break;
+
+        case S:{
+            painter.drawLine(x + longueur_case_carte / 2.0, y + largeur_case_carte / 2.0, x + longueur_case_carte / 2.0, y + largeur_case_carte);
+
+        }break;
+
+        case E:{
+            painter.drawLine(x + longueur_case_carte / 2.0, y + largeur_case_carte / 2.0, x + longueur_case_carte, y + largeur_case_carte / 2.0);
+        }break;
+
+        }
+    }break;
+
+    case CENTRE_T5:{
+        if(orientation_ == H){
+            painter.drawLine(x, y + largeur_case_carte / 2.0, x + longueur_case_carte, y + largeur_case_carte / 2.0);
+        } else {
+            painter.drawLine(x + longueur_case_carte / 2.0, y, x + longueur_case_carte / 2.0, y + largeur_case_carte);
+        }
+    }break;
+    }
 }
