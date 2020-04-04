@@ -5,9 +5,8 @@
 Cahier des charges : 
 1 - Intéraction sphère et sortie. ( moitié, détection sphère OK)
 2 - Gestion de l'éclairage (Lié au Bonus [Demander si OK au professeur]).
-3 - Chronomètre.
-4 - Commenter le code.
-5 - Rapport.
+3 - Commenter le code.
+4 - Rapport.
 
 
 Corrections de Bugs :
@@ -26,3 +25,4 @@ Bonus :
 5 - Modification design de l'interface selon les travaux de Cédric.
 6 - Ajouter les musiques de Maxime.
 7 - Ajouter les animations de Cédric.
+8 - Dans la carte 2D fixer la taille de l'indicateur de la direction d'observation du joueur.

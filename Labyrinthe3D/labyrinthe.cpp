@@ -15,13 +15,15 @@
 #include "maze.h"
 #include "item.h"
 #include "porte.h"
+#include "chronometre.h"
 
 // Début : Méthodes publiques
-Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QOpenGLWidget(parent)
+Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur, Chronometre * chronometre) : QOpenGLWidget(parent)
 {
     parent_ = parent;
     longueur_ = longueur * 2 + 1;
     largeur_ = largeur * 2 + 1;
+    chronometre_ = chronometre;
     maze_  = new Maze(longueur, largeur);
 
     // 0 : Mur
@@ -112,6 +114,8 @@ Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QOpenG
     timer_carte_du_labyrinthe_ = new QTimer(this);
     connect(timer_carte_du_labyrinthe_, SIGNAL(timeout()), this, SLOT(timerCarteDuLabyrintheFini()));
     timer_carte_du_labyrinthe_->start(DELAI_AFFICHAGE_CARTE);
+
+    chronometre_->start();
 
     setFixedSize(parent->width(), parent->height());
     move(0,0);
@@ -311,8 +315,6 @@ void Labyrinthe::genererPorte(){
     } else {
         qDebug() << tr("Orientation de la porte non déterminée ") << "(" << y << ";" << x << ")";
     }
-    double test1 = x * LONGUEUR_CASE;
-    double test2 = y * LONGUEUR_CASE;
 
     porte_ = new Porte(x * LONGUEUR_CASE, y * LONGUEUR_CASE, position, EPAISSEUR_PORTE, HAUTEUR_PORTE, LONGUEUR_PORTE, {GLColor(0, 0, 255)});
 }

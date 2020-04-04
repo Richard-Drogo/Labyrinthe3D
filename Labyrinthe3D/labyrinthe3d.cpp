@@ -372,13 +372,22 @@ void Labyrinthe3D::razUICalibration(){
 
 void Labyrinthe3D::setupUILabyrinthe(){
     label_video_labyrinthe = new QLabel(this);
-    label_video_labyrinthe->setFixedSize((int)(this->width() / 4),(int)(this->height() / 4));
+    label_video_labyrinthe->setFixedSize((int)(this->width() * LONGUEUR_VOLET_INFORMATIONS),(int)(this->height() * LARGEUR_LABEL_CAMERA));
     label_video_labyrinthe->setFocusPolicy(Qt::NoFocus);
 
-    labyrinthe = new Labyrinthe(this, ui->lineEdit_longueur->text().toInt(), ui->lineEdit_largeur->text().toInt());
+    label_chronometre = new QLabel(this);
+    label_chronometre->setFixedSize((int)(this->width() * LONGUEUR_VOLET_INFORMATIONS),(int)(this->height() * LARGEUR_LABEL_CHRONOMETRE));
+    label_chronometre->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    label_chronometre->setStyleSheet("background-color: rgba(0, 0, 0,200); color:rgb(255,255,255)");
+    label_chronometre->setFocusPolicy(Qt::NoFocus);
+
+    chronometre_ = new Chronometre(label_chronometre);
+
+    labyrinthe = new Labyrinthe(this, ui->lineEdit_longueur->text().toInt(), ui->lineEdit_largeur->text().toInt(), chronometre_);
 
     ui->gridLayout_ui_labyrinthe->addWidget(labyrinthe, 0, 0, Qt::AlignLeft | Qt::AlignTop);
     ui->gridLayout_ui_labyrinthe->addWidget(label_video_labyrinthe, 0, 0, Qt::AlignRight | Qt::AlignTop);
+    ui->gridLayout_ui_labyrinthe->addWidget(label_chronometre, 0, 0, Qt::AlignRight | Qt::AlignBottom);
 
     timer_video->start();
 }

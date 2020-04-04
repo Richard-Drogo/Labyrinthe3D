@@ -14,6 +14,7 @@
 #include "maze.h"
 #include "item.h"
 #include "porte.h"
+#include "chronometre.h"
 
 using namespace std;
 
@@ -23,7 +24,7 @@ class Labyrinthe : public QOpenGLWidget
 
 
 public:
-    Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur);
+    Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur, Chronometre * chronometre);
 
 
     void actionCamera(qint8 action);
@@ -46,6 +47,7 @@ private:
     QWidget * parent_;
     double longueur_; // Longueur indiquée sur l'UI.
     double largeur_; // Largeur indiquée sur l'UI.
+    Chronometre * chronometre_ = Q_NULLPTR;
     // Fin : Attributs du Constructeurs
 
     // Début : Attributs de la physique
@@ -117,7 +119,7 @@ private:
     const quint8 CARTE_EPAISSEUR_DIRECTION_JOUEUR = 10;
     const QColor CARTE_COULEUR_PORTE = Qt::blue;
     const quint8 CARTE_EPAISSEUR_PORTE = 4;
-    const qreal POURCENTAGE_LONGUEUR_PARENT = 0.85; // Pour éviter que la carte s'affiche sous la caméra.
+    const qreal POURCENTAGE_LONGUEUR_PARENT = 1 - 0.25; // 0.25 = Labyrinthe3D::LONGUEUR_VOLET_INFORMATIONS
     const qreal POURCENTAGE_LARGEUR_PARENT = 1;
     const qreal MARGE_AU_BORD_LONGUEUR_LARGEUR_PARENT = 0.05;
     // Fin : Constantes de dessin de la carte dy labyrinthe
