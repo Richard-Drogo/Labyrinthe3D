@@ -15,6 +15,7 @@
 #include "maze.h"
 #include "item.h"
 #include "porte.h"
+#include "object3d.h"
 
 // Début : Méthodes publiques
 Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur) : QOpenGLWidget(parent)
@@ -496,9 +497,6 @@ void Labyrinthe::avancer(){
     direction_.setX(direction_.getX() + qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
     direction_.setZ(direction_.getZ() + qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
     }
-    else {
-        qDebug() << "aie";
-    }
 }
 
 void Labyrinthe::reculer(){
@@ -600,7 +598,7 @@ bool Labyrinthe::touchTheWall(double X, double Y){
     double ycase = ((int) (positionJoueur_.getZ()/LONGUEUR_CASE))*LONGUEUR_CASE;
 
     bool touching = false;
-    QVector<Mur> mursAdjacents; // récupération des murs à coté du joueur
+    QVector<Object3D> mursAdjacents; // récupération des murs à coté du joueur
     for(int i = 0; i < murs_.size(); i++)
     {
         if (murs_[i].getX() == xcase-LONGUEUR_CASE | murs_[i].getX() == xcase | murs_[i].getX() == xcase+LONGUEUR_CASE){
@@ -608,6 +606,11 @@ bool Labyrinthe::touchTheWall(double X, double Y){
                 mursAdjacents.push_back(murs_[i]);
             }
         }
+    }
+
+    if(!itemGet_)//verification colisions porte
+    {
+        mursAdjacents.push_back(*porte_);
     }
 
    for(int i = 0; i < mursAdjacents.size(); i++){
