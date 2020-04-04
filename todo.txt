@@ -3,11 +3,10 @@
 
 
 Cahier des charges : 
-1 - Intéraction sphère et sortie. ( moitié, détection sphère OK)
-2 - Gestion de l'éclairage (Lié au Bonus [Demander si OK au professeur]).
-3 - Chronomètre.
-4 - Commenter le code.
-5 - Rapport.
+1 - Gestion de l'éclairage (Lié au Bonus [Demander si OK au professeur]).
+2 - Chronomètre.
+3 - Commenter le code.
+4 - Rapport.
 
 
 Corrections de Bugs :
@@ -15,8 +14,8 @@ Corrections de Bugs :
 Cause : le bug est causé par la vérification permanante des valeurs, bloquant les longueur de 10 à 19.
 2 - Touche ECHAP ne fonctionnant pas pour quitter l'UI OpenGL.
 3 - Redimensionnement automatique de toute les UI.
-4 - Bug générations sorties dans les angles
-5 - Bug génération de 4 chemins en carrés (SCREEN disponible)
+4 - Bug génération de 4 chemins en carrés (SCREEN disponible)
+5 - Bug affichage cadre camera
 
 Bonus :
 1 - Textures des murs et du plafond.
