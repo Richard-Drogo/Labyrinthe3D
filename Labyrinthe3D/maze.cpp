@@ -218,14 +218,14 @@ void Maze::display(bool pause)
         }
         cout<<endl;
     }
-
+    /*
     for ( int i = 0; i < 2*height_+1; i++){
         for ( int j = 0; j < 2*width_+1;j++){
             cout << grid_number_[i][j] << " " ;
         }
         cout << endl;
     }
-
+    */
     this->generateInitialPosition(exit_,2);
     this->generateInitialPosition(gettableItem_,1);
 
@@ -234,13 +234,14 @@ void Maze::display(bool pause)
     grid_number_[exit_.first][exit_.second] = 4;
     grid_number_[gettableItem_.first][gettableItem_.second] = 3;
     grid_number_[initPosPlayer_.first][initPosPlayer_.second] = 2;
-
+    /*
     for ( int i = 0; i < 2*height_+1; i++){
         for ( int j = 0; j < 2*width_+1;j++){
             cout << grid_number_[i][j] << " " ;
         }
         cout << endl;
     }
+    */
 
 
 
