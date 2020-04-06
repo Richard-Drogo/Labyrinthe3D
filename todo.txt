@@ -4,16 +4,15 @@
 
 Cahier des charges : 
 1 - Gestion de l'éclairage (Lié au Bonus [Demander si OK au professeur]).
-2 - Chronomètre.
-3 - Commenter le code.
-4 - Rapport.
+2 - Commenter le code.
+3 - Rapport.
 
 
 Corrections de Bugs :
 1 - La saisie des valeurs de configuration du labyrinthe (Longueur et largeur) ne fonctionne pas toujours.
 Cause : le bug est causé par la vérification permanante des valeurs, bloquant les longueur de 10 à 19.
 2 - Touche ECHAP ne fonctionnant pas pour quitter l'UI OpenGL.
-3 - Redimensionnement automatique de toute les UI.
+3 - Redimensionnement automatique de toutes les UI.
 4 - Bug génération de 4 chemins en carrés (SCREEN disponible)
 5 - Bug affichage cadre camera
 
