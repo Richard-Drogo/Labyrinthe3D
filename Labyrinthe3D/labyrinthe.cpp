@@ -34,6 +34,27 @@ Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur, Chronome
     // 4 : Sortie
     matrice_labyrinthe_ = maze_->getGridNumber();
 
+
+    exitPosX_ = maze_->getexitPos().second*LONGUEUR_CASE;
+    exitPosY_ = maze_->getexitPos().first*LONGUEUR_CASE;
+
+    int pos = maze_->getExitOrientation();
+    if(pos == 0){
+        exitPosY_ = exitPosY_-LONGUEUR_CASE;
+    }
+    else if (pos == 1){
+        exitPosX_ = exitPosX_ + LONGUEUR_CASE;
+    }
+    else if (pos == 2){
+        exitPosY_ = exitPosY_ + LONGUEUR_CASE;
+    }
+    else if ( pos == 3){
+        exitPosX_ = exitPosX_ - LONGUEUR_CASE;
+    }
+
+    qDebug() << exitPosX_ << ' ' << exitPosY_;
+    qDebug() << maze_->getexitPos().second << " " << maze_->getexitPos().first;
+
     qint8 posX_joueur = maze_->getPlayerPos().second; // Valeur retournée par fonction
     qint8 posY_joueur = maze_->getPlayerPos().first; // Valeur retournée par fonction
 
@@ -276,6 +297,7 @@ void Labyrinthe::timerCarteDuLabyrintheFini(){
 // Début : Méthodes privées
 void Labyrinthe::display(){
     sol_.display();
+    ReachExit();
     for(int i=0; i < murs_.size(); i++){
         murs_[i].display();
     }
@@ -592,6 +614,16 @@ void Labyrinthe::touchTheBall(){
             && positionJoueur_.getZ() < itemPosX_ + TAILLE_SPHERE && positionJoueur_.getZ() > itemPosX_ - TAILLE_SPHERE)
     {
         itemGet_ = true;
+    }
+}
+
+void Labyrinthe::ReachExit(){
+    //qDebug() << positionJoueur_.getX() << " " << positionJoueur_.getZ();
+    if( positionJoueur_.getX() > (exitPosX_) && positionJoueur_.getX() < (exitPosX_+LONGUEUR_CASE) &&
+            positionJoueur_.getZ() > (exitPosY_) && positionJoueur_.getZ() < (exitPosY_+LONGUEUR_CASE)){
+        //qDebug() << positionJoueur_.getX() << " " << positionJoueur_.getZ();
+        //qDebug() << "I made It !";
+        exitReached_ = true;
     }
 }
 

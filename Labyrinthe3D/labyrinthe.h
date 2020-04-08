@@ -71,6 +71,13 @@ private:
     bool itemGet_ = false;
     // Fin : Information sphère
 
+    // Début : Information sortie
+    double exitPosX_;
+    double exitPosY_;
+    bool exitReached_ = false;
+    // Fin : Information sphère
+
+
     // Début : Attributs du labyrinthe
     QVector<QVector<qint8>> matrice_labyrinthe_;
     Maze * maze_ = nullptr;
@@ -152,6 +159,7 @@ protected:
     void keyReleaseEvent(QKeyEvent * event);
     void touchTheBall();
     bool touchTheWall(double X, double Y);
+    void ReachExit();
 };
 
 #endif // LABYRINTHE_H
