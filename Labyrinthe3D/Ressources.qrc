@@ -24,5 +24,6 @@
         <file>Ressources/Textures/texture_mur.png</file>
         <file>Ressources/Textures/texture_plafond.png</file>
         <file>Ressources/Textures/texture_porte.png</file>
+        <file>Ressources/Textures/logo_telecom.png</file>
     </qresource>
 </RCC>
