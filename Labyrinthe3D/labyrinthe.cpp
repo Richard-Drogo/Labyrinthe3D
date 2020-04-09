@@ -5,6 +5,7 @@
 #include <QKeyEvent>
 #include <QtMath>
 #include <QTimer>
+#include <QGLWidget>
 
 #include <GL/glu.h>
 #include <glcolor.h>
@@ -197,6 +198,15 @@ void Labyrinthe::initializeGL()
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
+    QImage logo = QGLWidget::convertToGLFormat(QImage(logo_));
+
+    texturesId = new GLuint[1];
+    glGenTextures(1,texturesId);
+    glBindTexture(GL_TEXTURE_2D,texturesId[0]);
+    glTexImage2D(GL_TEXTURE_2D,0, 4,logo.width(),logo.height(),0,GL_RGBA, GL_UNSIGNED_BYTE, logo.bits());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 }
 
 void Labyrinthe::resizeGL(int width, int height)
@@ -322,6 +332,7 @@ void Labyrinthe::display(){
     //qDebug() << "redraw";
     if ( !itemGet_ ){
         touchTheBall();
+        glBindTexture(GL_TEXTURE_2D, texturesId[0]);
         item_->Display();
         porte_->display();
         }

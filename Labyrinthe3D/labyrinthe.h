@@ -52,6 +52,7 @@ private:
     double longueur_; // Longueur indiquée sur l'UI.
     double largeur_; // Largeur indiquée sur l'UI.
     Chronometre * chronometre_ = Q_NULLPTR;
+    GLuint* texturesId;
     // Fin : Attributs du Constructeurs
 
     // Début : Attributs de la physique
@@ -73,6 +74,7 @@ private:
     double itemPosX_;
     double itemPosY_;
     bool itemGet_ = false;
+    const QString logo_ = ":/textures/Ressources/Textures/logo_telecom.png";
     // Fin : Information sphère
 
     // Début : Information sortie
