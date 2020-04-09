@@ -5,7 +5,7 @@ Vertex::Vertex()
 
 }
 
-Vertex::Vertex(double x, double y, double z)
+Vertex::Vertex(float x, float y, float z)
 {
     this->x_ = x;
     this->y_ = y;

@@ -198,6 +198,14 @@ void Labyrinthe::initializeGL()
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
+    glLightfv(GL_LIGHT0,GL_AMBIENT,new GLfloat[4] {1.0, 1.0, 1.0, 1.0}); // Couleur globale
+    glLightfv(GL_LIGHT0,GL_DIFFUSE,new GLfloat[4] {1.0, 1.0, 1.0, 1.0}); // Reflets
+    glLightfv(GL_LIGHT0,GL_SPECULAR,new GLfloat[4] {1.0, 1.0, 1.0, 1.0}); // Tâche
+    glLightfv(GL_LIGHT0,GL_SPOT_CUTOFF,new GLfloat[4] {40});
+    glLightfv(GL_LIGHT0,GL_SPOT_EXPONENT,new GLfloat[4] {0});
+    glLightfv(GL_LIGHT0,GL_POSITION,new GLfloat[4] {positionJoueur_.getX(), HAUTEUR_TORCHE, positionJoueur_.getZ(), 1.0});
+    glLightfv(GL_LIGHT0,GL_SPOT_DIRECTION,new GLfloat[4] {(float)qCos(qDegreesToRadians(angle_direction_)), HAUTEUR_TORCHE, (float)qSin(qDegreesToRadians(angle_direction_))});
+
     QImage logo = QGLWidget::convertToGLFormat(QImage(logo_));
 
     texturesId = new GLuint[1];
@@ -206,6 +214,7 @@ void Labyrinthe::initializeGL()
     glTexImage2D(GL_TEXTURE_2D,0, 4,logo.width(),logo.height(),0,GL_RGBA, GL_UNSIGNED_BYTE, logo.bits());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 
 }
 
@@ -222,6 +231,7 @@ void Labyrinthe::paintGL()
     painter.beginNativePainting();
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
+
     //qDebug() << maze_->getItemPos().second << " " << maze_->getItemPos().first << " ";
 
     // Reinitialisation des tampons
@@ -238,15 +248,9 @@ void Labyrinthe::paintGL()
 
     this->display();
 
-    /*
-    glEnable(GL_LIGHT0);
-    glLightfv(GL_LIGHT0,GL_AMBIENT,new GLfloat[4] {1.0, 1.0, 1.0, 1.0}); // Couleur globale
-    glLightfv(GL_LIGHT0,GL_DIFFUSE,new GLfloat[4] {1.0, 1.0, 1.0, 1.0}); // Reflets
-    glLightfv(GL_LIGHT0,GL_SPECULAR,new GLfloat[4] {1.0, 1.0, 1.0, 1.0}); // Tâche
-    glLightfv(GL_LIGHT0,GL_POSITION,new GLfloat[4] {(float)direction_.getX(), (float)HAUTEUR_TORCHE, (float)direction_.getZ(), 1.0});
-    glLightfv(GL_LIGHT0,GL_SPOT_DIRECTION,new GLfloat[4] {(float)direction_.getX() + 10, (float)HAUTEUR_TORCHE, (float)direction_.getZ() + 10});
-    glLightfv(GL_LIGHT0,GL_SPOT_CUTOFF,new GLfloat[4] {10});
-    glLightfv(GL_LIGHT0,GL_SPOT_EXPONENT,new GLfloat[4] {20});*/
+
+    glLightfv(GL_LIGHT0,GL_POSITION,new GLfloat[4] {positionJoueur_.getX(), HAUTEUR_TORCHE, positionJoueur_.getZ(), 1.0});
+    glLightfv(GL_LIGHT0,GL_SPOT_DIRECTION,new GLfloat[4] {(float)qCos(qDegreesToRadians(angle_direction_)), HAUTEUR_TORCHE, (float)qSin(qDegreesToRadians(angle_direction_))});
 
     painter.endNativePainting();
     if(afficher_carte_){
@@ -289,15 +293,6 @@ void Labyrinthe::keyPressEvent(QKeyEvent * event){
         tournerCameraADroite();
     }break;
 
-    case Qt::Key_Space:
-    {
-        qDebug() << "TODO : A DEBUGGER";
-        /*
-        while(!porte_->isOuverte()){
-            porte_->ouvrir();
-            updateGL();
-        }*/
-    }break;
     }
 
     // Acceptation de l'evenement et mise a jour de la scene
@@ -324,6 +319,7 @@ void Labyrinthe::timerCarteDuLabyrintheFini(){
 void Labyrinthe::display(){
     sol_.display();
     ReachExit();
+
     for(int i=0; i < murs_.size(); i++){
         murs_[i].display();
     }
@@ -332,9 +328,10 @@ void Labyrinthe::display(){
     //qDebug() << "redraw";
     if ( !itemGet_ ){
         touchTheBall();
+        porte_->display();
         glBindTexture(GL_TEXTURE_2D, texturesId[0]);
         item_->Display();
-        porte_->display();
+        glBindTexture(GL_TEXTURE_2D, 0);
         }
     }
 

@@ -60,6 +60,7 @@ private:
     Vertex direction_;
     double angle_direction_ = -1;
     qint8 action_camera_actuelle_ = ACTION_CAMERA_AUCUNE;
+    bool mode_indice_active_ = false;
     // Fin : Attributs de la physique
 
     // Début : Objets 3D dessinés
@@ -103,10 +104,10 @@ private:
     const QImage TEXTURE_PLAFOND = QGLWidget::convertToGLFormat(QImage(":/textures/Ressources/Textures/texture_plafond.png"));
     const QImage TEXTURE_PORTE = QGLWidget::convertToGLFormat(QImage(":/textures/Ressources/Textures/texture_porte.png"));
 
-    const GLColor COULEUR_MUR = GLColor(255,255,255);
-    const GLColor COULEUR_PLAFOND = GLColor(255,255,255);
-    const GLColor COULEUR_PORTE = GLColor(255,255,255);
-    const GLColor COULEUR_SOL = GLColor(255,255,255); // GLColor(33, 12, 0)
+    const GLColor COULEUR_MUR = GLColor(0,0,0);
+    const GLColor COULEUR_PLAFOND = GLColor(0,0,0);
+    const GLColor COULEUR_PORTE = GLColor(0,0,0);
+    const GLColor COULEUR_SOL = GLColor(33, 12, 0);
     const GLColor COULEUR_SPHERE = GLColor(255,255,255);
     // Fin : Constantes pour les textures et l'éclairage
 
@@ -134,7 +135,7 @@ private:
     const double LONGUEUR_DEPLACEMENT = 0.1 * LONGUEUR_CASE;
     const double DEPLACEMENT_ANGULAIRE = 5; // Degrés
     const double TAILLE_JOUEUR = 1.7;
-    const double HAUTEUR_TORCHE = 1;
+    const GLfloat HAUTEUR_TORCHE = 0.5;
     const qint8 LIGNE_D_HORIZON = 100;
     const double TAILLE_SPHERE = 0.5;
     const quint16 DELAI_AFFICHAGE_CARTE = 1000; // En ms.

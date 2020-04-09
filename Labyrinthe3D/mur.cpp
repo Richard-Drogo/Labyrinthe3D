@@ -23,10 +23,10 @@ Mur::Mur(double x, double y, qint8 type, qint8 orientation, double epaisseur, do
     image_ = image;
     glGenTextures(1, &this->texture_);
 
-    setVertices();
+    createVertices();
 }
 
-void Mur::setVertices(){
+void Mur::createVertices(){
     switch(type_) {
     case ANGLE:{
         // Pour les angles on créé deux pavés droits.
@@ -625,9 +625,9 @@ void Mur::setVertices(){
 }
 
 qint8 Mur::display(){
-    glPushMatrix();
-
     qint8 success;
+
+    glPushMatrix();
 
     if(glIsEnabled(GL_LIGHTING)){
             GLfloat couleur_ambiente[] = {couleur_ambiente_.at(0), couleur_ambiente_.at(1), couleur_ambiente_.at(2), couleur_ambiente_.at(3)};
@@ -650,6 +650,7 @@ qint8 Mur::display(){
     }
 
     glBegin(GL_QUADS);
+
     switch(type_){
     case ANGLE:{
         success = OpenGLHelper::drawCube(vertices_, normales_, colors_, 2, OpenGLHelper::MUR);
@@ -683,9 +684,12 @@ qint8 Mur::display(){
         success = OpenGLHelper::drawCube(vertices_, normales_, colors_, 1, OpenGLHelper::MUR);
     }break;
     }
+
     glEnd();
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     glPopMatrix();
+
     return success;
 }
 

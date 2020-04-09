@@ -17,7 +17,7 @@ public:
     // Constructeurs
     Object3D();
     Object3D(QString name, QVector<QVector<Vertex>> vertices, QVector<GLColor> colors, GLfloat brillance = 0, const QImage * image = Q_NULLPTR);
-    qint8 display();
+    virtual qint8 display();
 
     // Getters
     QVector<QVector<Vertex>> getVertices(){return vertices_;};

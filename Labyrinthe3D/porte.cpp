@@ -27,7 +27,7 @@ Porte::Porte(double x, double y, qint8 position, double epaisseur, double hauteu
     glGenTextures(1, &this->texture_);
 
     angle_SE = qAtan(epaisseur_ / longueur_);
-    setVertices();
+    createVertices();
 }
 
 qint8 Porte::display(){
@@ -43,7 +43,7 @@ qint8 Porte::display(){
             glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE, couleur_diffuse);
             glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR, couleur_speculaire);
             glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION, couleur_emission);
-            glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS, this->brillance_);
+            glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS, brillance_);
     }
 
     if(image_ != Q_NULLPTR){
@@ -55,7 +55,9 @@ qint8 Porte::display(){
     }
 
     glBegin(GL_QUADS);
+    if(image_ != Q_NULLPTR){
         success = OpenGLHelper::drawCube(vertices_, normales_, colors_, 1, OpenGLHelper::MUR);
+    }
     glEnd();
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -117,7 +119,7 @@ void Porte::draw(QPainter & painter, qreal longueur_case_carte, qreal largeur_ca
 
 
 // Début : Méthodes privées
-void Porte::setVertices(){
+void Porte::createVertices(){
     normales_.push_back({0.0, 1.0, 0.0});
     normales_.push_back({0.0, -1.0, 0.0});
     normales_.push_back({0.0, 0.0, -1.0});

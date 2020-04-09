@@ -54,7 +54,7 @@ private:
 
 
     // Début : Méthodes privées
-    void setVertices();
+    void createVertices();
     // Fin : Méthodes privées
 };
 

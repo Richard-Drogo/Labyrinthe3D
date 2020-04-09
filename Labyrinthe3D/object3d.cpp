@@ -27,17 +27,17 @@ qint8 Object3D::display(){
     qint8 success;
     glPushMatrix();
 
-    if(glIsEnabled(GL_LIGHTING)){
-            GLfloat couleur_ambiente[] = {couleur_ambiente_.at(0), couleur_ambiente_.at(1), couleur_ambiente_.at(2), couleur_ambiente_.at(3)};
-            GLfloat couleur_diffuse[] = {couleur_diffuse_.at(0), couleur_diffuse_.at(1), couleur_diffuse_.at(2), couleur_diffuse_.at(3)};
-            GLfloat couleur_speculaire[] = {couleur_speculaire_.at(0), couleur_speculaire_.at(1), couleur_speculaire_.at(2), couleur_speculaire_.at(3)};
-            GLfloat couleur_emission[] = {couleur_emission_.at(0), couleur_emission_.at(1), couleur_emission_.at(2), couleur_emission_.at(3)};
-            glMaterialfv(GL_FRONT,GL_AMBIENT, couleur_ambiente);
-            glMaterialfv(GL_FRONT,GL_DIFFUSE, couleur_diffuse);
-            glMaterialfv(GL_FRONT,GL_SPECULAR, couleur_speculaire);
-            glMaterialfv(GL_FRONT,GL_EMISSION, couleur_emission);
-            glMaterialf(GL_FRONT,GL_SHININESS, this->brillance_);
-    }
+        GLfloat couleur_ambiente[] = {couleur_ambiente_.at(0), couleur_ambiente_.at(1), couleur_ambiente_.at(2), couleur_ambiente_.at(3)};
+        GLfloat couleur_diffuse[] = {couleur_diffuse_.at(0), couleur_diffuse_.at(1), couleur_diffuse_.at(2), couleur_diffuse_.at(3)};
+        GLfloat couleur_speculaire[] = {couleur_speculaire_.at(0), couleur_speculaire_.at(1), couleur_speculaire_.at(2), couleur_speculaire_.at(3)};
+        GLfloat couleur_emission[] = {couleur_emission_.at(0), couleur_emission_.at(1), couleur_emission_.at(2), couleur_emission_.at(3)};
+        glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT, couleur_ambiente);
+        glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE, couleur_diffuse);
+        glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR, couleur_speculaire);
+        glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION, couleur_emission);
+        glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS, brillance_);
+
+
 
     if(image_ != Q_NULLPTR){
         glBindTexture(GL_TEXTURE_2D, this->texture_);
@@ -48,7 +48,6 @@ qint8 Object3D::display(){
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     }
-
     glBegin(GL_QUADS);
         if(image_ != Q_NULLPTR){
             success = OpenGLHelper::drawCube(vertices_, normales_, colors_,1,OpenGLHelper::PLAFOND);
@@ -56,6 +55,7 @@ qint8 Object3D::display(){
             success = OpenGLHelper::drawCube(vertices_, normales_, colors_,1);
         }
     glEnd();
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     glPopMatrix();
     return success;

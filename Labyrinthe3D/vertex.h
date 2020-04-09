@@ -6,24 +6,24 @@ class Vertex
 {
 public:
     Vertex();
-    Vertex(double x, double y, double z);
+    Vertex(float x, float y, float z);
 
     // GETTERS
-    double getX(){return x_;};
-    double getY(){return y_;};
-    double getZ(){return z_;};
+    float getX(){return x_;};
+    float getY(){return y_;};
+    float getZ(){return z_;};
 
     // SETTERS
-    void setX(double x){x_ = x;};
-    void setY(double y){y_ = y;};
-    void setZ(double z){z_ = z;};
+    void setX(float x){x_ = x;};
+    void setY(float y){y_ = y;};
+    void setZ(float z){z_ = z;};
 
     Vertex xContrary(){return Vertex(-x_,y_,z_);};
 
 private:
-    double x_;
-    double y_;
-    double z_;
+    float x_;
+    float y_;
+    float z_;
 };
 
 #endif // VERTEX_H
