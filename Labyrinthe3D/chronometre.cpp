@@ -4,15 +4,16 @@
 
 Chronometre::Chronometre(QLabel * label_chronometre) : QObject()
 {
+    // Création d'ub chronomètre
     timer_ = new QTimer();
     timer_->setInterval(INTERVALLE);
     label_chronometre_ = label_chronometre;
     connect(timer_, SIGNAL(timeout()), this, SLOT(augmenter1Seconde()));
 }
 
-void Chronometre::augmenter1Seconde(){
+void Chronometre::augmenter1Seconde(){ // incremente la valeur chaque seconde
     secondes_++;
-    if(secondes_ == 60){
+    if(secondes_ == 60){ // remise à zero si minute passée
         secondes_ = 0;
         minutes_++;
         if(minutes_ == 60){
@@ -25,10 +26,10 @@ void Chronometre::augmenter1Seconde(){
         }
     }
 
-    label_chronometre_->setText(getTempsEcoule());
+    label_chronometre_->setText(getTempsEcoule()); // affiche le temps dans le label
 }
 
-QString Chronometre::getTempsEcoule(){
+QString Chronometre::getTempsEcoule(){ // renvoie la chaine en fonctino du temps
     quint8 type_affichage = 0;
     // type_affichage = 1 => Secondes uniquement
     // type_affichage = 2 => Minutes
@@ -49,7 +50,7 @@ QString Chronometre::getTempsEcoule(){
         type_affichage = 4;
     }
 
-    switch (type_affichage){
+    switch (type_affichage){ // en fonction du temps, l'affichage est différent
     case 1:{
         return QString(QString::number(secondes_) + tr("s"));
     }break;

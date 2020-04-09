@@ -17,24 +17,24 @@ Maze::Maze(int width, int height)
     : grid_(height,vector<Cell>(width)), width_(width), height_(height)
 {
     srand(time(NULL));
-    pos = rand() % 4;
+    pos = rand() % 4; // donne un mur aléatoire
 
-    if (pos == 0) {
+    if (pos == 0) { // mur nord
         exitx_ = 0;
         exity_ = rand() % (width_) + 1  ;
         exit_ = Point(0,2*exity_-1);
     }
-    else if (pos == 1) {
+    else if (pos == 1) { // mur est
         exity_ = width_;
         exitx_ = rand() % (height_ ) + 1;
         exit_  = Point(2*exitx_-1,2*width_);
     }
-    else if (pos == 2) {
+    else if (pos == 2) { // mur sud
         exitx_ = height_;
         exity_ = rand() % (width_) + 1;
         exit_ = Point(2*height_,2*exity_-1);
     }
-    else if (pos == 3) {
+    else if (pos == 3) { // mur ouest
         exity_ = 0;
         exitx_ = rand() % (height_ ) + 1;
         exit_ = Point(2*exitx_-1,0);
@@ -56,11 +56,11 @@ void Maze::reinit()
 
     for ( int i = 0; i < height_; i++){
         for ( int j = 0; j < width_;j++){
-            grid_number_[2*i+1][2*j+1] = 1 ;
+            grid_number_[2*i+1][2*j+1] = 1 ; // pose des chemins toujours présents
         }
     }
 
-    grid_number_[exit_.first][exit_.second] = 1 ;
+    grid_number_[exit_.first][exit_.second] = 1 ; // sortie
 }
 
 void Maze::addFrontier(Point p, list<Point> &frontier)
@@ -116,13 +116,13 @@ void Maze::display(bool pause)
     for (j=0;j<width_;j++)
         if (exitx_ == 0) {
             if (exity_ == j+1) {
-                cout << "+  ";
+                cout << "+  "; // si c'est ouvert, on met 1
                 grid_number_[0][2*j] = 0;
                 grid_number_[0][2*j+1] = 1;
             }
             else
             {
-                cout << "+--";
+                cout << "+--"; // sinon on met 0
                 grid_number_[0][2*j] = 0;
                 grid_number_[0][2*j+1] = 0;
             }
@@ -141,13 +141,13 @@ void Maze::display(bool pause)
         if (exity_ == 0) {
             if (exitx_-1 == i)
             {
-                cout << ' ';
+                cout << ' '; // si c'est ouvert, on met 1
                 grid_number_[2*i][0] = 0;
                 grid_number_[2*i+1][0] = 1;
             }
             else
             {
-                cout << '|';
+                cout << '|'; // sinon on met 0
                 grid_number_[2*i][0] = 0;
                 grid_number_[2*i+1][0] = 0;
             }
@@ -317,14 +317,11 @@ list<Point> Maze::path(Point begin, Point end){
 
     Point usingPoint = begin;
     grid_number_copy[usingPoint.first][usingPoint.second] = 2;
-    list<Point> pile;
+    list<Point> pile; // création d'une pile
     pile.push_front(begin);// ajout dans la pile du début du chemin
     if (grid_number_copy[end.first][end.second] != 0){
         while(usingPoint.first != end.first || usingPoint.second != end.second){
 
-            //cout << usingPoint.first << " " << usingPoint.second << "  " << pile.size() << endl;;
-            //cout << pile.size() << " ";
-            //pile.pop_front();// ajout dans la pile du début du chemin
             grid_number_copy[usingPoint.first][usingPoint.second] = 2;
             list<Point> neighborsList = MatrixNeighbors(usingPoint, grid_number_copy);
             if(neighborsList.size() > 0){
@@ -337,7 +334,7 @@ list<Point> Maze::path(Point begin, Point end){
             }
             usingPoint = pile.front();
         }
-        //cout << endl;
+
         pile.push_front(end);
 
         /*
@@ -361,10 +358,9 @@ void Maze::generateInitialPosition(Point start, int addedPoint){
     int posJX;
     int posJY;
 
-
-
     srand(time(NULL));
 
+    // donne une position aléatoire
     posJX = 2*(rand() % height_) + 1;
     posJY = 2*(rand() % width_ ) + 1;
 
@@ -372,7 +368,7 @@ void Maze::generateInitialPosition(Point start, int addedPoint){
 
     int distance = (this->path(Point(posX,posY),Point(posJX,posJY))).size();
 
-    while (distance < height_*width_/4 ){ // paramètre ajustable
+    while (distance < height_*width_/4 ){ // verifie la distance entre les points
 
         posJX = 2*(rand() % height_) + 1;
         posJY = 2*(rand() % width_ ) + 1;
