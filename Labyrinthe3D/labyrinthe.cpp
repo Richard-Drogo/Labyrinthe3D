@@ -66,7 +66,7 @@ Labyrinthe::Labyrinthe(QWidget * parent, QTHelper * qthelper, qint8 longueur, qi
     //qDebug() << itemPosX_;
     itemPosY_ = (posY_item+1.0/2.0)*LONGUEUR_CASE;
 
-    item_ = new Item(itemPosX_,TAILLE_SPHERE,itemPosY_,240, 120, 60);
+    item_ = new Item(itemPosX_,TAILLE_SPHERE,itemPosY_,COULEUR_SPHERE.getRed(), COULEUR_SPHERE.getGreen(), COULEUR_SPHERE.getBlue());
     //item_ = new Item(1,1,1,240, 120, 60); //tes
 
     positionJoueur_ = Vertex(posX_joueur * LONGUEUR_CASE,TAILLE_JOUEUR, posY_joueur * LONGUEUR_CASE);
@@ -113,7 +113,7 @@ Labyrinthe::Labyrinthe(QWidget * parent, QTHelper * qthelper, qint8 longueur, qi
         {SE_SOL_TOP, NE_TOP_SOL, NE_BOT_SOL, SE_BOT_SOL}
     };
 
-    sol_ = Object3D("Sol", vertices_sol, {GLColor(33, 12, 0)});
+    sol_ = Object3D("Sol", vertices_sol, {COULEUR_SOL});
     // Fin : Sol
 
     // Début : Plafond
@@ -128,7 +128,7 @@ Labyrinthe::Labyrinthe(QWidget * parent, QTHelper * qthelper, qint8 longueur, qi
         {SE_SOL_PLAFOND, NE_TOP_PLAFOND, NE_BOT_PLAFOND, SE_BOT_PLAFOND}
     };
 
-    plafond_ = Object3D("Plafond", vertices_plafond, {RGBColor::red_color_});
+    plafond_ = Object3D("Plafond", vertices_plafond, {COULEUR_PLAFOND}, 0, &TEXTURE_PLAFOND);
     // Fin : Plafond
 
     genererMur();
@@ -195,6 +195,8 @@ void Labyrinthe::initializeGL()
     // Activation du zbuffer
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
 }
 
 void Labyrinthe::resizeGL(int width, int height)
@@ -209,7 +211,7 @@ void Labyrinthe::paintGL()
     QPainter painter(this);
     painter.beginNativePainting();
     glEnable(GL_DEPTH_TEST);
-
+    glEnable(GL_TEXTURE_2D);
     //qDebug() << maze_->getItemPos().second << " " << maze_->getItemPos().first << " ";
 
     // Reinitialisation des tampons
@@ -226,11 +228,23 @@ void Labyrinthe::paintGL()
 
     this->display();
 
+    /*
+    glEnable(GL_LIGHT0);
+    glLightfv(GL_LIGHT0,GL_AMBIENT,new GLfloat[4] {1.0, 1.0, 1.0, 1.0}); // Couleur globale
+    glLightfv(GL_LIGHT0,GL_DIFFUSE,new GLfloat[4] {1.0, 1.0, 1.0, 1.0}); // Reflets
+    glLightfv(GL_LIGHT0,GL_SPECULAR,new GLfloat[4] {1.0, 1.0, 1.0, 1.0}); // Tâche
+    glLightfv(GL_LIGHT0,GL_POSITION,new GLfloat[4] {(float)direction_.getX(), (float)HAUTEUR_TORCHE, (float)direction_.getZ(), 1.0});
+    glLightfv(GL_LIGHT0,GL_SPOT_DIRECTION,new GLfloat[4] {(float)direction_.getX() + 10, (float)HAUTEUR_TORCHE, (float)direction_.getZ() + 10});
+    glLightfv(GL_LIGHT0,GL_SPOT_CUTOFF,new GLfloat[4] {10});
+    glLightfv(GL_LIGHT0,GL_SPOT_EXPONENT,new GLfloat[4] {20});*/
+
     painter.endNativePainting();
     if(afficher_carte_){
         dessinerCarteLabyrinthe(painter);
     }
     painter.end();
+
+
     this->setFocus();
 }
 
@@ -341,7 +355,7 @@ void Labyrinthe::genererPorte(){
         qDebug() << tr("Orientation de la porte non déterminée ") << "(" << y << ";" << x << ")";
     }
 
-    porte_ = new Porte(x * LONGUEUR_CASE, y * LONGUEUR_CASE, position, EPAISSEUR_PORTE, HAUTEUR_PORTE, LONGUEUR_PORTE, {GLColor(0, 0, 255)});
+    porte_ = new Porte(x * LONGUEUR_CASE, y * LONGUEUR_CASE, position, EPAISSEUR_PORTE, HAUTEUR_PORTE, LONGUEUR_PORTE, {COULEUR_PORTE}, BRILLANCE_PORTE, &TEXTURE_PORTE);
 }
 
 void Labyrinthe::definirTypeMur(qint8 x, qint8 y){
@@ -364,7 +378,7 @@ void Labyrinthe::definirTypeMur(qint8 x, qint8 y){
         }
 
         type = Mur::ANGLE;
-        this->murs_.push_back(Mur(x * LONGUEUR_CASE, y * LONGUEUR_CASE, type, position, EPAISSEUR_MUR, HAUTEUR_MUR, LONGUEUR_MUR, {GLColor(255, 255, 255)}));
+        this->murs_.push_back(Mur(x * LONGUEUR_CASE, y * LONGUEUR_CASE, type, position, EPAISSEUR_MUR, HAUTEUR_MUR, LONGUEUR_MUR, {COULEUR_MUR}, BRILLANCE_MUR, &TEXTURE_MUR));
 
     } else if (cases_hors_zones_autour == 1){
         // C'est un mur du contour
@@ -427,7 +441,7 @@ void Labyrinthe::definirTypeMur(qint8 x, qint8 y){
         }break;
         }
 
-        this->murs_.push_back(Mur(x * LONGUEUR_CASE, y * LONGUEUR_CASE, type, orientation, EPAISSEUR_MUR, HAUTEUR_MUR, LONGUEUR_MUR, {GLColor(255, 255, 255)}));
+        this->murs_.push_back(Mur(x * LONGUEUR_CASE, y * LONGUEUR_CASE, type, orientation, EPAISSEUR_MUR, HAUTEUR_MUR, LONGUEUR_MUR, {COULEUR_MUR}, BRILLANCE_MUR, &TEXTURE_MUR));
 
     } else if (cases_hors_zones_autour == 0){
         // C'est un mur central.
@@ -483,7 +497,7 @@ void Labyrinthe::definirTypeMur(qint8 x, qint8 y){
             qDebug() << tr("Type du mur non déterminé ") << "(" << y << ";" << x << ")" << endl << tr("Cases hors zone aux alentours : ") << cases_hors_zones_autour;
         }
 
-        this->murs_.push_back(Mur(x * LONGUEUR_CASE, y * LONGUEUR_CASE, type, orientation, EPAISSEUR_MUR, HAUTEUR_MUR, LONGUEUR_MUR, {GLColor(255, 255, 255)}));
+        this->murs_.push_back(Mur(x * LONGUEUR_CASE, y * LONGUEUR_CASE, type, orientation, EPAISSEUR_MUR, HAUTEUR_MUR, LONGUEUR_MUR, {COULEUR_MUR}, BRILLANCE_MUR, &TEXTURE_MUR));
 
     } else {
         qDebug() << tr("Erreur !") << " " << cases_hors_zones_autour << " " << tr("cases hors zone détectées pour le mur") << " (" << y << ";" << x << ")";

@@ -4,7 +4,7 @@
 
 Cahier des charges : 
 1 - Recommencer une partie
-2 - Gestion de l'éclairage (Lié au Bonus [Demander si OK au professeur]).
+2 - Bugs d'affichage et amélioration de l'éclairage
 3 - Commenter le code.
 4 - Rapport.
 
@@ -15,8 +15,6 @@ Corrections de Bugs :
 3 - Bug affichage cadre camera
 
 Bonus :
-1 - Textures des murs et du plafond.
-2 - Affichage de la lampe torche du joueur.
-3 - Intéraction de la lampe torche du joueur avec les murs (CAHIER DES CHARGES, PARTIE ECLAIRAGE).
-4 - Placements des indices.
-5 - Dans la carte 2D fixer la taille de l'indicateur de la direction d'observation du joueur.
+1 - Affichage de la lampe torche du joueur.
+2 - Placements des indices.
+3 - Dans la carte 2D fixer la taille de l'indicateur de la direction d'observation du joueur.

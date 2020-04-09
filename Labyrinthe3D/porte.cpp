@@ -7,14 +7,25 @@
 #include "labyrinthe.h"
 
 // Début : Méthodes publiques
-Porte::Porte(double x, double y, qint8 position, double epaisseur, double hauteur, double longueur, QVector<GLColor> couleurs_porte) : Object3D() {
+Porte::Porte(double x, double y, qint8 position, double epaisseur, double hauteur, double longueur, QVector<GLColor> couleurs_porte, GLfloat brillance, const QImage * image) : Object3D() {
     x_ = x;
     y_ = y;
+    name_ = "Porte(" + QString::number(x_)+";" + QString::number(y_) + ")";
     position_ = position;
     epaisseur_ = epaisseur;
     hauteur_ = hauteur;
     longueur_ = longueur;
     colors_ = couleurs_porte;
+    // Début : Paramètres pour l'éclairage
+    couleur_ambiente_ = QVector<GLfloat>({colors_.at(0).getRed() / 255.0f, colors_.at(0).getGreen() / 255.0f, colors_.at(0).getGreen() / 255.0f, 1.0});
+    couleur_diffuse_ = QVector<GLfloat>({colors_.at(0).getRed() / 255.0f, colors_.at(0).getGreen() / 255.0f, colors_.at(0).getGreen() / 255.0f, 1.0});
+    couleur_speculaire_ = QVector<GLfloat>({1.0, 1.0, 1.0, 1.0});
+    couleur_emission_ = QVector<GLfloat>({0, 0, 0, 1.0});
+    brillance_ = brillance;
+    // Fin : Paramètres pour l'éclairage
+    image_ = image;
+    glGenTextures(1, &this->texture_);
+
     angle_SE = qAtan(epaisseur_ / longueur_);
     setVertices();
 }
@@ -23,9 +34,30 @@ qint8 Porte::display(){
     glPushMatrix();
 
     qint8 success;
+    if(glIsEnabled(GL_LIGHTING)){
+            GLfloat couleur_ambiente[] = {couleur_ambiente_.at(0), couleur_ambiente_.at(1), couleur_ambiente_.at(2), couleur_ambiente_.at(3)};
+            GLfloat couleur_diffuse[] = {couleur_diffuse_.at(0), couleur_diffuse_.at(1), couleur_diffuse_.at(2), couleur_diffuse_.at(3)};
+            GLfloat couleur_speculaire[] = {couleur_speculaire_.at(0), couleur_speculaire_.at(1), couleur_speculaire_.at(2), couleur_speculaire_.at(3)};
+            GLfloat couleur_emission[] = {couleur_emission_.at(0), couleur_emission_.at(1), couleur_emission_.at(2), couleur_emission_.at(3)};
+            glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT, couleur_ambiente);
+            glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE, couleur_diffuse);
+            glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR, couleur_speculaire);
+            glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION, couleur_emission);
+            glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS, this->brillance_);
+    }
+
+    if(image_ != Q_NULLPTR){
+        glBindTexture(GL_TEXTURE_2D, this->texture_);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (*this->image_).width(), (*this->image_).height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, (*this->image_).bits());
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+
     glBegin(GL_QUADS);
-        success = OpenGLHelper::drawCube(vertices_, colors_, 1);
+        success = OpenGLHelper::drawCube(vertices_, normales_, colors_, 1, OpenGLHelper::MUR);
     glEnd();
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     glPopMatrix();
     return success;
@@ -86,7 +118,15 @@ void Porte::draw(QPainter & painter, qreal longueur_case_carte, qreal largeur_ca
 
 // Début : Méthodes privées
 void Porte::setVertices(){
+    normales_.push_back({0.0, 1.0, 0.0});
+    normales_.push_back({0.0, -1.0, 0.0});
+    normales_.push_back({0.0, 0.0, -1.0});
+    normales_.push_back({-1.0, 0.0, 0.0});
+    normales_.push_back({0.0, 0.0, 1.0});
+    normales_.push_back({1.0, 0.0, 0.0});
+
     switch(position_){
+
     case N:{
         Vertex NE_BOT(x_ + longueur_, 0, y_), NW_BOT(x_, 0, y_), SW_BOT(x_, 0, y_ + epaisseur_), SE_BOT(x_ + longueur_, 0, y_ + epaisseur_);
         Vertex NE_TOP(x_ + longueur_, hauteur_, y_), NW_TOP(x_, hauteur_, y_), SW_TOP(x_, hauteur_, y_ + epaisseur_), SE_TOP(x_ + longueur_, hauteur_, y_ + epaisseur_);

@@ -131,8 +131,8 @@ public:
     // Le Labyrinthe n'est pas centré
     const qreal LONGUEUR_LABYRINTHE = 0.95;
     const qreal LARGEUR_LABYRINTHE = 0.95;
-
     // Fin : Constantes pour la gestion des proportions de l'UI
+
     // Fin : Définition des constantes publiques
 
 private slots:

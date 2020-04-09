@@ -4,6 +4,7 @@
 #include <vector>
 #include <QString>
 #include <QVector>
+#include <QImage>
 
 #include "vertex.h"
 #include "glcolor.h"
@@ -15,7 +16,7 @@ class Object3D
 public:
     // Constructeurs
     Object3D();
-    Object3D(QString name, QVector<QVector<Vertex>> vertices, QVector<GLColor> colors);
+    Object3D(QString name, QVector<QVector<Vertex>> vertices, QVector<GLColor> colors, GLfloat brillance = 0, const QImage * image = Q_NULLPTR);
     qint8 display();
 
     // Getters
@@ -29,8 +30,19 @@ public:
 
 protected:
     QVector<QVector<Vertex>> vertices_;
+    QVector<Vertex> normales_;
     QVector<GLColor> colors_;
     QString name_;
+
+    QVector<GLfloat> couleur_ambiente_;
+    QVector<GLfloat> couleur_diffuse_;
+    QVector<GLfloat> couleur_speculaire_;
+    QVector<GLfloat> couleur_emission_;
+    GLfloat brillance_ = 0;
+
+    QImage const* image_ = Q_NULLPTR;
+    GLuint texture_;
+
 
 };
 

@@ -8,7 +8,7 @@
 class Mur : public Object3D
 {
 public:
-    Mur(double x, double y, qint8 type, qint8 orientation, double epaisseur, double hauteur, double longueur, QVector<GLColor> colors);
+    Mur(double x, double y, qint8 type, qint8 orientation, double epaisseur, double hauteur, double longueur, QVector<GLColor> colors, GLfloat brillance = 0, const QImage * image = Q_NULLPTR);
     qint8 display();
     void draw(QPainter & painter, qreal longueur_case_carte, qreal largeur_case_carte);
 

@@ -3,6 +3,7 @@
 
 #include <QOpenGLWidget>
 #include <QVector>
+#include <QGLWidget>
 
 #include <utility>
 #include <mutex>
@@ -95,6 +96,18 @@ private:
     const QString SON_MARCHE = "qrc:/sons/Ressources/Sons/son_marche.wav";
     // Fin : Constantes pour la gestion de la musique et des sons
 
+    // Début : Constantes pour les textures et l'éclairage
+    const QImage TEXTURE_MUR = QGLWidget::convertToGLFormat(QImage(":/textures/Ressources/Textures/texture_mur.png"));
+    const QImage TEXTURE_PLAFOND = QGLWidget::convertToGLFormat(QImage(":/textures/Ressources/Textures/texture_plafond.png"));
+    const QImage TEXTURE_PORTE = QGLWidget::convertToGLFormat(QImage(":/textures/Ressources/Textures/texture_porte.png"));
+
+    const GLColor COULEUR_MUR = GLColor(255,255,255);
+    const GLColor COULEUR_PLAFOND = GLColor(255,255,255);
+    const GLColor COULEUR_PORTE = GLColor(255,255,255);
+    const GLColor COULEUR_SOL = GLColor(255,255,255); // GLColor(33, 12, 0)
+    const GLColor COULEUR_SPHERE = GLColor(255,255,255);
+    // Fin : Constantes pour les textures et l'éclairage
+
     // Début : Configurations dimensionnelles
     const double EPAISSEUR_SOL = 0.5;
     const double EPAISSEUR_PLAFOND = 0.5;
@@ -106,10 +119,20 @@ private:
     const double LONGUEUR_PORTE = LONGUEUR_CASE;
     // Fin : Configurations dimensionnelles
 
+    // Début : Configuration éclairage
+    const GLfloat BRILLANCE_MUR = 0;
+    const GLfloat BRILLANCE_PORTE = 0;
+    const GLfloat BRILLANCE_PLAFOND = 0;
+    const GLfloat BRILLANCE_SOL = 0;
+
+    const qreal SPOT_EXPONENT = 5;
+    // Fin : Configuration éclairage
+
     // Début : Configurations physiques
     const double LONGUEUR_DEPLACEMENT = 0.1 * LONGUEUR_CASE;
     const double DEPLACEMENT_ANGULAIRE = 5; // Degrés
     const double TAILLE_JOUEUR = 1.7;
+    const double HAUTEUR_TORCHE = 1;
     const qint8 LIGNE_D_HORIZON = 100;
     const double TAILLE_SPHERE = 0.5;
     const quint16 DELAI_AFFICHAGE_CARTE = 1000; // En ms.

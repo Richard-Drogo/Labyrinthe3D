@@ -2,17 +2,27 @@
 #include "openglhelper.h"
 #include "labyrinthe.h"
 
-Mur::Mur(double x, double y, qint8 type, qint8 orientation, double epaisseur, double hauteur, double longueur, QVector<GLColor> colors) : Object3D()
+Mur::Mur(double x, double y, qint8 type, qint8 orientation, double epaisseur, double hauteur, double longueur, QVector<GLColor> colors, GLfloat brillance, const QImage * image) : Object3D()
 {
     x_ = x;
     y_ = y;
+    name_ = "Mur(" + QString::number(x_)+";" + QString::number(y_) + ")";
     type_ = type;
     orientation_ = orientation;
     epaisseur_ = epaisseur;
     hauteur_ = hauteur;
     longueur_ = longueur;
     colors_ = colors;
-    name_ = "Mur(" + QString::number(x)+";" + QString::number(y_) + ")";
+    // Début : Paramètres pour l'éclairage
+    couleur_ambiente_ = QVector<GLfloat>({colors_.at(0).getRed() / 255.0f, colors_.at(0).getGreen() / 255.0f, colors_.at(0).getGreen() / 255.0f, 1.0});
+    couleur_diffuse_ = QVector<GLfloat>({colors_.at(0).getRed() / 255.0f, colors_.at(0).getGreen() / 255.0f, colors_.at(0).getGreen() / 255.0f, 1.0});
+    couleur_speculaire_ = QVector<GLfloat>({1.0, 1.0, 1.0, 1.0});
+    couleur_emission_ = QVector<GLfloat>({0, 0, 0, 1.0});
+    brillance_ = brillance;
+    // Fin : Paramètres pour l'éclairage
+    image_ = image;
+    glGenTextures(1, &this->texture_);
+
     setVertices();
 }
 
@@ -20,6 +30,20 @@ void Mur::setVertices(){
     switch(type_) {
     case ANGLE:{
         // Pour les angles on créé deux pavés droits.
+        normales_.push_back({0.0, 1.0, 0.0});
+        normales_.push_back({0.0, -1.0, 0.0});
+        normales_.push_back({0.0, 0.0, -1.0});
+        normales_.push_back({-1.0, 0.0, 0.0});
+        normales_.push_back({0.0, 0.0, 1.0});
+        normales_.push_back({1.0, 0.0, 0.0});
+
+        normales_.push_back({0.0, 1.0, 0.0});
+        normales_.push_back({0.0, -1.0, 0.0});
+        normales_.push_back({0.0, 0.0, -1.0});
+        normales_.push_back({-1.0, 0.0, 0.0});
+        normales_.push_back({0.0, 0.0, 1.0});
+        normales_.push_back({1.0, 0.0, 0.0});
+
         switch(orientation_){
         case NW:{
             Vertex NE_BOT_1(x_ + longueur_, 0, y_), NW_BOT_1(x_, 0, y_), SW_BOT_1(x_, 0, y_ + epaisseur_), SE_BOT_1(x_ + longueur_, 0, y_ + epaisseur_);
@@ -105,9 +129,23 @@ void Mur::setVertices(){
     }break;
 
     case CONTOUR_T1:{
+        // Forme en T, on utiliser deux pavés droits.
+        normales_.push_back({0.0, 1.0, 0.0});
+        normales_.push_back({0.0, -1.0, 0.0});
+        normales_.push_back({0.0, 0.0, -1.0});
+        normales_.push_back({-1.0, 0.0, 0.0});
+        normales_.push_back({0.0, 0.0, 1.0});
+        normales_.push_back({1.0, 0.0, 0.0});
+
+        normales_.push_back({0.0, 1.0, 0.0});
+        normales_.push_back({0.0, -1.0, 0.0});
+        normales_.push_back({0.0, 0.0, -1.0});
+        normales_.push_back({-1.0, 0.0, 0.0});
+        normales_.push_back({0.0, 0.0, 1.0});
+        normales_.push_back({1.0, 0.0, 0.0});
+
         switch(orientation_){
         case N:{
-            // Forme en T, on utiliser deux pavés droits.
             Vertex NE_BOT_1(x_ + longueur_, 0, y_), NW_BOT_1(x_, 0, y_), SW_BOT_1(x_, 0, y_ + epaisseur_), SE_BOT_1(x_ + longueur_, 0, y_ + epaisseur_);
             Vertex NE_TOP_1(x_ + longueur_, hauteur_, y_), NW_TOP_1(x_, hauteur_, y_), SW_TOP_1(x_, hauteur_, y_ + epaisseur_), SE_TOP_1(x_ + longueur_, hauteur_, y_ + epaisseur_);
 
@@ -192,6 +230,13 @@ void Mur::setVertices(){
     }break;
 
     case CONTOUR_T2:{
+        normales_.push_back({0.0, 1.0, 0.0});
+        normales_.push_back({0.0, -1.0, 0.0});
+        normales_.push_back({0.0, 0.0, -1.0});
+        normales_.push_back({-1.0, 0.0, 0.0});
+        normales_.push_back({0.0, 0.0, 1.0});
+        normales_.push_back({1.0, 0.0, 0.0});
+
         switch(orientation_){
         case N:{
             Vertex NE_BOT(x_ + longueur_, 0, y_), NW_BOT(x_, 0, y_), SW_BOT(x_, 0, y_ + epaisseur_), SE_BOT(x_ + longueur_, 0, y_ + epaisseur_);
@@ -242,6 +287,27 @@ void Mur::setVertices(){
 
     case CENTRE_T1:{
         // Pour cette pièce (+) on doit créer 3 pavés droits.
+        normales_.push_back({0.0, 1.0, 0.0});
+        normales_.push_back({0.0, -1.0, 0.0});
+        normales_.push_back({0.0, 0.0, -1.0});
+        normales_.push_back({-1.0, 0.0, 0.0});
+        normales_.push_back({0.0, 0.0, 1.0});
+        normales_.push_back({1.0, 0.0, 0.0});
+
+        normales_.push_back({0.0, 1.0, 0.0});
+        normales_.push_back({0.0, -1.0, 0.0});
+        normales_.push_back({0.0, 0.0, -1.0});
+        normales_.push_back({-1.0, 0.0, 0.0});
+        normales_.push_back({0.0, 0.0, 1.0});
+        normales_.push_back({1.0, 0.0, 0.0});
+
+        normales_.push_back({0.0, 1.0, 0.0});
+        normales_.push_back({0.0, -1.0, 0.0});
+        normales_.push_back({0.0, 0.0, -1.0});
+        normales_.push_back({-1.0, 0.0, 0.0});
+        normales_.push_back({0.0, 0.0, 1.0});
+        normales_.push_back({1.0, 0.0, 0.0});
+
         Vertex NE_BOT_1(x_ + longueur_ / 2 + epaisseur_, 0, y_), NW_BOT_1(x_ + longueur_ / 2 - epaisseur_, 0, y_), SW_BOT_1(x_ + longueur_ / 2 - epaisseur_, 0, y_ + longueur_), SE_BOT_1(x_ + longueur_ / 2 + epaisseur_, 0, y_ + longueur_);
         Vertex NE_TOP_1(x_ + longueur_ / 2 + epaisseur_, hauteur_, y_), NW_TOP_1(x_ + longueur_ / 2 - epaisseur_, hauteur_, y_), SW_TOP_1(x_ + longueur_ / 2 - epaisseur_, hauteur_, y_ + longueur_), SE_TOP_1(x_ + longueur_ / 2 + epaisseur_, hauteur_, y_ + longueur_);
         vertices_.push_back({NE_TOP_1, NW_TOP_1, SW_TOP_1, SE_TOP_1});
@@ -271,9 +337,23 @@ void Mur::setVertices(){
     }break;
 
     case CENTRE_T2:{
+        // Forme en T, on utiliser deux pavés droits.
+        normales_.push_back({0.0, 1.0, 0.0});
+        normales_.push_back({0.0, -1.0, 0.0});
+        normales_.push_back({0.0, 0.0, -1.0});
+        normales_.push_back({-1.0, 0.0, 0.0});
+        normales_.push_back({0.0, 0.0, 1.0});
+        normales_.push_back({1.0, 0.0, 0.0});
+
+        normales_.push_back({0.0, 1.0, 0.0});
+        normales_.push_back({0.0, -1.0, 0.0});
+        normales_.push_back({0.0, 0.0, -1.0});
+        normales_.push_back({-1.0, 0.0, 0.0});
+        normales_.push_back({0.0, 0.0, 1.0});
+        normales_.push_back({1.0, 0.0, 0.0});
+
         switch(orientation_){
         case N:{
-            // Forme en T, on utiliser deux pavés droits.
             Vertex NE_BOT_1(x_ + longueur_, 0, y_ + longueur_ / 2 - epaisseur_), NW_BOT_1(x_, 0, y_ + longueur_ / 2 - epaisseur_), SW_BOT_1(x_, 0, y_ + longueur_ / 2 + epaisseur_), SE_BOT_1(x_ + longueur_, 0, y_ + longueur_ / 2 + epaisseur_);
             Vertex NE_TOP_1(x_ + longueur_, hauteur_, y_ + longueur_ / 2 - epaisseur_), NW_TOP_1(x_, hauteur_, y_ + longueur_ / 2 - epaisseur_), SW_TOP_1(x_, hauteur_, y_ + longueur_ / 2 + epaisseur_), SE_TOP_1(x_ + longueur_, hauteur_, y_ + longueur_ / 2 + epaisseur_);
 
@@ -359,6 +439,20 @@ void Mur::setVertices(){
 
     case CENTRE_T3:{
         // Pour les angles on créé deux pavés droits.
+        normales_.push_back({0.0, 1.0, 0.0});
+        normales_.push_back({0.0, -1.0, 0.0});
+        normales_.push_back({0.0, 0.0, -1.0});
+        normales_.push_back({-1.0, 0.0, 0.0});
+        normales_.push_back({0.0, 0.0, 1.0});
+        normales_.push_back({1.0, 0.0, 0.0});
+
+        normales_.push_back({0.0, 1.0, 0.0});
+        normales_.push_back({0.0, -1.0, 0.0});
+        normales_.push_back({0.0, 0.0, -1.0});
+        normales_.push_back({-1.0, 0.0, 0.0});
+        normales_.push_back({0.0, 0.0, 1.0});
+        normales_.push_back({1.0, 0.0, 0.0});
+
         switch(orientation_){
         case NW:{
             Vertex NE_BOT_1(x_ + longueur_, 0, y_ + longueur_ / 2 - epaisseur_), NW_BOT_1(x_ + longueur_ / 2 - epaisseur_, 0, y_ + longueur_ / 2 - epaisseur_), SW_BOT_1(x_ + longueur_ / 2 - epaisseur_, 0, y_ + longueur_ / 2 + epaisseur_), SE_BOT_1(x_ + longueur_, 0, y_ + longueur_ / 2 + epaisseur_);
@@ -444,6 +538,13 @@ void Mur::setVertices(){
     }break;
 
     case CENTRE_T4:{
+        normales_.push_back({0.0, 1.0, 0.0});
+        normales_.push_back({0.0, -1.0, 0.0});
+        normales_.push_back({0.0, 0.0, -1.0});
+        normales_.push_back({-1.0, 0.0, 0.0});
+        normales_.push_back({0.0, 0.0, 1.0});
+        normales_.push_back({1.0, 0.0, 0.0});
+
         switch(orientation_){
         case N:{
             Vertex NE_BOT(x_ + longueur_ / 2 + epaisseur_, 0, y_), NW_BOT(x_ + longueur_ / 2 - epaisseur_, 0, y_), SW_BOT(x_ + longueur_ / 2 - epaisseur_, 0, y_ + longueur_ / 2 + epaisseur_), SE_BOT(x_ + longueur_ / 2 + epaisseur_, 0, y_ + longueur_ / 2 + epaisseur_);
@@ -493,6 +594,13 @@ void Mur::setVertices(){
     }break;
 
     case CENTRE_T5:{
+        normales_.push_back({0.0, 1.0, 0.0});
+        normales_.push_back({0.0, -1.0, 0.0});
+        normales_.push_back({0.0, 0.0, -1.0});
+        normales_.push_back({-1.0, 0.0, 0.0});
+        normales_.push_back({0.0, 0.0, 1.0});
+        normales_.push_back({1.0, 0.0, 0.0});
+
         if(orientation_ == H){
             Vertex NE_BOT(x_ + longueur_, 0, y_ + longueur_ / 2 - epaisseur_), NW_BOT(x_, 0, y_ + longueur_ / 2 - epaisseur_), SW_BOT(x_, 0, y_ + longueur_ / 2 + epaisseur_), SE_BOT(x_ + longueur_, 0, y_ + longueur_ / 2 + epaisseur_);
             Vertex NE_TOP(x_ + longueur_, hauteur_, y_ + longueur_ / 2 - epaisseur_), NW_TOP(x_, hauteur_, y_ + longueur_ / 2 - epaisseur_), SW_TOP(x_, hauteur_, y_ + longueur_ / 2 + epaisseur_), SE_TOP(x_ + longueur_, hauteur_, y_ + longueur_ / 2 + epaisseur_);
@@ -520,38 +628,59 @@ qint8 Mur::display(){
     glPushMatrix();
 
     qint8 success;
+
+    if(glIsEnabled(GL_LIGHTING)){
+            GLfloat couleur_ambiente[] = {couleur_ambiente_.at(0), couleur_ambiente_.at(1), couleur_ambiente_.at(2), couleur_ambiente_.at(3)};
+            GLfloat couleur_diffuse[] = {couleur_diffuse_.at(0), couleur_diffuse_.at(1), couleur_diffuse_.at(2), couleur_diffuse_.at(3)};
+            GLfloat couleur_speculaire[] = {couleur_speculaire_.at(0), couleur_speculaire_.at(1), couleur_speculaire_.at(2), couleur_speculaire_.at(3)};
+            GLfloat couleur_emission[] = {couleur_emission_.at(0), couleur_emission_.at(1), couleur_emission_.at(2), couleur_emission_.at(3)};
+            glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT, couleur_ambiente);
+            glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE, couleur_diffuse);
+            glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR, couleur_speculaire);
+            glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION, couleur_emission);
+            glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS, this->brillance_);
+    }
+
+    if(image_ != Q_NULLPTR){
+        glBindTexture(GL_TEXTURE_2D, this->texture_);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (*this->image_).width(), (*this->image_).height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, (*this->image_).bits());
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+
     glBegin(GL_QUADS);
     switch(type_){
     case ANGLE:{
-        success = OpenGLHelper::drawCube(vertices_, colors_, 2);
+        success = OpenGLHelper::drawCube(vertices_, normales_, colors_, 2, OpenGLHelper::MUR);
     }break;
 
     case CONTOUR_T1:{
-        success = OpenGLHelper::drawCube(vertices_, colors_, 2);
+        success = OpenGLHelper::drawCube(vertices_, normales_, colors_, 2, OpenGLHelper::MUR);
     }break;
 
     case CONTOUR_T2:{
-        success = OpenGLHelper::drawCube(vertices_, colors_, 1);
+        success = OpenGLHelper::drawCube(vertices_, normales_, colors_, 1, OpenGLHelper::MUR);
     }break;
 
     case CENTRE_T1:{
-        success = OpenGLHelper::drawCube(vertices_, colors_, 3);
+        success = OpenGLHelper::drawCube(vertices_, normales_, colors_, 3, OpenGLHelper::MUR);
     }break;
 
     case CENTRE_T2:{
-        success = OpenGLHelper::drawCube(vertices_, colors_, 2);
+        success = OpenGLHelper::drawCube(vertices_, normales_, colors_, 2, OpenGLHelper::MUR);
     }break;
 
     case CENTRE_T3:{
-        success = OpenGLHelper::drawCube(vertices_, colors_, 2);
+        success = OpenGLHelper::drawCube(vertices_, normales_, colors_, 2, OpenGLHelper::MUR);
     }break;
 
     case CENTRE_T4:{
-        success = OpenGLHelper::drawCube(vertices_, colors_, 1);
+        success = OpenGLHelper::drawCube(vertices_, normales_, colors_, 1, OpenGLHelper::MUR);
     }break;
 
     case CENTRE_T5:{
-        success = OpenGLHelper::drawCube(vertices_, colors_, 1);
+        success = OpenGLHelper::drawCube(vertices_, normales_, colors_, 1, OpenGLHelper::MUR);
     }break;
     }
     glEnd();

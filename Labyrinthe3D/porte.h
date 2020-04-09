@@ -8,7 +8,7 @@ class Porte : public Object3D
 {
 public:
     // Début : Méthodes publiques
-    Porte(double x, double y, qint8 position, double epaisseur, double hauteur, double longueur, QVector<GLColor> couleurs_porte);
+    Porte(double x, double y, qint8 position, double epaisseur, double hauteur, double longueur, QVector<GLColor> couleurs_porte, GLfloat brillance = 0, const QImage * image = Q_NULLPTR);
     qint8 display();
     void ouvrir();
     void draw(QPainter & painter, qreal longueur_case_carte, qreal largeur_case_carte);

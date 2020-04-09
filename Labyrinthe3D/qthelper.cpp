@@ -20,6 +20,7 @@ void QTHelper::jouerMusique(QString path){
 
     player_ = new QMediaPlayer();
     player_->setPlaylist(playlist_);
+    player_->setVolume(15);
     player_->play();
 }
 
