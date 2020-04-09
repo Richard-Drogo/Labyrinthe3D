@@ -24,22 +24,24 @@ Labyrinthe::Labyrinthe(QWidget * parent, QTHelper * qthelper, qint8 longueur, qi
 {
     parent_ = parent;
     qthelper_ = qthelper;
-    longueur_ = longueur * 2 + 1;
-    largeur_ = largeur * 2 + 1;
-    chronometre_ = chronometre;
-    maze_  = new Maze(longueur, largeur);
+    longueur_ = longueur * 2 + 1; // longueur de la matrice
+    largeur_ = largeur * 2 + 1; // largeur de la matrice
+    chronometre_ = chronometre; // ajout du chronomètre dans la classe
+    maze_  = new Maze(longueur, largeur); // création du labyrinthe
 
     // 0 : Mur
     // 1 : Chemin
     // 2 : Joueur
     // 3 : Sphère
     // 4 : Sortie
-    matrice_labyrinthe_ = maze_->getGridNumber();
 
+    matrice_labyrinthe_ = maze_->getGridNumber(); // récupération de la matrice
 
+    // récupération de la position de la sortie
     exitPosX_ = maze_->getexitPos().second*LONGUEUR_CASE;
     exitPosY_ = maze_->getexitPos().first*LONGUEUR_CASE;
 
+    // récupération de la case extérieure à la sortie
     int pos = maze_->getExitOrientation();
     if(pos == 0){
         exitPosY_ = exitPosY_-LONGUEUR_CASE;
@@ -53,22 +55,24 @@ Labyrinthe::Labyrinthe(QWidget * parent, QTHelper * qthelper, qint8 longueur, qi
     else if ( pos == 3){
         exitPosX_ = exitPosX_ - LONGUEUR_CASE;
     }
-
+    /*
     qDebug() << exitPosX_ << ' ' << exitPosY_;
     qDebug() << maze_->getexitPos().second << " " << maze_->getexitPos().first;
+    */
 
+    // position initiale du joueur
     qint8 posX_joueur = maze_->getPlayerPos().second; // Valeur retournée par fonction
     qint8 posY_joueur = maze_->getPlayerPos().first; // Valeur retournée par fonction
 
+    // position de l'objet à récupérer dans la matrice
     double posY_item = (double) maze_->getItemPos().second;
     double posX_item = (double) maze_->getItemPos().first;
 
     itemPosX_ = (posX_item+1.0/2.0)*LONGUEUR_CASE;
-    //qDebug() << itemPosX_;
     itemPosY_ = (posY_item+1.0/2.0)*LONGUEUR_CASE;
 
+    // création de l'objet
     item_ = new Item(itemPosX_,TAILLE_SPHERE,itemPosY_,COULEUR_SPHERE.getRed(), COULEUR_SPHERE.getGreen(), COULEUR_SPHERE.getBlue());
-    //item_ = new Item(1,1,1,240, 120, 60); //tes
 
     positionJoueur_ = Vertex(posX_joueur * LONGUEUR_CASE,TAILLE_JOUEUR, posY_joueur * LONGUEUR_CASE);
     // Début : On détermine la direction observée
@@ -135,16 +139,16 @@ Labyrinthe::Labyrinthe(QWidget * parent, QTHelper * qthelper, qint8 longueur, qi
     genererMur();
     genererPorte();
 
-    timer_carte_du_labyrinthe_ = new QTimer(this);
+    timer_carte_du_labyrinthe_ = new QTimer(this); // timer pour l'affichage de la carte
     connect(timer_carte_du_labyrinthe_, SIGNAL(timeout()), this, SLOT(timerCarteDuLabyrintheFini()));
     timer_carte_du_labyrinthe_->start(DELAI_AFFICHAGE_CARTE);
 
-    chronometre_->start();
+    chronometre_->start(); // début du chronomètre
 
     move(0,0);
 }
 
-Labyrinthe::~Labyrinthe(){
+Labyrinthe::~Labyrinthe(){ // détruit l'élement labyrinthe
     delete maze_;
     delete timer_carte_du_labyrinthe_;
     delete item_;
@@ -152,28 +156,28 @@ Labyrinthe::~Labyrinthe(){
 
 void Labyrinthe::actionCamera(qint8 action){
     switch(action){
-    case ACTION_CAMERA_AUCUNE:{
+    case ACTION_CAMERA_AUCUNE:{ // affiche la carte si on ne bouge pas
         if(!timer_carte_du_labyrinthe_->isActive()){
             timer_carte_du_labyrinthe_->start(DELAI_AFFICHAGE_CARTE);
         }
     }break;
 
-    case ACTION_CAMERA_AVANCER:{
+    case ACTION_CAMERA_AVANCER:{ // fait avancer
         arreterTimerCarteDuLabyrinthe();
         avancer();
     }break;
 
-    case ACTION_CAMERA_RECULER:{
+    case ACTION_CAMERA_RECULER:{ // fait reculer
         arreterTimerCarteDuLabyrinthe();
         reculer();
     }break;
 
-    case ACTION_CAMERA_TOURNER_CAMERA_A_GAUCHE:{
+    case ACTION_CAMERA_TOURNER_CAMERA_A_GAUCHE:{ // fait tourner à gauche
         arreterTimerCarteDuLabyrinthe();
         tournerCameraAGauche();
     }break;
 
-    case ACTION_CAMERA_TOURNER_CAMERA_A_DROITE:{
+    case ACTION_CAMERA_TOURNER_CAMERA_A_DROITE:{ // fait tourner à droite
         arreterTimerCarteDuLabyrinthe();
         tournerCameraADroite();
     }break;
@@ -207,7 +211,7 @@ void Labyrinthe::initializeGL()
     glLightfv(GL_LIGHT0,GL_SPOT_DIRECTION,new GLfloat[4] {(float)qCos(qDegreesToRadians(angle_direction_)), HAUTEUR_TORCHE, (float)qSin(qDegreesToRadians(angle_direction_))});
 
     QImage logo = QGLWidget::convertToGLFormat(QImage(logo_));
-
+    // charger l'image
     texturesId = new GLuint[1];
     glGenTextures(1,texturesId);
     glBindTexture(GL_TEXTURE_2D,texturesId[0]);
@@ -232,19 +236,18 @@ void Labyrinthe::paintGL()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
 
-    //qDebug() << maze_->getItemPos().second << " " << maze_->getItemPos().first << " ";
 
     // Reinitialisation des tampons
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Effacer des buffers couleurs et Z
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(80, 16/9, 0.1, LIGNE_D_HORIZON);
+    gluPerspective(80, 16/9, 0.1, LIGNE_D_HORIZON); // change la perspective
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(positionJoueur_.getX(), positionJoueur_.getY(), positionJoueur_.getZ(),
               direction_.getX(), direction_.getY(), direction_.getZ(),
-              0,1,0);
+              0,1,0); // change la vue de la caméra
 
     this->display();
 
@@ -266,7 +269,7 @@ void Labyrinthe::keyPressEvent(QKeyEvent * event){
 
 
     switch (event->key()) {
-
+    // commandes déplacement au clavier
     case Qt::Key_Z:
     {
         arreterTimerCarteDuLabyrinthe();
@@ -300,7 +303,7 @@ void Labyrinthe::keyPressEvent(QKeyEvent * event){
     update();
 }
 
-void Labyrinthe::keyReleaseEvent(QKeyEvent * event){
+void Labyrinthe::keyReleaseEvent(QKeyEvent * event){ // lacher la touche du clavier
     if ((event->key() == Qt::Key_Z) || (event->key() == Qt::Key_Q) || (event->key() == Qt::Key_S) || (event->key() == Qt::Key_D)){
         arreterTimerCarteDuLabyrinthe();
     }
@@ -317,16 +320,16 @@ void Labyrinthe::timerCarteDuLabyrintheFini(){
 
 // Début : Méthodes privées
 void Labyrinthe::display(){
-    sol_.display();
-    ReachExit();
+    sol_.display(); // affiche le sol
+    ReachExit(); // vérifie si on est sorti
 
     for(int i=0; i < murs_.size(); i++){
         murs_[i].display();
     }
-    plafond_.display();
+    plafond_.display(); // affiche le plafond
 
     //qDebug() << "redraw";
-    if ( !itemGet_ ){
+    if ( !itemGet_ ){ // vérifie si l'objet est récupéré ou non
         touchTheBall();
         porte_->display();
         glBindTexture(GL_TEXTURE_2D, texturesId[0]);
@@ -335,7 +338,7 @@ void Labyrinthe::display(){
         }
     }
 
-void Labyrinthe::genererMur(){
+void Labyrinthe::genererMur(){ // appelle la classe mur pour les créer
 
     for(int y = 0; y < matrice_labyrinthe_.size(); y++){
         for(int x = 0; x < matrice_labyrinthe_[y].size(); x++) {
@@ -346,12 +349,12 @@ void Labyrinthe::genererMur(){
     }
 }
 
-void Labyrinthe::genererPorte(){
+void Labyrinthe::genererPorte(){ // génère la porte
     double x = maze_->getexitPos().second;
     double y = maze_->getexitPos().first;
     qint8 position = -1;
 
-    if(y-1 <0) {
+    if(y-1 <0) { // gère la position de la sortie
         position = Porte::N;
     } else if(x-1 <0){
         position = Porte::W;
@@ -362,11 +365,11 @@ void Labyrinthe::genererPorte(){
     } else {
         qDebug() << tr("Orientation de la porte non déterminée ") << "(" << y << ";" << x << ")";
     }
-
+    // créé la porte
     porte_ = new Porte(x * LONGUEUR_CASE, y * LONGUEUR_CASE, position, EPAISSEUR_PORTE, HAUTEUR_PORTE, LONGUEUR_PORTE, {COULEUR_PORTE}, BRILLANCE_PORTE, &TEXTURE_PORTE);
 }
 
-void Labyrinthe::definirTypeMur(qint8 x, qint8 y){
+void Labyrinthe::definirTypeMur(qint8 x, qint8 y){ // crée des murs en fonctions des murs alentours
     qint8 cases_hors_zones_autour = compterCombienDeCasesNonDefinies(x,y);
     qint8 position = -1;
     qint8 orientation = Mur::AUCUNE_ORIENTATION;
@@ -533,12 +536,12 @@ qint8 Labyrinthe::compterCombienDeCasesNonDefinies(qint8 x, qint8 y){
     return compteur;
 }
 
-void Labyrinthe::avancer(){
+void Labyrinthe::avancer(){ // fait avancer la position du labyrinthe
 
     double expectedX = positionJoueur_.getX() + qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT;
     double expectedY = positionJoueur_.getZ() + qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT;
 
-    if (!touchTheWall(expectedX,expectedY)){
+    if (!touchTheWall(expectedX,expectedY)){ // vérifie si l'on atteint le mur
     positionJoueur_.setX(expectedX);
     positionJoueur_.setZ(expectedY);
 
@@ -549,11 +552,11 @@ void Labyrinthe::avancer(){
     }
 }
 
-void Labyrinthe::reculer(){
+void Labyrinthe::reculer(){ // fait reculer la position du labyrinthe
     double expectedX = positionJoueur_.getX() - qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT;
     double expectedY = positionJoueur_.getZ() - qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT;
 
-    if (!touchTheWall(expectedX,expectedY)){
+    if (!touchTheWall(expectedX,expectedY)){// vérifie si l'on atteint le mur
     positionJoueur_.setX(expectedX);
     positionJoueur_.setZ(expectedY);
 
@@ -564,8 +567,8 @@ void Labyrinthe::reculer(){
     }
 }
 
-void Labyrinthe::tournerCameraAGauche(){
-    if(angle_direction_ - DEPLACEMENT_ANGULAIRE < 0){
+void Labyrinthe::tournerCameraAGauche(){ // fait tourner la caméra vers la gauche
+    if(angle_direction_ - DEPLACEMENT_ANGULAIRE < 0){ // recalcule l'angle de la caméra
         angle_direction_ = 360 + (angle_direction_ - angle_direction_);
     } else {
         angle_direction_ = angle_direction_ - DEPLACEMENT_ANGULAIRE;
@@ -575,8 +578,8 @@ void Labyrinthe::tournerCameraAGauche(){
     direction_.setZ(positionJoueur_.getZ() + qSqrt(qPow(direction_.getX() - positionJoueur_.getX(),2) + qPow(direction_.getZ() - positionJoueur_.getZ(),2)) * qSin(qDegreesToRadians(angle_direction_)));
 }
 
-void Labyrinthe::tournerCameraADroite(){
-    if(angle_direction_ + DEPLACEMENT_ANGULAIRE >= 360){
+void Labyrinthe::tournerCameraADroite(){ // fait tourner la caméra vers la droite
+    if(angle_direction_ + DEPLACEMENT_ANGULAIRE >= 360){  // recalcule l'angle de la caméra
         angle_direction_ = DEPLACEMENT_ANGULAIRE - (360 - angle_direction_);
     } else {
         angle_direction_ = angle_direction_ + DEPLACEMENT_ANGULAIRE;
@@ -586,7 +589,7 @@ void Labyrinthe::tournerCameraADroite(){
 
 }
 
-void Labyrinthe::dessinerCarteLabyrinthe(QPainter & painter){
+void Labyrinthe::dessinerCarteLabyrinthe(QPainter & painter){ // dessine le labirynthe
     QRect fond(0,0,this->width(),this->height());
     QRect zone_carte(this->width() * MARGE_AU_BORD_LONGUEUR_LARGEUR_PARENT, this->height() * MARGE_AU_BORD_LONGUEUR_LARGEUR_PARENT, int(this->width() * POURCENTAGE_LONGUEUR_PARENT - this->width() * MARGE_AU_BORD_LONGUEUR_LARGEUR_PARENT), int(this->height() * POURCENTAGE_LARGEUR_PARENT - this->height() * MARGE_AU_BORD_LONGUEUR_LARGEUR_PARENT));
 
@@ -614,11 +617,15 @@ void Labyrinthe::dessinerCarteLabyrinthe(QPainter & painter){
         murs_[i].draw(painter, longueur_case_carte, largeur_case_carte);
     }
 
+    // dessine les murs
+
     painter.setPen(pen_joueur);
     painter.drawPoint(positionJoueur_.getX() / LONGUEUR_CASE * longueur_case_carte, positionJoueur_.getZ() / LONGUEUR_CASE * largeur_case_carte);
 
     painter.setPen(pen_direction_joueur);
     painter.drawLine(positionJoueur_.getX() / LONGUEUR_CASE * longueur_case_carte, positionJoueur_.getZ() / LONGUEUR_CASE * largeur_case_carte, direction_.getX() / LONGUEUR_CASE * longueur_case_carte, direction_.getZ() / LONGUEUR_CASE * largeur_case_carte);
+
+    // dessine la porte si l'objet n'est pas trouvé
 
     if(!itemGet_){
         painter.setPen(pen_porte);
@@ -626,18 +633,16 @@ void Labyrinthe::dessinerCarteLabyrinthe(QPainter & painter){
     }
     painter.setViewport(fond);
     painter.fillRect(fond, QBrush(QColor(pen_fond.color().red(),pen_fond.color().green(),pen_fond.color().blue(),CARTE_TRANSPARENCE_FOND)));
-
-
 }
 
-void Labyrinthe::arreterTimerCarteDuLabyrinthe(){
+void Labyrinthe::arreterTimerCarteDuLabyrinthe(){ // retire l'affichage de la carte
     timer_carte_du_labyrinthe_->stop();
     afficher_carte_ = false;
 }
 // Fin : Méthodes privées
 
 
-void Labyrinthe::touchTheBall(){
+void Labyrinthe::touchTheBall(){ // détecte si on touche la boule
     if (positionJoueur_.getX() < itemPosY_ + TAILLE_SPHERE && positionJoueur_.getX() > itemPosY_ - TAILLE_SPHERE
             && positionJoueur_.getZ() < itemPosX_ + TAILLE_SPHERE && positionJoueur_.getZ() > itemPosX_ - TAILLE_SPHERE)
     {
@@ -645,17 +650,15 @@ void Labyrinthe::touchTheBall(){
     }
 }
 
-void Labyrinthe::ReachExit(){
+void Labyrinthe::ReachExit(){ // vérifie si on attend la sortie
     //qDebug() << positionJoueur_.getX() << " " << positionJoueur_.getZ();
     if( positionJoueur_.getX() > (exitPosX_) && positionJoueur_.getX() < (exitPosX_+LONGUEUR_CASE) &&
             positionJoueur_.getZ() > (exitPosY_) && positionJoueur_.getZ() < (exitPosY_+LONGUEUR_CASE)){
-        //qDebug() << positionJoueur_.getX() << " " << positionJoueur_.getZ();
-        //qDebug() << "I made It !";
         exitReached_ = true;
     }
 }
 
-bool Labyrinthe::touchTheWall(double X, double Y){
+bool Labyrinthe::touchTheWall(double X, double Y){ // gestion des colisions
     double xcase = ((int) (positionJoueur_.getX()/LONGUEUR_CASE))*LONGUEUR_CASE;
     double ycase = ((int) (positionJoueur_.getZ()/LONGUEUR_CASE))*LONGUEUR_CASE;
 
@@ -683,7 +686,7 @@ bool Labyrinthe::touchTheWall(double X, double Y){
             double maxX = -1;
             double minY = 100000000;
             double maxY = -1;
-            for(int k = 0;k < points.size();k++){
+            for(int k = 0;k < points.size();k++){ // récupère les points extrèmes de la face du bas
                 if(points[k].getX() < minX){
                     minX = points[k].getX();
                 }
@@ -697,7 +700,7 @@ bool Labyrinthe::touchTheWall(double X, double Y){
                     maxY = points[k].getZ();
                 }
             }
-            //qDebug() << i << " " <<  minX << " " << maxX << " " << minY << " " << maxY << " " << X << " " << Y;
+            // on verifie si on touche le mur
             if(X < maxX + 0.1 && X > minX - 0.1  && Y < maxY + 0.1 && Y > minY - 0.1){
                 return true;
             }

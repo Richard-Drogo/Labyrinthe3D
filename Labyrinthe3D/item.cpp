@@ -25,30 +25,18 @@ void Item::Display() const
     glPushMatrix();
     //glLoadIdentity();
 
-    //GLfloat reflect[] = {float(this->colorR)/255,float(this->colorG)/255,float(this->colorB)/255,1.0};
-    //GLfloat zeRo[] = {0.0,0.0,0.0,1.0};
-    /*
-    glMaterialfv(GL_FRONT, GL_AMBIENT, reflect);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, reflect);
-    glMaterialfv(GL_FRONT, GL_EMISSION, zeRo );
-    */
-    // Transformation pour la periode de revolution
+    // transfert à la position dans le labyrinthe
 
     glTranslated(this->posY,1,this->posX);
-
-    // Transformation pour la periode de rotation
 
     // Couleur de l'objet
 
     glColor3ub(this->colorR, this->colorG, this->colorB);
-    glRotated(-90, 1,0,1);
-
-    // gestion reflexion lumineuse
-    //glMaterialfv(GL_FRONT, GL_DIFFUSE, {1.0,1.0,1.0,1.0});
+    glRotated(-90, 1,0,1); // tourne pour l'affichage
 
     // Affichage de la quadrique
-    gluQuadricTexture(this->sphere,GL_TRUE);
-    gluSphere(this->sphere,this->rayon,20,20);
+    gluQuadricTexture(this->sphere,GL_TRUE); // activation de la texture
+    gluSphere(this->sphere,this->rayon,20,20); // affiche la sphère
     glPopMatrix();
 }
 
