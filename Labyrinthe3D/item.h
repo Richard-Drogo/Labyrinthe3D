@@ -14,7 +14,6 @@ private :
     unsigned int colorB;
     float posX;
     float posY;
-    //float revolution;
     float rayon;
     GLUquadric* sphere;
 

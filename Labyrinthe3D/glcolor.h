@@ -16,6 +16,7 @@ public:
     GLclampf getGreen() const {return green_;};
     GLclampf getBlue() const {return blue_;};
 private:
+    // champs pour les couleurs
     GLclampf red_;
     GLclampf green_;
     GLclampf blue_;
