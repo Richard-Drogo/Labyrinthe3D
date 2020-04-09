@@ -41,11 +41,13 @@ void Item::Display() const
     // Couleur de l'objet
 
     glColor3ub(this->colorR, this->colorG, this->colorB);
+    glRotated(-90, 1,0,1);
 
     // gestion reflexion lumineuse
     //glMaterialfv(GL_FRONT, GL_DIFFUSE, {1.0,1.0,1.0,1.0});
 
     // Affichage de la quadrique
+    gluQuadricTexture(this->sphere,GL_TRUE);
     gluSphere(this->sphere,this->rayon,20,20);
     glPopMatrix();
 }
