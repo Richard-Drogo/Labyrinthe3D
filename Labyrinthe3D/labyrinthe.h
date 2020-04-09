@@ -15,6 +15,7 @@
 #include "item.h"
 #include "porte.h"
 #include "chronometre.h"
+#include "qthelper.h"
 
 using namespace std;
 
@@ -24,10 +25,11 @@ class Labyrinthe : public QOpenGLWidget
 
 
 public:
-    Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur, Chronometre * chronometre);
-
+    Labyrinthe(QWidget * parent, QTHelper * qthelper, qint8 longueur, qint8 largeur, Chronometre * chronometre);
+    ~Labyrinthe();
 
     void actionCamera(qint8 action);
+
     // Début : Constantes utilisées par la Caméra
     static const qint8 SEUIL_NORME_ACTION_CAMERA = 30; // DOIT TOUJOURS ÊTRE != 0
     static const qint8 ACTION_CAMERA_AUCUNE = 0;
@@ -45,6 +47,7 @@ private:
     // Début : Attributs
     // Début : Attributs du Constructeur
     QWidget * parent_;
+    QTHelper * qthelper_;
     double longueur_; // Longueur indiquée sur l'UI.
     double largeur_; // Largeur indiquée sur l'UI.
     Chronometre * chronometre_ = Q_NULLPTR;
@@ -81,6 +84,10 @@ private:
 
 
     // Début : Définition des constantes
+    // Début : Constantes pour la gestion de la musique et des sons
+    const QString SON_MARCHE = "qrc:/sons/Ressources/Sons/son_marche.wav";
+    // Fin : Constantes pour la gestion de la musique et des sons
+
     // Début : Configurations dimensionnelles
     const double EPAISSEUR_SOL = 0.5;
     const double EPAISSEUR_PLAFOND = 0.5;
@@ -123,6 +130,8 @@ private:
     const qreal POURCENTAGE_LARGEUR_PARENT = 1;
     const qreal MARGE_AU_BORD_LONGUEUR_LARGEUR_PARENT = 0.05;
     // Fin : Constantes de dessin de la carte dy labyrinthe
+
+
     // Fin : Définition des constantes
 
 
@@ -152,6 +161,7 @@ protected:
     void keyReleaseEvent(QKeyEvent * event);
     void touchTheBall();
     bool touchTheWall(double X, double Y);
+
 };
 
 #endif // LABYRINTHE_H

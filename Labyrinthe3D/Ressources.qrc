@@ -2,4 +2,27 @@
     <qresource prefix="/xml">
         <file>Ressources/haarcascade_frontalface_alt.xml</file>
     </qresource>
+    <qresource prefix="/ui">
+        <file>Ressources/UI/accueil_1.png</file>
+        <file>Ressources/UI/accueil_2.png</file>
+        <file>Ressources/UI/cadre.png</file>
+        <file>Ressources/UI/parametrage_labyrinthe.png</file>
+        <file>Ressources/UI/zone_largeur.png</file>
+        <file>Ressources/UI/zone_longueur.png</file>
+        <file>Ressources/UI/fleche.png</file>
+        <file>Ressources/UI/calibrage.png</file>
+        <file>Ressources/UI/fond_labyrinthe.png</file>
+    </qresource>
+    <qresource prefix="/musiques">
+        <file>Ressources/Musiques/musique_accueil.mp3</file>
+        <file>Ressources/Musiques/musique_labyrinthe.wav</file>
+    </qresource>
+    <qresource prefix="/sons">
+        <file>Ressources/Sons/son_marche.wav</file>
+    </qresource>
+    <qresource prefix="/textures">
+        <file>Ressources/Textures/texture_mur.png</file>
+        <file>Ressources/Textures/texture_plafond.png</file>
+        <file>Ressources/Textures/texture_porte.png</file>
+    </qresource>
 </RCC>

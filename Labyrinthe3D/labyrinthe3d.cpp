@@ -6,46 +6,33 @@
 #include <QPixmap>
 #include <QDebug>
 #include <QtMath>
+#include <QThread>
+#include <QScreen>
 
 #include <cstdio>
 #include <iostream>
+#include <opencv2/objdetect.hpp>
 
-#include "labyrinthe3d.h"
-#include "ui_labyrinthe3d.h"
 #include "opencv2/opencv.hpp"
 #include "opencv2/imgproc.hpp"
 #include "opencv2/highgui.hpp"
-#include <opencv2/objdetect.hpp>
 #include "opencv2/video/tracking.hpp"
+#include "labyrinthe3d.h"
+#include "ui_labyrinthe3d.h"
+#include "qthelper.h"
 
 using namespace cv;
 using namespace std;
 
 Labyrinthe3D::Labyrinthe3D(QWidget *parent): QMainWindow(parent), ui(new Ui::Labyrinthe3D)
 {
-
     ui->setupUi(this);
+    this->setMinimumSize(this->screen()->size().width() * 2 / 3.0, this->screen()->size().height() * 2 / 3.0);
 
-    // Début : Page Accueil
-    ui->label_longueur->setText(tr("Longueur : "));
-    ui->label_largeur->setText(tr("Largeur : "));
-    ui->label_record->setText(tr("Record : "));
-    ui->label_developpeurs->setText(tr("Developpeurs : Richard DROGO & Lilian HOUDELET"));
-    ui->label_designer->setText(tr("Graphiste : Cédric PARIZY"));
-    ui->label_sound_designer->setText(tr("Sound Designer : Maxime LANCELOT"));
-    ui->pushButton_jouer->setText(tr("Jouer"));
+    qthelper_ = new QTHelper();
+    qthelper_->jouerMusique(MUSIQUE_ACCUEIL);
 
-    ui->lineEdit_longueur->setText(QString::number(LONGUEUR_PAR_DEFAUT));
-    ui->lineEdit_largeur->setText(QString::number(LARGEUR_PAR_DEFAUT));
-    // Fin : Page Accueil
-
-
-    // Début : Page Calibration
-    ui->pushButton_calibrer->setText(tr("Calibrer"));
-    ui->pushButton_retour_accueil->setText("←");
-    ui->label_video->setText("");
-    ui->label_informations_calibration->setText("");
-    // Fin : Page Calibration
+    setupUIAccueil();
 }
 
 Labyrinthe3D::~Labyrinthe3D()
@@ -59,54 +46,26 @@ Labyrinthe3D::~Labyrinthe3D()
 void Labyrinthe3D::on_pushButton_jouer_clicked()
 {
     verifierConfiguration();
-    ui->stackedWidget_navigation->setCurrentIndex(1);
+    ui->stackedWidget_navigation->setCurrentIndex(INDEX_CALIBRAGE);
+    setupUICalibrage();
 }
 
 void Labyrinthe3D::on_pushButton_retour_accueil_clicked()
 {
-    ui->stackedWidget_navigation->setCurrentIndex(0);
-    razUICalibration();
+    razUICalibrage();
+    ui->stackedWidget_navigation->setCurrentIndex(INDEX_PARAMETRES_LABYRINTHE);
+    setupUIParametrageLabyrinthe();
 }
 
-void Labyrinthe3D::on_pushButton_calibrer_clicked()
+void Labyrinthe3D::on_lineEdit_longueur_editingFinished()
 {
-    /* Comme nous ne pouvons pas utiliser la méthode .load de CascadeClassifier via les ressources,
-     * Nous créons un répertoire temporaire et y mettons une copie du fichier xml afin de contourner
-     * le problème.
-    */
-    QTemporaryDir dossier_temporaire;
-    if(dossier_temporaire.isValid()){
-        QString chemin_de_la_copie = dossier_temporaire.path() + "/haarcascade_frontalface_alt.xml";
-        qDebug() << chemin_de_la_copie;
-        QFile::copy(":/xml/Ressources/haarcascade_frontalface_alt.xml",chemin_de_la_copie);
-
-        if(CascadeClassifier_visages.load(chemin_de_la_copie.toStdString())){
-            ui->pushButton_calibrer->setVisible(false);
-            ui->label_informations_calibration->setText(tr("Appuyez sur la touche \"Entrée\" pour terminer la calibration."));
-
-            webcam =new VideoCapture(0);
-            timer_video = new QTimer(this);
-            connect(timer_video, SIGNAL(timeout()), this, SLOT(updateVideo()));
-            timer_video->start(INTERVALE_TIMER);
-
-        } else {
-            ui->label_video->setText(tr("Nous n'avons pas pu charger HaarCascade..."));
-            timer_video->stop();
-        }
-    } else {
-        ui->label_video->setText(tr("Nous n'avons pas pu créer le répertoire temporaire pour le fichier XML HaarCascade."));
-        timer_video->stop();
-    }
-}
-
-void Labyrinthe3D::on_lineEdit_longueur_textEdited(const QString &arg1)
-{
+    QString saisie = ui->lineEdit_longueur->text();
     QRegExp regex_numeros("\\d*");
-    if (regex_numeros.exactMatch(arg1)){
-        if(arg1.length() > 0){
-            if(arg1.toInt() < DIMENSION_MINIMALE){
+    if (regex_numeros.exactMatch(saisie)){
+        if(saisie.length() > 0){
+            if(saisie.toInt() < DIMENSION_MINIMALE){
                 ui->lineEdit_longueur->setText(QString::number(DIMENSION_MINIMALE));
-            } else if (arg1.toInt() > DIMENSION_MAXIMALE) {
+            } else if (saisie.toInt() > DIMENSION_MAXIMALE) {
                 ui->lineEdit_longueur->setText(QString::number(DIMENSION_MAXIMALE));
             }
         }
@@ -114,22 +73,26 @@ void Labyrinthe3D::on_lineEdit_longueur_textEdited(const QString &arg1)
         ui->lineEdit_longueur->setText(QString::number(LONGUEUR_PAR_DEFAUT));
     }
 
+    verifierConfiguration();
 }
 
-void Labyrinthe3D::on_lineEdit_largeur_textEdited(const QString &arg1)
+void Labyrinthe3D::on_lineEdit_largeur_editingFinished()
 {
+    QString saisie = ui->lineEdit_largeur->text();
     QRegExp regex_numeros("\\d*");
-    if (regex_numeros.exactMatch(arg1)){
-        if(arg1.length() > 0){
-            if(arg1.toInt() < DIMENSION_MINIMALE){
+    if (regex_numeros.exactMatch(saisie)){
+        if(saisie.length() > 0){
+            if(saisie.toInt() < DIMENSION_MINIMALE){
                 ui->lineEdit_largeur->setText(QString::number(DIMENSION_MINIMALE));
-            } else if (arg1.toInt() > DIMENSION_MAXIMALE) {
+            } else if (saisie.toInt() > DIMENSION_MAXIMALE) {
                 ui->lineEdit_largeur->setText(QString::number(DIMENSION_MAXIMALE));
             }
         }
     } else {
         ui->lineEdit_largeur->setText(QString::number(LONGUEUR_PAR_DEFAUT));
     }
+
+    verifierConfiguration();
 }
 // Fin : SLOTS AUTOMATIQUEMENT GÉNÉRÉS
 
@@ -140,7 +103,7 @@ void Labyrinthe3D::updateVideo(){
 
     if(webcam->isOpened()){
         // On peut commencer le traitement
-        if(ui->stackedWidget_navigation->currentIndex() == 1){
+        if(ui->stackedWidget_navigation->currentIndex() == INDEX_CALIBRAGE){
             // UI CALIBRATION
             Mat image_webcam, image_ndg;
             std::vector<Rect> visages;
@@ -175,14 +138,15 @@ void Labyrinthe3D::updateVideo(){
                 }
 
                 QImage img= QImage((const unsigned char*)(image_webcam.data),image_webcam.cols,image_webcam.rows,QImage::Format_RGB888);
-                ui->label_video->setPixmap(QPixmap::fromImage(img));
-
+                QPixmap pixmap = QPixmap::fromImage(img);
+                ui->label_video_->setPixmap(pixmap.scaled(ui->label_video_->width(),ui->label_video_->height(),Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 
             } else {
-                ui->label_video->setText(tr("Nous n'avons pas pu faire d'acquisitions via la Webcam..."));
+                ui->label_video_->setText(tr("Nous n'avons pas pu faire d'acquisitions via la Webcam..."));
                 timer_video->stop();
             }
-        } else if (ui->stackedWidget_navigation->currentIndex() == 2){
+
+        } else if (ui->stackedWidget_navigation->currentIndex() == INDEX_LABYRINTHE3D){
             Mat image_webcam;
 
             if (webcam->read(image_webcam)) {
@@ -211,20 +175,20 @@ void Labyrinthe3D::updateVideo(){
 
                 QImage img= QImage((const unsigned char*)(image_webcam.data),image_webcam.cols,image_webcam.rows,QImage::Format_RGB888);
                 QPixmap image = QPixmap::fromImage(img);
-                label_video_labyrinthe->setPixmap(image.scaled(label_video_labyrinthe->width(),label_video_labyrinthe->height(),Qt::KeepAspectRatio));
+                label_video_labyrinthe_->setPixmap(image.scaled(label_video_labyrinthe_->width(),label_video_labyrinthe_->height(),Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 
                 //swap(frameReference,frameComparaison);
 
-                labyrinthe->actionCamera(getActionCamera(vect, qSqrt(qPow(vect.x,2) + qPow(vect.y,2))));
+                labyrinthe_->actionCamera(getActionCamera(vect, qSqrt(qPow(vect.x,2) + qPow(vect.y,2))));
 
             } else {
-                ui->label_video->setText(tr("Nous n'avons pas pu faire d'acquisitions via la Webcam..."));
+                ui->label_video_->setText(tr("Nous n'avons pas pu faire d'acquisitions via la Webcam..."));
                 timer_video->stop();
             }
         }
 
     } else {
-        ui->label_video->setText(tr("Nous n'avons pas réussi à ouvrir la Webcam par défaut..."));
+        ui->label_video_->setText(tr("Nous n'avons pas réussi à ouvrir la Webcam par défaut..."));
         timer_video->stop();
     }
 
@@ -232,8 +196,26 @@ void Labyrinthe3D::updateVideo(){
 
 void Labyrinthe3D::keyPressEvent(QKeyEvent * event){
     switch (ui->stackedWidget_navigation->currentIndex()) {
-    // 1 : UI de Calibration
-    case 1:{
+
+    case INDEX_ACCUEIL:{
+        if(event->key() != Qt::Key_Escape){
+            if(!timer_accueil_->isActive()){
+                QTHelper::setImageDeFond(this,":/ui/Ressources\\UI/accueil_2.png");
+                timer_accueil_->start();
+            }
+        } else {
+            QCoreApplication::quit();
+        }
+    }
+
+    case INDEX_PARAMETRES_LABYRINTHE:{
+        if(event->key() == Qt::Key_Escape){
+            ui->stackedWidget_navigation->setCurrentIndex(INDEX_ACCUEIL);
+            setupUIAccueil();
+        }
+    }break;
+
+    case INDEX_CALIBRAGE:{
 
         switch (event->key()) {
         case Qt::Key_Return:
@@ -245,18 +227,27 @@ void Labyrinthe3D::keyPressEvent(QKeyEvent * event){
                         timer_video->stop();
                         int reponse = QMessageBox::question(this, tr("Confirmation"), tr("Ce cadrage vous convient-il ?"), QMessageBox::Yes | QMessageBox::No);
                         if(reponse == QMessageBox::Yes){
+                            //razUICalibrage(); On ne le fait pas tout de suite car nous avons besoin de la caméra
+                            ui->stackedWidget_navigation->setCurrentIndex(INDEX_LABYRINTHE3D);
                             setupUILabyrinthe();
-                            ui->stackedWidget_navigation->setCurrentIndex(2);
-                            razUICalibration();
                         } else if (reponse == QMessageBox::No){
                             timer_video->start();
                         }
                     }
                 }
             }
-        }
-            break;
+        }break;
 
+
+        case Qt::Key_Escape:{
+            razUICalibrage();
+            ui->stackedWidget_navigation->setCurrentIndex(INDEX_PARAMETRES_LABYRINTHE);
+            setupUIParametrageLabyrinthe();
+        }break;
+
+        case Qt::Key_Space:{
+
+        }break;
         }
         break;
 
@@ -269,17 +260,42 @@ void Labyrinthe3D::resizeEvent(QResizeEvent* event)
 {
     QMainWindow::resizeEvent(event);
     int index_ui = ui->stackedWidget_navigation->currentIndex();
-    if(index_ui == 0){
-        // UI Accueil
-        // TODO
-    } else if (index_ui == 1){
-        // UI Calibration
-        // TODO
-    } else {
-        // UI Labyrinthe
-        label_video_labyrinthe->setFixedSize((int)(this->width() / 4),(int)(this->height() / 4));
+
+    switch(index_ui){
+    case INDEX_ACCUEIL:{
+        if(!timer_accueil_->isActive()){
+            QTHelper::setImageDeFond(this,IMAGE_DE_FOND_ACCUEIL_1);
+        } else {
+            QTHelper::setImageDeFond(this,IMAGE_DE_FOND_ACCUEIL_2);
+        }
+    }break;
+
+    case INDEX_PARAMETRES_LABYRINTHE:{
+        resizeUIParametrageLabyrinthe(event);
+    }break;
+
+    case INDEX_CALIBRAGE:{
+        resizeUICalibrage(event);
+    }break;
+
+    case INDEX_LABYRINTHE3D:{
+        resizeUILabyrinthe(event);
+    }break;
+
+    default:{
+        qDebug() << tr("ERREUR dans le resizeEvent(...) ! Index inconnu :") << index_ui;
+    }break;
     }
+
 }
+
+void Labyrinthe3D::finAnimationAccueil(){
+    timer_accueil_->stop();
+    razUIAccueil();
+    ui->stackedWidget_navigation->setCurrentIndex(INDEX_PARAMETRES_LABYRINTHE);
+    setupUIParametrageLabyrinthe();
+}
+
 // Fin : SLOTS CRÉÉS
 
 
@@ -352,55 +368,266 @@ void Labyrinthe3D::verifierConfiguration(){
     }
 }
 
-void Labyrinthe3D::razUICalibration(){
-    ui->label_video->clear();
+void Labyrinthe3D::demarrerVideo(){
+    /* Comme nous ne pouvons pas utiliser la méthode .load de CascadeClassifier via les ressources,
+     * Nous créons un répertoire temporaire et y mettons une copie du fichier xml afin de contourner
+     * le problème.
+    */
+    QTemporaryDir dossier_temporaire;
+    if(dossier_temporaire.isValid()){
+        QString chemin_de_la_copie = dossier_temporaire.path() + "/haarcascade_frontalface_alt.xml";
+        qDebug() << chemin_de_la_copie;
+        QFile::copy(":/xml/Ressources/haarcascade_frontalface_alt.xml",chemin_de_la_copie);
+
+        if(CascadeClassifier_visages.load(chemin_de_la_copie.toStdString())){
+            ui->label_informations_calibration->setText(tr("Appuyez sur la touche 'Entrée' pour terminer le calibrage. Veillez à avoir un éclairage uniforme et des lunettes anti-reflets. Sinon enlevez-les."));
+
+            webcam =new VideoCapture(0);
+            timer_video = new QTimer(this);
+            connect(timer_video, SIGNAL(timeout()), this, SLOT(updateVideo()));
+            timer_video->start(INTERVALE_TIMER);
+
+        } else {
+            ui->label_video_->setText(tr("Nous n'avons pas pu charger HaarCascade..."));
+            timer_video->stop();
+        }
+    } else {
+        ui->label_video_->setText(tr("Nous n'avons pas pu créer le répertoire temporaire pour le fichier XML HaarCascade."));
+        timer_video->stop();
+    }
+}
+
+
+void Labyrinthe3D::initialiserUIParametrageLabyrinthe(){
+    // Début : Page Paramétrage du Labyrinthe
+    // Début : Zones du paramétrage du labyrinthe
+    ui->label_longueur->setText(tr("Longueur"));
+    ui->label_longueur->setStyleSheet("color:rgb(255,255,255);");
+    ui->label_longueur->setFixedSize(this->width() * LONGUEUR_LABEL_LONGUEUR, this->height() * LARGEUR_LABEL_LONGUEUR);
+
+    ui->label_largeur->setText(tr("Largeur"));
+    ui->label_largeur->setStyleSheet("color:rgb(255,255,255);");
+    ui->label_largeur->setFixedSize(this->width() * LONGUEUR_LABEL_LARGEUR, this->height() * LARGEUR_LABEL_LARGEUR);
+
+    ui->lineEdit_longueur->setText(QString::number(LONGUEUR_PAR_DEFAUT));
+    ui->lineEdit_longueur->setStyleSheet("border-image:url(" + IMAGE_ZONE_DE_SAISIE_LONGUEUR + "); color:rgb(255,255,255);");
+    ui->lineEdit_longueur->setFixedSize(this->width() * LONGUEUR_ZONE_LONGUEUR, this->height() * LARGEUR_ZONE_LONGUEUR);
+
+    ui->lineEdit_largeur->setText(QString::number(LARGEUR_PAR_DEFAUT));
+    ui->lineEdit_largeur->setStyleSheet("border-image:url(" + IMAGE_ZONE_DE_SAISIE_LARGEUR + "); color:rgb(255,255,255);");
+    ui->lineEdit_largeur->setFixedSize(this->width() * LONGUEUR_ZONE_LARGEUR, this->height() * LARGEUR_ZONE_LARGEUR);
+    // Fin : Zones du paramétrage du labyrinthe
+
+
+    // Début : Zone des crédits
+    ui->label_developpeurs->setText(tr("Developpeurs : Richard DROGO & Lilian HOUDELET"));
+    ui->label_developpeurs->setStyleSheet("color:rgb(255,255,255);");
+    ui->label_designer->setText(tr("Graphiste : Cédric PARIZY"));
+    ui->label_designer->setStyleSheet("color:rgb(255,255,255);");
+    ui->label_sound_designer->setText(tr("Sound Designer : Maxime LANCELOT"));
+    ui->label_sound_designer->setStyleSheet("color:rgb(255,255,255);");
+    ui->groupBox_credits->setStyleSheet("QGroupBox{""border-image:url(" + IMAGE_CADRE + ");} ");
+    // Fin : Zone des crédits
+
+    ui->label_record->setText(tr("Record : "));
+    ui->label_record->setStyleSheet("border-image:url(" + IMAGE_CADRE + "); color:rgb(255,255,255);");
+    ui->label_record->setFixedSize(this->width() * LONGUEUR_ZONE_RECORD, this->height() * LARGEUR_ZONE_RECORD);
+
+    ui->pushButton_jouer->setText(tr("Jouer"));
+    ui->pushButton_jouer->setStyleSheet("border-image:url(" + IMAGE_CADRE + "); color:rgb(255,255,255);");
+    ui->pushButton_jouer->setFixedSize(this->width() * LONGUEUR_BOUTON_JOUER, this->height() * LARGEUR_BOUTON_JOUER);
+    // Fin : Page Paramétrage du Labyrinthe
+}
+
+void Labyrinthe3D::initialiserUICalibrage(){
+    ui->pushButton_retour_accueil->setText("");
+    ui->pushButton_retour_accueil->setStyleSheet("border-image:url(" + IMAGE_FLECHE_RETOUR + ");");
+    ui->pushButton_retour_accueil->setFixedSize(this->width() * LONGUEUR_BOUTON_RETOUR, this->height() * LARGEUR_BOUTON_RETOUR);
+
     ui->label_informations_calibration->setText("");
-    ui->pushButton_calibrer->setVisible(true);
+    ui->label_informations_calibration->setStyleSheet("color:rgb(255,255,255);");
+    ui->label_informations_calibration->setFixedSize(this->width() * LONGUEUR_LABEL_VIDEO_CALIBRAGE, this->height() * LARGEUR_LABEL_VIDEO_CALIBRAGE);
+
+    ui->label_video_->setText("");
+    ui->label_video_->setStyleSheet("color:rgb(255,255,255);");
+    ui->label_video_->setFixedSize(this->width() * LONGUEUR_VIDEO_CALIBRAGE, this->height() * LARGEUR_VIDEO_CALIBRAGE);
+}
+
+void Labyrinthe3D::initialiserUILabyrinthe(){
+    label_video_labyrinthe_ = new QLabel(ui->stackedWidget_navigation);
+    label_video_labyrinthe_->setText("");
+    label_video_labyrinthe_->setStyleSheet("color:rgb(255,255,255);");
+    label_video_labyrinthe_->setFixedSize(this->width() * LONGUEUR_VIDEO_LABYRINTHE, this->height() * LARGEUR_VIDEO_LABYRINTHE);
+
+    label_chronometre_ = new QLabel(ui->stackedWidget_navigation);
+    label_chronometre_->setText("");
+    label_chronometre_->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    label_chronometre_->setStyleSheet("color:rgb(255,255,255);");
+    label_chronometre_->setFixedSize(this->width() * LONGUEUR_VOLET_INFORMATIONS, this->height() * LARGEUR_LABEL_CHRONOMETRE);
+    chronometre_ = new Chronometre(label_chronometre_);
+
+    labyrinthe_ = new Labyrinthe(ui->page_labyrinthe, qthelper_, ui->lineEdit_longueur->text().toInt(), ui->lineEdit_largeur->text().toInt(), chronometre_);
+    labyrinthe_->setFixedSize(this->width() * LONGUEUR_LABYRINTHE, this->height() * LARGEUR_LABYRINTHE);
+}
+
+
+void Labyrinthe3D::setupUIAccueil(){
+    QTHelper::setImageDeFond(this,IMAGE_DE_FOND_ACCUEIL_1);
+    timer_accueil_ = new QTimer();
+    timer_accueil_->setInterval(DELAI_ANIMATION_ACCUEIL);
+    connect(timer_accueil_, SIGNAL(timeout()),this, SLOT(finAnimationAccueil()));
+}
+
+void Labyrinthe3D::setupUIParametrageLabyrinthe(){
+    QTHelper::setImageDeFond(this,IMAGE_DE_FOND_PARAMETRAGE_LABYRINTHE);
+    if(!isUIParametrageLabyrintheInitialized_){
+        initialiserUIParametrageLabyrinthe();
+        isUIParametrageLabyrintheInitialized_ = true;
+    }
+
+    resizeUIParametrageLabyrinthe();
+}
+
+void Labyrinthe3D::setupUICalibrage(){
+    QTHelper::setImageDeFond(this,IMAGE_DE_FOND_CALIBRAGE);
+    if(!isUICalibrageInitialized_){
+        initialiserUICalibrage();
+        isUICalibrageInitialized_ = true;
+    }
+    resizeUICalibrage();
+    demarrerVideo();
+}
+
+void Labyrinthe3D::setupUILabyrinthe(){
+    QTHelper::setImageDeFond(this,IMAGE_DE_FOND_LABYRINTHE);
+    if(!isUILabyrintheInitialized_){
+        initialiserUILabyrinthe();
+        isUILabyrintheInitialized_ = true;
+    }
+
+    ui->gridLayout_ui_labyrinthe_->addWidget(labyrinthe_, 0, 0, Qt::AlignTop | Qt::AlignLeft);
+    ui->gridLayout_ui_labyrinthe_->addWidget(label_video_labyrinthe_, 0, 0, Qt::AlignTop | Qt::AlignRight);
+    ui->gridLayout_ui_labyrinthe_->addWidget(label_chronometre_, 0, 0, Qt::AlignBottom | Qt::AlignRight);
+
+    label_video_labyrinthe_->show();
+    label_chronometre_->show();
+
+    resizeUILabyrinthe();
+
+    timer_video->start();
+    qthelper_->arreterMusique();
+    qthelper_->jouerMusique(MUSIQUE_LABYRINTHE);
+}
+
+
+void Labyrinthe3D::resizeUIParametrageLabyrinthe(QResizeEvent* event){
+    QTHelper::setImageDeFond(this,IMAGE_DE_FOND_PARAMETRAGE_LABYRINTHE);
+
+    int width = -1;
+    int height = -1;
+    if(event != Q_NULLPTR){
+        width = event->size().width();
+        height = event->size().height();
+    } else {
+        width = this->width();
+        height = this->height();
+    }
+
+    ui->pushButton_jouer->setFixedSize(width * LONGUEUR_BOUTON_JOUER, height * LARGEUR_BOUTON_JOUER);
+    ui->pushButton_jouer->move(width * POSITION_LONGUEUR_BOUTON_JOUER - ui->pushButton_jouer->width() / 2.0, height * POSITION_LARGEUR_BOUTON_JOUER - ui->pushButton_jouer->height() / 2.0);
+
+    ui->groupBox_credits->setFixedSize(width * LONGUEUR_ZONE_CREDITS, height * LARGEUR_ZONE_CREDITS);
+    ui->groupBox_credits->move(width * POSITION_LONGUEUR_ZONE_CREDITS - MARGE_DROITE * width, height * POSITION_LARGEUR_ZONE_CREDITS - MARGE_INFERIEUR * height);
+
+    ui->label_record->setFixedSize(width * LONGUEUR_ZONE_RECORD, height * LARGEUR_ZONE_RECORD);
+    ui->label_record->move(width * POSITION_LONGUEUR_ZONE_RECORD, height * POSITION_LARGEUR_ZONE_RECORD - MARGE_INFERIEUR * height);
+
+    ui->label_longueur->setFixedSize(width * LONGUEUR_LABEL_LONGUEUR, height * LARGEUR_LABEL_LONGUEUR);
+    ui->label_longueur->move(width * POSITION_LONGUEUR_LABEL_LONGUEUR - ui->label_longueur->width() / 2.0, height * POSITION_LARGEUR_LABEL_LONGUEUR - ui->label_longueur->height() / 2.0);
+
+    ui->lineEdit_longueur->setFixedSize(width * LONGUEUR_ZONE_LONGUEUR, height * LARGEUR_ZONE_LONGUEUR);
+    ui->lineEdit_longueur->move(width * POSITION_LONGUEUR_ZONE_LONGUEUR - ui->lineEdit_longueur->width() / 2.0, height * POSITION_LARGEUR_ZONE_LONGUEUR - ui->lineEdit_longueur->height() / 2.0);
+
+    ui->label_largeur->setFixedSize(width * LONGUEUR_LABEL_LARGEUR, height * LARGEUR_LABEL_LARGEUR);
+    ui->label_largeur->move(width * POSITION_LONGUEUR_LABEL_LARGEUR - ui->label_largeur->width() / 2.0, height * POSITION_LARGEUR_LABEL_LARGEUR - ui->label_largeur->height() / 2.0);
+
+    ui->lineEdit_largeur->setFixedSize(width * LONGUEUR_ZONE_LARGEUR, height * LARGEUR_ZONE_LARGEUR);
+    ui->lineEdit_largeur->move(width * POSITION_LONGUEUR_ZONE_LARGEUR - ui->lineEdit_largeur->width() / 2.0, height * POSITION_LARGEUR_ZONE_LARGEUR - ui->lineEdit_largeur->height() / 2.0);
+
+    }
+
+void Labyrinthe3D::resizeUICalibrage(QResizeEvent* event){
+    QTHelper::setImageDeFond(this,IMAGE_DE_FOND_CALIBRAGE);
+
+    int width = -1;
+    int height = -1;
+    if(event != Q_NULLPTR){
+        width = event->size().width();
+        height = event->size().height();
+    } else {
+        width = this->width();
+        height = this->height();
+    }
+
+    ui->pushButton_retour_accueil->setFixedSize(width * LONGUEUR_BOUTON_RETOUR, height * LARGEUR_BOUTON_RETOUR);
+    ui->pushButton_retour_accueil->move(width * POSITION_LONGUEUR_BOUTON_RETOUR, height * POSITION_LARGEUR_BOUTON_RETOUR - MARGE_INFERIEUR * height);
+
+    ui->label_informations_calibration->setFixedSize(width * LONGUEUR_LABEL_VIDEO_CALIBRAGE, height * LARGEUR_LABEL_VIDEO_CALIBRAGE);
+    ui->label_informations_calibration->move(width * POSITION_LONGUEUR_LABEL_VIDEO_CALIBRAGE - ui->label_informations_calibration->width() / 2.0, height * POSITION_LARGEUR_LABEL_VIDEO_CALIBRAGE - ui->label_informations_calibration->height() / 2.0);
+
+    ui->label_video_->setFixedSize(width * LONGUEUR_VIDEO_CALIBRAGE, height * LARGEUR_VIDEO_CALIBRAGE);
+    ui->label_video_->move(width * POSITION_LONGUEUR_VIDEO_CALIBRAGE - ui->label_video_->width() / 2.0, height * POSITION_LARGEUR_VIDEO_CALIBRAGE - ui->label_video_->height() / 2.0);
+}
+
+void Labyrinthe3D::resizeUILabyrinthe(QResizeEvent* event){
+    QTHelper::setImageDeFond(this,IMAGE_DE_FOND_LABYRINTHE);
+
+    int width = -1;
+    int height = -1;
+    if(event != Q_NULLPTR){
+        width = event->size().width();
+        height = event->size().height();
+    } else {
+        width = this->width();
+        height = this->height();
+    }
+
+    label_video_labyrinthe_->setFixedSize(width * LONGUEUR_VIDEO_LABYRINTHE, height * LARGEUR_VIDEO_LABYRINTHE);
+    label_video_labyrinthe_->move(width * POSITION_LONGUEUR_VOLET_INFORMATIONS, height * POSITION_LARGEUR_VIDEO_LABYRINTHE);
+
+    label_chronometre_->setFixedSize(width * LONGUEUR_VOLET_INFORMATIONS, height * LARGEUR_LABEL_CHRONOMETRE);
+    label_chronometre_->move(width * POSITION_LONGUEUR_VOLET_INFORMATIONS, height * POSITION_LARGEUR_CHRONOMETRE);
+
+    labyrinthe_->setFixedSize(width * LONGUEUR_LABYRINTHE, height * LARGEUR_LABYRINTHE);
+    labyrinthe_->move(0,0);
+
+}
+
+
+void Labyrinthe3D::razUIAccueil(){
+    delete timer_accueil_;
+    timer_accueil_ = Q_NULLPTR;
+}
+
+void Labyrinthe3D::razUICalibrage(){
 
     if(webcam != nullptr){
         // On libère les données associées à la caméra uniquement si nous ne nous rendons pas dans l'UI du jeu.
-        if(ui->stackedWidget_navigation->currentIndex() != 2){
+        if(ui->stackedWidget_navigation->currentIndex() != INDEX_LABYRINTHE3D){
             delete webcam;
         }
     }
     if(timer_video != nullptr){
-        if(ui->stackedWidget_navigation->currentIndex() != 2){
+        if(ui->stackedWidget_navigation->currentIndex() != INDEX_LABYRINTHE3D){
             delete timer_video;
         }
     }
 }
 
-void Labyrinthe3D::setupUILabyrinthe(){
-    label_video_labyrinthe = new QLabel(this);
-    label_video_labyrinthe->setFixedSize((int)(this->width() * LONGUEUR_VOLET_INFORMATIONS),(int)(this->height() * LARGEUR_LABEL_CAMERA));
-    label_video_labyrinthe->setFocusPolicy(Qt::NoFocus);
-
-    label_chronometre = new QLabel(this);
-    label_chronometre->setFixedSize((int)(this->width() * LONGUEUR_VOLET_INFORMATIONS),(int)(this->height() * LARGEUR_LABEL_CHRONOMETRE));
-    label_chronometre->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    label_chronometre->setStyleSheet("background-color: rgba(0, 0, 0,200); color:rgb(255,255,255)");
-    label_chronometre->setFocusPolicy(Qt::NoFocus);
-
-    chronometre_ = new Chronometre(label_chronometre);
-
-    labyrinthe = new Labyrinthe(this, ui->lineEdit_longueur->text().toInt(), ui->lineEdit_largeur->text().toInt(), chronometre_);
-
-    ui->gridLayout_ui_labyrinthe->addWidget(labyrinthe, 0, 0, Qt::AlignLeft | Qt::AlignTop);
-    ui->gridLayout_ui_labyrinthe->addWidget(label_video_labyrinthe, 0, 0, Qt::AlignRight | Qt::AlignTop);
-    ui->gridLayout_ui_labyrinthe->addWidget(label_chronometre, 0, 0, Qt::AlignRight | Qt::AlignBottom);
-
-    timer_video->start();
-}
-
 void Labyrinthe3D::razUILabyrinthe(){
-    delete label_video_labyrinthe;
     delete timer_video;
-}
-
-void Labyrinthe3D::quitterLabyrinthe(){
-    qDebug() << "A DEBUGUER";
-    ui->stackedWidget_navigation->setCurrentIndex(0);
-    razUILabyrinthe();
-    ui->stackedWidget_navigation->setFocus();
+    delete chronometre_;
+    delete labyrinthe_;
+    isUILabyrintheInitialized_ = false;
 }
 // Fin : Méthodes privées

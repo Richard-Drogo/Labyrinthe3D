@@ -3,25 +3,20 @@
 
 
 Cahier des charges : 
-1 - Gestion de l'éclairage (Lié au Bonus [Demander si OK au professeur]).
-2 - Commenter le code.
-3 - Rapport.
+1 - Recommencer une partie
+2 - Gestion de l'éclairage (Lié au Bonus [Demander si OK au professeur]).
+3 - Commenter le code.
+4 - Rapport.
 
 
 Corrections de Bugs :
-1 - La saisie des valeurs de configuration du labyrinthe (Longueur et largeur) ne fonctionne pas toujours.
-Cause : le bug est causé par la vérification permanante des valeurs, bloquant les longueur de 10 à 19.
-2 - Touche ECHAP ne fonctionnant pas pour quitter l'UI OpenGL.
-3 - Redimensionnement automatique de toutes les UI.
-4 - Bug génération de 4 chemins en carrés (SCREEN disponible)
-5 - Bug affichage cadre camera
+1 - Touche ECHAP ne fonctionnant pas pour quitter l'UI OpenGL.
+2 - Bug génération de 4 chemins en carrés (SCREEN disponible)
+3 - Bug affichage cadre camera
 
 Bonus :
 1 - Textures des murs et du plafond.
 2 - Affichage de la lampe torche du joueur.
 3 - Intéraction de la lampe torche du joueur avec les murs (CAHIER DES CHARGES, PARTIE ECLAIRAGE).
 4 - Placements des indices.
-5 - Modification design de l'interface selon les travaux de Cédric.
-6 - Ajouter les musiques de Maxime.
-7 - Ajouter les animations de Cédric.
-8 - Dans la carte 2D fixer la taille de l'indicateur de la direction d'observation du joueur.
+5 - Dans la carte 2D fixer la taille de l'indicateur de la direction d'observation du joueur.

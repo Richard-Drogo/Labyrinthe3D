@@ -1,4 +1,5 @@
 QT       += core gui opengl widgets
+QT       += multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -27,6 +28,7 @@ SOURCES += \
     object3d.cpp \
     openglhelper.cpp \
     porte.cpp \
+    qthelper.cpp \
     rgbcolor.cpp \
     vertex.cpp
 
@@ -42,6 +44,7 @@ HEADERS += \
     object3d.h \
     openglhelper.h \
     porte.h \
+    qthelper.h \
     rgbcolor.h \
     vertex.h
 

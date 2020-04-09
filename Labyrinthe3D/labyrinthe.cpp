@@ -19,9 +19,10 @@
 #include "object3d.h"
 
 // Début : Méthodes publiques
-Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur, Chronometre * chronometre) : QOpenGLWidget(parent)
+Labyrinthe::Labyrinthe(QWidget * parent, QTHelper * qthelper, qint8 longueur, qint8 largeur, Chronometre * chronometre) : QOpenGLWidget(parent)
 {
     parent_ = parent;
+    qthelper_ = qthelper;
     longueur_ = longueur * 2 + 1;
     largeur_ = largeur * 2 + 1;
     chronometre_ = chronometre;
@@ -118,8 +119,13 @@ Labyrinthe::Labyrinthe(QWidget * parent, qint8 longueur, qint8 largeur, Chronome
 
     chronometre_->start();
 
-    setFixedSize(parent->width(), parent->height());
     move(0,0);
+}
+
+Labyrinthe::~Labyrinthe(){
+    delete maze_;
+    delete timer_carte_du_labyrinthe_;
+    delete item_;
 }
 
 void Labyrinthe::actionCamera(qint8 action){
@@ -173,7 +179,8 @@ void Labyrinthe::initializeGL()
 void Labyrinthe::resizeGL(int width, int height)
 {
     // Definition du viewport (zone d'affichage)
-    glViewport(0, 0, width, height);
+    glViewport(0, 0,width, height);
+
 }
 
 void Labyrinthe::paintGL()
@@ -210,12 +217,6 @@ void Labyrinthe::keyPressEvent(QKeyEvent * event){
 
 
     switch (event->key()) {
-
-    case Qt::Key_Escape:
-    {
-        ((Labyrinthe3D)parent_).quitterLabyrinthe();
-        ((Labyrinthe3D)parent_).setFocus();
-    }break;
 
     case Qt::Key_Z:
     {
@@ -268,6 +269,7 @@ void Labyrinthe::keyReleaseEvent(QKeyEvent * event){
 void Labyrinthe::timerCarteDuLabyrintheFini(){
     afficher_carte_ = true;
     timer_carte_du_labyrinthe_->stop();
+    qthelper_->arreterSon();
     update();
 }
 // Fin : SLOTS CRÉÉS
@@ -498,6 +500,8 @@ void Labyrinthe::avancer(){
 
     direction_.setX(direction_.getX() + qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
     direction_.setZ(direction_.getZ() + qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+
+    qthelper_->jouerSon(SON_MARCHE);
     }
 }
 
@@ -511,6 +515,8 @@ void Labyrinthe::reculer(){
 
     direction_.setX(direction_.getX() - qCos(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
     direction_.setZ(direction_.getZ() - qSin(qDegreesToRadians(angle_direction_)) * LONGUEUR_DEPLACEMENT);
+
+    qthelper_->jouerSon(SON_MARCHE);
     }
 }
 
