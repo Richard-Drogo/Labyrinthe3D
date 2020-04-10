@@ -89,7 +89,7 @@ void Labyrinthe3D::on_lineEdit_largeur_editingFinished()
             }
         }
     } else {
-        ui->lineEdit_largeur->setText(QString::number(LONGUEUR_PAR_DEFAUT));
+        ui->lineEdit_largeur->setText(QString::number(LARGEUR_PAR_DEFAUT));
     }
 
     verifierConfiguration();

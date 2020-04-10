@@ -4,29 +4,11 @@
 
 Chronometre::Chronometre(QLabel * label_chronometre) : QObject()
 {
-    // Création d'ub chronomètre
+    // Création d'un chronomètre
     timer_ = new QTimer();
     timer_->setInterval(INTERVALLE);
     label_chronometre_ = label_chronometre;
     connect(timer_, SIGNAL(timeout()), this, SLOT(augmenter1Seconde()));
-}
-
-void Chronometre::augmenter1Seconde(){ // incremente la valeur chaque seconde
-    secondes_++;
-    if(secondes_ == 60){ // remise à zero si minute passée
-        secondes_ = 0;
-        minutes_++;
-        if(minutes_ == 60){
-            minutes_ = 0;
-            heures_++;
-            if(heures_ == 24){
-                heures_ = 0;
-                jours_++;
-            }
-        }
-    }
-
-    label_chronometre_->setText(getTempsEcoule()); // affiche le temps dans le label
 }
 
 QString Chronometre::getTempsEcoule(){ // renvoie la chaine en fonctino du temps
@@ -73,3 +55,23 @@ QString Chronometre::getTempsEcoule(){ // renvoie la chaine en fonctino du temps
     }break;
     }
 }
+
+// Début : Slots créés
+void Chronometre::augmenter1Seconde(){ // Incremente la valeur chaque seconde
+    secondes_++;
+    if(secondes_ == 60){ // Remise à zero si minute passée
+        secondes_ = 0;
+        minutes_++;
+        if(minutes_ == 60){
+            minutes_ = 0;
+            heures_++;
+            if(heures_ == 24){
+                heures_ = 0;
+                jours_++;
+            }
+        }
+    }
+
+    label_chronometre_->setText(getTempsEcoule()); // affiche le temps dans le label
+}
+// Fin : Slots créés

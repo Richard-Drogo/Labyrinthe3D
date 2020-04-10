@@ -20,15 +20,34 @@
 
 using namespace std;
 
+/* Classe Labyrinthe
+Rôle : Cette classe est le QOpenGLWidget permettant l'affichage du Labyrinthe en 3D et de la carte en 2D. La génération informatique du labyrinthe est effectuée dedans.
+*/
 class Labyrinthe : public QOpenGLWidget
 {
     Q_OBJECT
 
 
 public:
+    /* Labyrinthe(QWidget * parent, QTHelper * qthelper, qint8 longueur, qint8 largeur, Chronometre * chronometre);
+    Rôle : Constructeur de la classe.
+    Entrées :
+                - QWidget * parent : Représentant un object Labyrinthe3D.
+                - QTHelper * qthelper : Utilisé dans cette classe pour géré la musique et les sons.
+                - quint8 longueur : Longueur du labyrinthe paramétrée [5;20] (Ce n'est donc pas la longueur effective)
+                - quint8 largeur : Largeur du labyrinthe paramétrée [5;20] (Ce n'est donc pas la largeur effective)
+                - Chronometre * chronometre : Pointeur vers le modèle chronomètre. (Utilisé pour le démarrer)
+    */
     Labyrinthe(QWidget * parent, QTHelper * qthelper, qint8 longueur, qint8 largeur, Chronometre * chronometre);
+    /* ~Labyrinthe()
+    Rôle : Destructeur de la classe.
+    */
     ~Labyrinthe();
 
+    /* void actionCamera(qint8 action)
+    Rôle : Cette méthode est appelée par le parent Labyrinthe3D dans la méthode updateVideo(). A chaque fois qu'une nouvelle acquisition est faite. L'action désirée est déterminée (Voir valeurs ci-dessous) puis passée paramètre. Cette méthode s'occupe ensuite de commander la réalisation des actions.
+    Entrée : qint8 action : L'action déterminée par la méthode "getAction() de Labyrinthe3D" et étant une des valeurs ci-dessous.
+    */
     void actionCamera(qint8 action);
 
     // Début : Constantes utilisées par la Caméra

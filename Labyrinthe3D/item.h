@@ -6,6 +6,9 @@
 #include <GL/glu.h>
 #include <QColor>
 
+/* Classe Item
+Rôle : Classe permettant la gestion des objets dans le labyrinthe sous forme de quadrique (sphère). Utilisé pour la sphère avec le logo de TSE.
+*/
 class Item
 {
 private :

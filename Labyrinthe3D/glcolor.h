@@ -5,6 +5,9 @@
 
 #include <rgbcolor.h>
 
+/* Classe GLColor
+Rôle : Classe permettant de regrouper les informations de couleurs.
+*/
 class GLColor
 {
 public:
