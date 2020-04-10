@@ -156,7 +156,8 @@ private:
     QTimer * timer_accueil_ = Q_NULLPTR;
     QMediaPlaylist * playlist_ = Q_NULLPTR;
     QMediaPlayer * player_ = Q_NULLPTR;
-
+    quint32 record_ = 0;
+    QString recordS_ = "";
     bool isUIParametrageLabyrintheInitialized_ = false;
     bool isUICalibrageInitialized_ = false;
     bool isUILabyrintheInitialized_ = false;
@@ -242,6 +243,8 @@ private:
 
     void razUILabyrinthe();
 
+private slots:
+    void partieTerminee();
 
 protected:
     void keyPressEvent(QKeyEvent * event);

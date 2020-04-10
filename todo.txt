@@ -3,8 +3,7 @@
 
 
 Cahier des charges : 
-1 - Recommencer une partie
-2 - Bugs d'affichage
+1 - Bugs d'affichage des objets 3D sans couleurs
 3 - Commenter le code.
 4 - Rapport.
 
@@ -17,4 +16,6 @@ Corrections de Bugs :
 Bonus :
 1 - Affichage de la lampe torche en mode Bleu.
 2 - Placements des indices.
-3 - Dans la carte 2D fixer la taille de l'indicateur de la direction d'observation du joueur.
+3 - Cinématique
+4 - Dans la carte 2D fixer la taille de l'indicateur de la direction d'observation du joueur.
+5 - Record en fonction de la taille du labyrinthe

@@ -6,6 +6,7 @@
 #include <QtMath>
 #include <QTimer>
 #include <QGLWidget>
+#include <QMessageBox>
 
 #include <GL/glu.h>
 #include <glcolor.h>
@@ -191,6 +192,7 @@ void Labyrinthe::actionCamera(qint8 action){
 // Fin : Méthodes publiques
 
 
+
 // Début : SLOTS CRÉÉS
 void Labyrinthe::initializeGL()
 {
@@ -231,6 +233,7 @@ void Labyrinthe::resizeGL(int width, int height)
 
 void Labyrinthe::paintGL()
 {
+
     QPainter painter(this);
     painter.beginNativePainting();
     glEnable(GL_DEPTH_TEST);
@@ -261,8 +264,12 @@ void Labyrinthe::paintGL()
     }
     painter.end();
 
-
     this->setFocus();
+
+    ReachExit(); // vérifie si on est sorti
+    if(exitReached_){
+        this->close();
+    }
 }
 
 void Labyrinthe::keyPressEvent(QKeyEvent * event){
@@ -321,7 +328,6 @@ void Labyrinthe::timerCarteDuLabyrintheFini(){
 // Début : Méthodes privées
 void Labyrinthe::display(){
     sol_.display(); // affiche le sol
-    ReachExit(); // vérifie si on est sorti
 
     for(int i=0; i < murs_.size(); i++){
         murs_[i].display();
@@ -655,6 +661,7 @@ void Labyrinthe::ReachExit(){ // vérifie si on attend la sortie
     if( positionJoueur_.getX() > (exitPosX_) && positionJoueur_.getX() < (exitPosX_+LONGUEUR_CASE) &&
             positionJoueur_.getZ() > (exitPosY_) && positionJoueur_.getZ() < (exitPosY_+LONGUEUR_CASE)){
         exitReached_ = true;
+        sortieAtteinte();
     }
 }
 

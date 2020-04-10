@@ -34,7 +34,7 @@ QString Chronometre::getTempsEcoule(){ // renvoie la chaine en fonctino du temps
     // type_affichage = 1 => Secondes uniquement
     // type_affichage = 2 => Minutes
     // type_affichage = 3 => Heures
-    // type_afficahge = 4 => Jours
+    // type_affichage = 4 => Jours
 
     if(jours_ == 0){
         if(heures_ == 0){

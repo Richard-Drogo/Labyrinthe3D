@@ -296,6 +296,38 @@ void Labyrinthe3D::finAnimationAccueil(){
     setupUIParametrageLabyrinthe();
 }
 
+void Labyrinthe3D::partieTerminee(){
+    labyrinthe_->clearFocus();
+    labyrinthe_->hide();
+    this->setFocus();
+
+    chronometre_->stop();
+    QMessageBox message(this);
+    message.setIcon(QMessageBox::Question);
+    message.setWindowTitle(tr("Félicitations !"));
+    message.setText(tr("Bravo vous avez gagné ! Vous avez battu ce labyrinthe en ") + chronometre_->getTempsEcoule() + "\n" + tr("Voulez-vous recommencer une partie ?"));
+    message.setModal(1);
+    message.setStandardButtons(QMessageBox::Yes);
+    message.addButton(QMessageBox::No);
+    message.setDefaultButton(QMessageBox::No);
+    if(message.exec() == QMessageBox::Yes){
+        if(record_ == 0){
+            record_ = chronometre_->getTempsInt();
+            recordS_ = chronometre_->getTempsEcoule();
+        } else {
+            if(chronometre_->getTempsInt() < record_){
+                record_ = chronometre_->getTempsInt();
+                recordS_ = chronometre_->getTempsEcoule();
+            }
+        }
+        ui->label_record->setText(tr("Record : ") + recordS_);
+        razUILabyrinthe();
+        ui->stackedWidget_navigation->setCurrentIndex(INDEX_PARAMETRES_LABYRINTHE);
+        setupUIParametrageLabyrinthe();
+    }else {
+      this->close();
+    }
+}
 // Fin : SLOTS CRÉÉS
 
 
@@ -468,6 +500,8 @@ void Labyrinthe3D::initialiserUILabyrinthe(){
 
     labyrinthe_ = new Labyrinthe(ui->page_labyrinthe, qthelper_, ui->lineEdit_longueur->text().toInt(), ui->lineEdit_largeur->text().toInt(), chronometre_);
     labyrinthe_->setFixedSize(this->width() * LONGUEUR_LABYRINTHE, this->height() * LARGEUR_LABYRINTHE);
+    connect(labyrinthe_, SIGNAL(sortieAtteinte()), this, SLOT(partieTerminee()));
+
 }
 
 
@@ -627,7 +661,6 @@ void Labyrinthe3D::razUICalibrage(){
 void Labyrinthe3D::razUILabyrinthe(){
     delete timer_video;
     delete chronometre_;
-    delete labyrinthe_;
     isUILabyrintheInitialized_ = false;
 }
 // Fin : Méthodes privées

@@ -44,6 +44,9 @@ public:
     static constexpr double LONGUEUR_CASE = 2;
     // Fin : Constantes dimensionnelles publiques
 
+signals:
+    void sortieAtteinte();
+
 private:
     // Début : Attributs
     // Début : Attributs du Constructeur
