@@ -641,6 +641,7 @@ qint8 Mur::display(){
             glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS, this->brillance_);
     }
 
+    /*
     if(image_ != Q_NULLPTR){
         glBindTexture(GL_TEXTURE_2D, this->texture_);
 
@@ -648,6 +649,7 @@ qint8 Mur::display(){
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
+    */
 
     glBegin(GL_QUADS);
 
@@ -686,7 +688,7 @@ qint8 Mur::display(){
     }
 
     glEnd();
-    glBindTexture(GL_TEXTURE_2D, 0);
+    //glBindTexture(GL_TEXTURE_2D, 0);
 
     glPopMatrix();
 

@@ -45,7 +45,7 @@ qint8 Porte::display(){
             glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION, couleur_emission);
             glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS, brillance_);
     }
-
+    /*
     if(image_ != Q_NULLPTR){
         glBindTexture(GL_TEXTURE_2D, this->texture_);
 
@@ -53,11 +53,13 @@ qint8 Porte::display(){
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
-
+    */
     glBegin(GL_QUADS);
+
     if(image_ != Q_NULLPTR){
         success = OpenGLHelper::drawCube(vertices_, normales_, colors_, 1, OpenGLHelper::MUR);
     }
+
     glEnd();
     glBindTexture(GL_TEXTURE_2D, 0);
 
