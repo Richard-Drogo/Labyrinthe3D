@@ -22,6 +22,7 @@ Item::~Item(){
 
 void Item::Display() const
 {
+    glEnable(GL_LIGHT1);
     glPushMatrix();
     //glLoadIdentity();
 
@@ -33,6 +34,11 @@ void Item::Display() const
 
     glColor3ub(this->colorR, this->colorG, this->colorB);
     glRotated(-90, 1,0,1); // tourne pour l'affichage
+
+    GLfloat emitPos[] = {this->posY,1,this->posX,1.0};
+    glLightfv(GL_LIGHT1,GL_POSITION,emitPos);
+    GLfloat reflect[] = {double(this->colorR)/255,double(this->colorG)/255,double(this->colorB)/255,1.0};
+    glMaterialfv(GL_FRONT, GL_EMISSION, reflect);
 
     // Affichage de la quadrique
     gluQuadricTexture(this->sphere,GL_TRUE); // activation de la texture
