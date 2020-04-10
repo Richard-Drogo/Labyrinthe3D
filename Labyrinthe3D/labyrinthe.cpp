@@ -214,10 +214,26 @@ void Labyrinthe::initializeGL()
 
     QImage logo = QGLWidget::convertToGLFormat(QImage(logo_));
     // charger l'image
-    texturesId = new GLuint[1];
-    glGenTextures(1,texturesId);
+    texturesId = new GLuint[4];
+    glGenTextures(4,texturesId);
+
     glBindTexture(GL_TEXTURE_2D,texturesId[0]);
     glTexImage2D(GL_TEXTURE_2D,0, 4,logo.width(),logo.height(),0,GL_RGBA, GL_UNSIGNED_BYTE, logo.bits());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glBindTexture(GL_TEXTURE_2D,texturesId[1]);
+    glTexImage2D(GL_TEXTURE_2D,0, 4,TEXTURE_MUR.width(),TEXTURE_MUR.height(),0,GL_RGBA, GL_UNSIGNED_BYTE, TEXTURE_MUR.bits());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glBindTexture(GL_TEXTURE_2D,texturesId[2]);
+    glTexImage2D(GL_TEXTURE_2D,0, 4,TEXTURE_PLAFOND.width(),TEXTURE_PLAFOND.height(),0,GL_RGBA, GL_UNSIGNED_BYTE, TEXTURE_PLAFOND.bits());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glBindTexture(GL_TEXTURE_2D,texturesId[3]);
+    glTexImage2D(GL_TEXTURE_2D,0, 4,TEXTURE_PORTE.width(),TEXTURE_PORTE.height(),0,GL_RGBA, GL_UNSIGNED_BYTE, TEXTURE_PORTE.bits());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -328,20 +344,23 @@ void Labyrinthe::timerCarteDuLabyrintheFini(){
 // Début : Méthodes privées
 void Labyrinthe::display(){
     sol_.display(); // affiche le sol
-
+    glBindTexture(GL_TEXTURE_2D, texturesId[1]);
     for(int i=0; i < murs_.size(); i++){
         murs_[i].display();
     }
+    glBindTexture(GL_TEXTURE_2D, texturesId[2]);
     plafond_.display(); // affiche le plafond
 
     //qDebug() << "redraw";
     if ( !itemGet_ ){ // vérifie si l'objet est récupéré ou non
         touchTheBall();
+        glBindTexture(GL_TEXTURE_2D, texturesId[3]);
         porte_->display();
         glBindTexture(GL_TEXTURE_2D, texturesId[0]);
         item_->Display();
         glBindTexture(GL_TEXTURE_2D, 0);
         }
+    glBindTexture(GL_TEXTURE_2D, 0);
     }
 
 void Labyrinthe::genererMur(){ // appelle la classe mur pour les créer
