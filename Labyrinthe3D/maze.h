@@ -44,18 +44,23 @@ class Maze
     Cell::Direction direction(Point f, Point t);
 
 public:
-    Maze(int width,int height); // Dimensions du labyrinthe souhaitée, définition la position de la sortie et lance la génération
+    /*
+    Maze(int w, int h)
+    Prend les dimensions du labyrinthe souhaité en paramètre
+    définit la position de la sortie et lance la génération du labyrinthe
+    */
+    Maze(int width,int height);
     void reinit();
     void display(bool pause=false);
     void generate(bool show=false);
     list<Point> path(Point,Point); // renvoie le chemin entre deux points dans la metrice
     list<Point> MatrixNeighbors(Point p,QVector<QVector<qint8>> grid_number_copy);
     void generateInitialPosition(Point start, int addedPoint); // génère la position du point loin du point en paramètre start
-    QVector<QVector<qint8>> getGridNumber() {return grid_number_;}; // renvoie la matrice
+    QVector<QVector<qint8>> getGridNumber() {return grid_number_;}; // renvoie la matrice de nombre généré dans generate()
     Point getPlayerPos() { return initPosPlayer_;};
     Point getexitPos() { return exit_;};
     Point getItemPos() { return gettableItem_;};
-    int getExitOrientation() {return pos;}; // Portion de mur sur lequel se trouve la sortie
+    int getExitOrientation() {return pos;}; // renvoie la portion de mur sur lequel est la sortie
 };
 
 #endif // MAZE_H
