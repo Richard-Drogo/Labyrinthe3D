@@ -19,12 +19,22 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class Labyrinthe3D; }
 QT_END_NAMESPACE
 
+/* Classe Labyrinthe3D
+Rôle : Classe d'entrée du programme et permettant de gérer la navigation entre toutes les UI.
+*/
 class Labyrinthe3D : public QMainWindow
 {
     Q_OBJECT
 
 public:
+    /* Labyrinthe3D(QWidget *parent = nullptr)
+    Rôle : Constructeur de la classe Labyrinthe3D
+    Entrée : QWidget * qui sera égal à nullptr étant que c'est le point d'entrée graphique du programme.
+    */
     Labyrinthe3D(QWidget *parent = nullptr);
+    /* ~Labyrinthe3D()
+    Rôle : Destructeur de la classe Labyrinthe3D
+    */
     ~Labyrinthe3D();
 
     // Début : Définitions des constantes publiques
@@ -136,45 +146,69 @@ public:
     // Fin : Définition des constantes publiques
 
 private slots:
+    /* on_pushButton_jouer_clicked()
+    Rôle : Permet de mettre en place l'UI de configuration du labyrinthe.
+    */
     void on_pushButton_jouer_clicked();
 
+    /* on_pushButton_retour_accueil_clicked()
+    Rôle : Permet de reset l'UI de configuration du labyrinthe et mettre en place l'UI d'accueil.
+    */
     void on_pushButton_retour_accueil_clicked();
 
+    /* updateVideo()
+    Rôle : Appelée en réponse au SLOT(timeout()) du timer_video, elle permet de mettre-à-jouer l'image de la caméra.
+    */
     void updateVideo();
 
+    /* finAnimationAccueil()
+    Rôle : Appelée en réponse au SLOT(timeout()) du timer_accueil_ et réalise l'animation de l'accueil.
+    */
     void finAnimationAccueil();
 
+    /* on_lineEdit_largeur_editingFinished()
+    Rôle : Permet de vérifier la bonne saisie d'une valeur de longueur pour le labyrinthe.
+    */
     void on_lineEdit_largeur_editingFinished();
 
+    /* on_lineEdit_largeur_editingFinished()
+    Rôle : Permet de vérifier la bonne saisie d'une valeur de largeur pour le labyrinthe.
+    */
     void on_lineEdit_longueur_editingFinished();
 
 private:
-    Ui::Labyrinthe3D *ui;
+    Ui::Labyrinthe3D *ui; // Permet d'accéder aux éléments conçus via QT UI Designer.
 
-    QTHelper * qthelper_ = Q_NULLPTR;
-    QTimer * timer_video = nullptr;
-    QTimer * timer_accueil_ = Q_NULLPTR;
-    QMediaPlaylist * playlist_ = Q_NULLPTR;
-    QMediaPlayer * player_ = Q_NULLPTR;
-    quint32 record_ = 0;
-    QString recordS_ = "";
+    QTHelper * qthelper_ = Q_NULLPTR; // Objet QTHelper pour la gestion de la musique.
+    QTimer * timer_video = nullptr; // Timer permettant de m-à-j les images de la webcam grâce au SLOT(timeout()) qui appelle le SIGNAL(updateVideo()).
+    QTimer * timer_accueil_ = Q_NULLPTR; // Timer permettant de temporiser avant de passer à l'UI de paramétrage. SIGNAL(finAnimationAccueil()).
+    QMediaPlaylist * playlist_ = Q_NULLPTR; // Non utilisé (oubli de déletion)
+    QMediaPlayer * player_ = Q_NULLPTR; // Non utilisé (oubli de déletion)
+    quint32 record_ = 0; // Valeur du record en secondes et permet de comparer avec une nouvelle valeur.
+    QString recordS_ = ""; // String représentant le record actuel.
+
+    // Début : Attributs permettant d'indiquer si l'UI n'a jamais été configurée.
     bool isUIParametrageLabyrintheInitialized_ = false;
     bool isUICalibrageInitialized_ = false;
     bool isUILabyrintheInitialized_ = false;
+    // Fin : Attributs permettant d'indiquer si l'UI n'a jamais été configurée.
 
-    bool partie_en_cours_ = false;
-    VideoCapture * webcam = nullptr;
-    Chronometre * chronometre_ = Q_NULLPTR;
+    bool partie_en_cours_ = false; // Non utilisé (oubli de déletion)
+    VideoCapture * webcam = nullptr; // La webcam
+    Chronometre * chronometre_ = Q_NULLPTR; // Modèle de chronomètre.
+
+    // Début : Attributs nécessaires pour la partie détection de visage.
     CascadeClassifier CascadeClassifier_visages;
     Rect calibrageRect;
     Rect templateRect;
     cv::Point workingCenter;
     Mat frameReference, resultImage;
+    // Fin : Attributs nécessaires pour la partie détection de visage.
 
     // Début : UI Labyrinthe
-    QLabel * label_video_labyrinthe_ = Q_NULLPTR;
-    QLabel * label_chronometre_ = Q_NULLPTR;
-    Labyrinthe * labyrinthe_ = Q_NULLPTR;
+    QLabel * label_video_labyrinthe_ = Q_NULLPTR; // QLabel où est affiché la caméra durant le labyrinthe.
+    QLabel * label_chronometre_ = Q_NULLPTR; // QLabe où est affiché le chronomètre durant le labyrinthe.
+    Labyrinthe * labyrinthe_ = Q_NULLPTR; // Objet Labyrinthe créé dynamiquement.
     // Fin : UI Labyrinthe
 
 
@@ -199,28 +233,42 @@ private:
     // Fin : Définitions des constantes privées
 
     /* retournerIndiceDuRectanglePlusGrand(std::vector<Rect> rectangles)
-     * Rôle : Permet de retourner l'indice du plus grand rectangle d'un vector<Rect> passé en paramètre.
-     *          Utile pour la reconnaissance de visages dans la vidéo. (On veut un seul visage !)
-     * Entrée : vector<Rect>, vecteur contenant tous les rectangles correspondants aux visages détectés.
-     * Sortie : L'indice du rectangle le plus grand dans la liste
-     * Auteur : Richard DROGO
+     Rôle : Permet de retourner l'indice du plus grand rectangle d'un vector<Rect> passé en paramètre.
+              Utile pour la reconnaissance de visages dans la vidéo. (On veut un seul visage !)
+     Entrée : vector<Rect>, vecteur contenant tous les rectangles correspondants aux visages détectés.
+     Sortie : L'indice du rectangle le plus grand dans la liste
      */
     unsigned long long retournerIndiceDuRectanglePlusGrand(std::vector<Rect> rectangles);
 
+    /* verifierConfiguration()
+    Rôle : Effectue d'autres vérifications sur les saisies des paramètres du labyrinthe.
+    */
     void verifierConfiguration();
 
+    /* qint8 getActionCamera(cv::Point vecteur_translation, double norme)
+    Rôle : Permet de déterminer l'action voulue par le joueur via la caméra. qint8 est une constante d'action définie dans Labyrinthe.h
+    Entrées :   * cv::Point vecteur_translation : Vecteur de translation déterminé
+                * double norme : Norme du vecteur translation (Si la norme n'est pas suffisante => aucune action)
+    Sortie : qint8 correspondant à une constante d'action définie dans Labyrinthe.h
+    */
     qint8 getActionCamera(cv::Point vecteur_translation, double norme);
 
+    /* demarrerVideo()
+    Rôle : Après avoir cliqué sur le bouton "Jouer" permet d'initialiser les variables pour le traitement d'image et lancer la vidéo.
+    */
     void demarrerVideo();
 
 
+    // Début : Méthodes permettant de configurer la première fois les widgets et composants de l'UI en question
     void initialiserUIParametrageLabyrinthe();
 
     void initialiserUICalibrage();
 
     void initialiserUILabyrinthe();
+    // Fin : Méthodes permettant de configurer la première fois les widgets et composants de l'UI en question
 
 
+    // Début : Méthodes permettant de mettre en place les UI en question
     void setupUIAccueil();
 
     void setupUIParametrageLabyrinthe();
@@ -228,28 +276,37 @@ private:
     void setupUICalibrage();
 
     void setupUILabyrinthe();
+    // Fin : Méthodes permettant de mettre en place les UI en question
 
 
+    // Début : Méthodes permettant de redimensionner tous les composants de l'UI en question
     void resizeUIParametrageLabyrinthe(QResizeEvent* event = Q_NULLPTR);
 
     void resizeUICalibrage(QResizeEvent* event = Q_NULLPTR);
 
     void resizeUILabyrinthe(QResizeEvent* event = Q_NULLPTR);
+    // Fin : Méthodes permettant de redimensionner tous les composants de l'UI en question
 
 
+    // Début : Méthodes permettant de réinitialiser les UI en question (quand on quitte une UI)
     void razUIAccueil();
 
     void razUICalibrage();
 
     void razUILabyrinthe();
+    // Fin : Méthodes permettant de réinitialiser les UI en question (quand on quitte une UI)
 
 private slots:
+    /* partieTerminee()
+    Informations : SIGNAL appelé par la classe Labyrinthe lorsque le joueur sort du labyrinthe.
+    Rôle : Permet de mettre à jour le QLabel record, de rénitialiser l'UI Labyrinthe et de mettre en place l'UI de paramétrage.
+    */
     void partieTerminee();
 
 protected:
-    void keyPressEvent(QKeyEvent * event);
+    void keyPressEvent(QKeyEvent * event); // Méthode étant appelée à chaque fois que l'utilisateur appuye sur une touche.
 
-    void resizeEvent(QResizeEvent* event);
+    void resizeEvent(QResizeEvent* event); // Méthode étant appelée à chaque fois que l'utilisateur redimensionne la fenêtre principale
 
 };
 #endif // LABYRINTHE3D_H

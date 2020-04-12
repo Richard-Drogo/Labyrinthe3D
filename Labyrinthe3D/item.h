@@ -12,23 +12,25 @@ Rôle : Classe permettant la gestion des objets dans le labyrinthe sous forme de
 class Item
 {
 private :
-    unsigned int colorR;
-    unsigned int colorG;
-    unsigned int colorB;
-    float posX;
-    float posY;
-    float rayon;
-    GLUquadric* sphere;
+    unsigned int colorR; // Couleur du matériau Canal Rouge
+    unsigned int colorG; // Couleur du matériau Canal Vert
+    unsigned int colorB; // Couleur du matériau Canal Bleu
+    float posX; // Position X de la sphère
+    float posY; // Position Z de la sphère
+    float rayon; // Rayon de la sphère
+    GLUquadric* sphere; // Quadrique
 
 
 public:
-    // Constructeur avec parametres
+    /* Item(float posX, float rayon, float posY, unsigned int colorR, unsigned int colorG,  unsigned int colorB)
+    Rôle : Permet de construire la sphère selon sa position X, Z, son rayon et sa couleur.
+    */
     Item(float posX, float rayon, float posY, unsigned int colorR, unsigned int colorG,  unsigned int colorB);//, float revolution);
 
     // Destructeur
     virtual ~Item();
 
-    // Methode d'affichage
+    // Methode d'affichage de la sphère.
     void Display() const;
 
 };

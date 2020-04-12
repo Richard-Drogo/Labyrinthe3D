@@ -119,7 +119,10 @@ Labyrinthe::Labyrinthe(QWidget * parent, QTHelper * qthelper, qint8 longueur, qi
         {SE_SOL_TOP, NE_TOP_SOL, NE_BOT_SOL, SE_BOT_SOL}
     };
 
-    sol_ = Object3D("Sol", vertices_sol, {COULEUR_SOL});
+    QVector<Vertex> normales {{0.0, 1.0, 0.0}, {0.0, -1.0, 0.0}, {0.0, 0.0, -1.0}, {-1.0, 0.0, 0.0}, {0.0, 0.0, 1.0}, {1.0, 0.0, 0.0}};
+
+
+    sol_ = Object3D("Sol", vertices_sol, normales, {COULEUR_SOL});
     // Fin : Sol
 
     // Début : Plafond
@@ -134,7 +137,7 @@ Labyrinthe::Labyrinthe(QWidget * parent, QTHelper * qthelper, qint8 longueur, qi
         {SE_SOL_PLAFOND, NE_TOP_PLAFOND, NE_BOT_PLAFOND, SE_BOT_PLAFOND}
     };
 
-    plafond_ = Object3D("Plafond", vertices_plafond, {COULEUR_PLAFOND}, 0, &TEXTURE_PLAFOND);
+    plafond_ = Object3D("Plafond", vertices_plafond, normales, {COULEUR_PLAFOND}, 0, &TEXTURE_PLAFOND);
     // Fin : Plafond
 
     genererMur();

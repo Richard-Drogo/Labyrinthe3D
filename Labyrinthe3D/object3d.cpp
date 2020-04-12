@@ -7,10 +7,11 @@ Object3D::Object3D()
 }
 
 
-Object3D::Object3D(QString name, QVector<QVector<Vertex>> vertices, QVector<GLColor> colors, GLfloat brillance, const QImage * image)
+Object3D::Object3D(QString name, QVector<QVector<Vertex>> vertices, QVector<Vertex> normales, QVector<GLColor> colors, GLfloat brillance, const QImage * image)
 {
-    this->name_ = name;
-    this->vertices_ = vertices;
+    name_ = name;
+    vertices_ = vertices;
+    normales_ = normales;
     this->colors_ = colors;
     // Début : Paramètres pour l'éclairage
     couleur_ambiente_ = QVector<GLfloat>({colors_.at(0).getRed() / 255.0f, colors_.at(0).getGreen() / 255.0f, colors_.at(0).getGreen() / 255.0f, 1.0});

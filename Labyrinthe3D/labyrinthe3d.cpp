@@ -501,7 +501,6 @@ void Labyrinthe3D::initialiserUILabyrinthe(){
     labyrinthe_ = new Labyrinthe(ui->page_labyrinthe, qthelper_, ui->lineEdit_longueur->text().toInt(), ui->lineEdit_largeur->text().toInt(), chronometre_);
     labyrinthe_->setFixedSize(this->width() * LONGUEUR_LABYRINTHE, this->height() * LARGEUR_LABYRINTHE);
     connect(labyrinthe_, SIGNAL(sortieAtteinte()), this, SLOT(partieTerminee()));
-
 }
 
 

@@ -44,7 +44,7 @@ class Maze
     Cell::Direction direction(Point f, Point t);
 
 public:
-    Maze(int width,int height);
+    Maze(int width,int height); // Dimensions du labyrinthe souhaitée, définition la position de la sortie et lance la génération
     void reinit();
     void display(bool pause=false);
     void generate(bool show=false);
@@ -55,7 +55,7 @@ public:
     Point getPlayerPos() { return initPosPlayer_;};
     Point getexitPos() { return exit_;};
     Point getItemPos() { return gettableItem_;};
-    int getExitOrientation() {return pos;};
+    int getExitOrientation() {return pos;}; // Portion de mur sur lequel se trouve la sortie
 };
 
 #endif // MAZE_H

@@ -10,7 +10,7 @@
 #include "cell.h"
 #include "maze.h"
 #include <QVector>
-
+#include <QtDebug>
 using namespace std;
 
 Maze::Maze(int width, int height)
@@ -367,9 +367,9 @@ void Maze::generateInitialPosition(Point start, int addedPoint){
     //cout << posX << " " << posY << endl << posJX << " "<< posJY << endl ;
 
     int distance = (this->path(Point(posX,posY),Point(posJX,posJY))).size();
-
+    int i = 1;
     while (distance < height_*width_/4 ){ // verifie la distance entre les points
-
+        i++;
         posJX = 2*(rand() % height_) + 1;
         posJY = 2*(rand() % width_ ) + 1;
         distance = (this->path(Point(posX,posY),Point(posJX,posJY))).size();

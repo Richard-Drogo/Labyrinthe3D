@@ -8,10 +8,26 @@
 class Mur : public Object3D
 {
 public:
+    /* Mur(double x, double y, qint8 type, qint8 orientation, double epaisseur, double hauteur, double longueur,
+                              QVector<GLColor> colors, GLfloat brillance = 0, const QImage * image = Q_NULLPTR)
+    Rôle : Construit un mur selon les paramètre indiqués :
+    Entrées :   * double x, y : Coordonnées graphiques.
+                * qint8 type : Type de mur (ANGLE, CONTOUR_T1...),
+                * qint8 orientation : NE,NW...
+                * double epaisseur, hauteur, longueur : dimensions physiques
+                * QVector<GLColor> colors : Couleur du matériau
+                * GLfloat brillance : Brillance sous éclairage.
+                * const QImage * image : Texture.
+    */
     Mur(double x, double y, qint8 type, qint8 orientation, double epaisseur, double hauteur, double longueur, QVector<GLColor> colors, GLfloat brillance = 0, const QImage * image = Q_NULLPTR);
-    qint8 display() override;
+    qint8 display() override; // Affichage dans la scène du mur.
+
+    /* draw(QPainter & painter, qreal longueur_case_carte, qreal largeur_case_carte)
+    Rôle : Permet de dessiner ce mur sur la carte avec le painter et les longueurs et large d'une case sur la carte.
+    */
     void draw(QPainter & painter, qreal longueur_case_carte, qreal largeur_case_carte);
 
+    // Getters
     double getX() {return x_;};
     double getY() {return y_;};
 
@@ -49,6 +65,9 @@ private:
     double hauteur_;
     double longueur_;
 
+    /* createVertices()
+    Rôle : Méthode privée permettant de créer tous les Vertex relatifs au type de mur et à son orientation.
+    */
     void createVertices();
 };
 

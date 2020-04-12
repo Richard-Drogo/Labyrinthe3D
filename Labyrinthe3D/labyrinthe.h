@@ -39,6 +39,7 @@ public:
                 - Chronometre * chronometre : Pointeur vers le modèle chronomètre. (Utilisé pour le démarrer)
     */
     Labyrinthe(QWidget * parent, QTHelper * qthelper, qint8 longueur, qint8 largeur, Chronometre * chronometre);
+
     /* ~Labyrinthe()
     Rôle : Destructeur de la classe.
     */
@@ -64,32 +65,32 @@ public:
     // Fin : Constantes dimensionnelles publiques
 
 signals:
-    void sortieAtteinte();
+    void sortieAtteinte(); // Non utilisé (oubli de déletion)
 
 private:
     // Début : Attributs
     // Début : Attributs du Constructeur
     QWidget * parent_;
-    QTHelper * qthelper_;
+    QTHelper * qthelper_; // Classe QTHelper permettant de gérer la musique et les sons.
     double longueur_; // Longueur indiquée sur l'UI.
     double largeur_; // Largeur indiquée sur l'UI.
-    Chronometre * chronometre_ = Q_NULLPTR;
-    GLuint* texturesId;
+    Chronometre * chronometre_ = Q_NULLPTR; // Modèle Chronomètre.
+    GLuint* texturesId; // Textures
     // Fin : Attributs du Constructeurs
 
     // Début : Attributs de la physique
     Vertex positionJoueur_;
     Vertex direction_;
-    double angle_direction_ = -1;
+    double angle_direction_ = -1; // Angle compris entre 0 et 360 durant l'exécution du jeu.
     qint8 action_camera_actuelle_ = ACTION_CAMERA_AUCUNE;
-    bool mode_indice_active_ = false;
+    bool mode_indice_active_ = false; // Non utilisé (oubli de déletion)
     // Fin : Attributs de la physique
 
     // Début : Objets 3D dessinés
     Object3D sol_;
     Object3D plafond_;
     QVector<Mur> murs_;
-    Item* item_;
+    Item* item_; // Sphère texturée avec le logo de TSE (clef pour ouvrir la porte)
     Porte* porte_ = nullptr;
     // Fin : Objets 3D dessinés
 
@@ -108,10 +109,10 @@ private:
 
 
     // Début : Attributs du labyrinthe
-    QVector<QVector<qint8>> matrice_labyrinthe_;
-    Maze * maze_ = nullptr;
-    QTimer * timer_carte_du_labyrinthe_ = Q_NULLPTR;
-    bool afficher_carte_= false;
+    QVector<QVector<qint8>> matrice_labyrinthe_; // Matrice retournée par la fonction spécifique créée dans la classe Maze.
+    Maze * maze_ = nullptr; // Instance de Maze générateur de labyrinthe.
+    QTimer * timer_carte_du_labyrinthe_ = Q_NULLPTR; // Timer permettant la temporisation avant l'affichage de la carte 2D.
+    bool afficher_carte_= false; // Utilisé dans le paintGL permet d'indiquer d'afficher la carte.
     // Fin : Attributs du labyrinthe
     // Fin : Attributs
 
@@ -191,32 +192,31 @@ private:
 
 
     // Début : Méthodes privées
-    void display();
-    void genererMur();
-    void genererPorte();
-    void definirTypeMur(qint8 x, qint8 y);
-    qint8 compterCombienDeCasesNonDefinies(qint8 x, qint8 y);
-    void avancer();
-    void reculer();
+    void display(); // Permet d'afficher dans le paintGL le labyrinthe
+    void genererMur(); // Boucle permettant de créer les murs.
+    void genererPorte(); // Permet de créer la porte.
+    void definirTypeMur(qint8 x, qint8 y); // Création d'un mur correspondant à la case localisé en x et en y.
+    qint8 compterCombienDeCasesNonDefinies(qint8 x, qint8 y); // Permet de compter le nombre de cases non définies autour du mur en x et y.
+    void avancer(); // Effectue les changements de position pour avancer si aucune collision.
+    void reculer(); // Effectue les changements de position pour reculer si aucune collision.
     void tournerCameraAGauche();
     void tournerCameraADroite();
     void dessinerCarteLabyrinthe(QPainter & painter);
-    void arreterTimerCarteDuLabyrinthe();
+    void arreterTimerCarteDuLabyrinthe(); // Lors d'un déplacement, permet d'arrêter l'affichage de la carte.
     // Fin : Méthodes privées
 
 
 private slots:
-    void timerCarteDuLabyrintheFini();
+    void timerCarteDuLabyrintheFini(); // Lors d'une position neutre, timer introduisant une temporisation avant affichage.
 
 protected:
-    void initializeGL();
-    void resizeGL(int width, int height);
-    void paintGL();
-    void keyPressEvent(QKeyEvent * event);
-    void keyReleaseEvent(QKeyEvent * event);
-    void touchTheBall();
-    bool touchTheWall(double X, double Y);
-    void ReachExit();
+    void initializeGL(); // Initialisation de la scène OpenGL
+    void resizeGL(int width, int height); // Méthode appelée lors du redimensionnement de la fenêtre
+    void paintGL(); // Methode permettant de dessiner la scène.
+    void keyPressEvent(QKeyEvent * event); // Appelée lorsque le joueur appuye sur une touche (déplacements)
+    void keyReleaseEvent(QKeyEvent * event); // Appelée lorsque le joueuru relâche une touche.
+    void touchTheBall(); // Permet de vérifier si le joueur est en contact avec la sphère.
+    bool touchTheWall(double X, double Y); // Permet de vérifier si le joueur entre en collision avec le mur ou la porte.
+    void ReachExit(); // Permet d'indiquer au programme que le joueur a atteint la sortie.
 };
-
 #endif // LABYRINTHE_H

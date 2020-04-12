@@ -1,19 +1,13 @@
 ﻿TODO List |
 ------------
 
-
-Cahier des charges : 
-1 - Bugs d'affichage des objets 3D sans couleurs
-3 - Commenter le code.
-4 - Rapport.
-
-
 Corrections de Bugs :
-1 - Touche ECHAP ne fonctionnant pas pour quitter l'UI OpenGL.
-2 - Bug génération de 4 chemins en carrés (SCREEN disponible)
-3 - Bug affichage cadre camera
+1 - Bugs d'affichage des objets 3D sans couleurs
+2 - Touche ECHAP ne fonctionnant pas pour quitter l'UI OpenGL.
+3 - Bug génération de 4 chemins en carrés (SCREEN disponible)
+4 - Bug affichage cadre camera
 
-Bonus :
+Fonctionnalités :
 1 - Affichage de la lampe torche en mode Bleu.
 2 - Placements des indices.
 3 - Cinématique
